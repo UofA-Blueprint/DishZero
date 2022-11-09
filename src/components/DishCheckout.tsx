@@ -69,8 +69,6 @@ const DishCheckout = ({db}: any) => {
                             ))}
                         </tbody>
                     </table>
-                    {JSON.stringify(dishesAvail)}
-
                 </div>
             </Container>
         </>
