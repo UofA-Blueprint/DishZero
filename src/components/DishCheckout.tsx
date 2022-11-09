@@ -6,20 +6,6 @@ import CreateTempDishes from "./temp/CreateTempDishes";
 import {useEffect, useState} from "react";
 import DishApi from "../api/DishApi";
 
-const firebaseConfig = {
-    apiKey: process.env.REACT_APP_apiKey,
-    authDomain: process.env.REACT_APP_authDomain,
-    databaseURL: process.env.REACT_APP_databaseURL,
-    projectId: process.env.REACT_APP_projectId,
-    storageBucket: process.env.REACT_APP_storageBucket,
-    messagingSenderId: process.env.REACT_APP_messagingSenderId,
-    appId: process.env.REACT_APP_appId,
-    measurementId: process.env.REACT_APP_measurementId,
-};
-
-const firestoreApp = initializeApp(firebaseConfig);
-const db = getFirestore(firestoreApp);
-
 const DishListItem = ({db, dish, index, updateList}: any) => {
     let checkoutDish = async function () {
         await DishApi.checkOutDish(db, dish);
@@ -49,7 +35,7 @@ const DishListItem = ({db, dish, index, updateList}: any) => {
     )
 }
 
-const DishCheckout = () => {
+const DishCheckout = ({db}: any) => {
     const [dishesAvail, setDishesAvail] = useState([]);
     const [refreshList, setRefreshList] = useState(0);
 
@@ -79,7 +65,7 @@ const DishCheckout = () => {
                         </thead>
                         <tbody>
                             {dishesAvail.map((dish: any, key: any) => (
-                                <DishListItem db={db} dish={dish} index={key+1} updateList={updateList}/>
+                                <DishListItem key={key} db={db} dish={dish} index={key+1} updateList={updateList}/>
                             ))}
                         </tbody>
                     </table>
