@@ -20,13 +20,15 @@ const firebaseConfig = {
 const firestoreApp = initializeApp(firebaseConfig);
 const db = getFirestore(firestoreApp);
 
-const DishListItem = ({dish, index}: any) => {
-    let checkoutDish = function () {
-        console.log(`Checked out: ${dish.id}`);
+const DishListItem = ({db, dish, index, updateList}: any) => {
+    let checkoutDish = async function () {
+        await DishApi.checkOutDish(db, dish);
+        updateList();
     };
 
-    let checkinDish = function () {
-        console.log("checked in: ", dish.id);
+    let checkinDish = async function () {
+        await DishApi.checkInDish(db, dish);
+        updateList();
     }
     return (
         <>
@@ -49,12 +51,17 @@ const DishListItem = ({dish, index}: any) => {
 
 const DishCheckout = () => {
     const [dishesAvail, setDishesAvail] = useState([]);
+    const [refreshList, setRefreshList] = useState(0);
+
     useEffect(() => {
-        DishApi.getAvailableDishes(db)
+        DishApi.getAllDishes(db)
             .then((dishesAvailResp: any) => {
                 setDishesAvail(dishesAvailResp);
             })
-    }, [])
+    }, [refreshList])
+
+    let updateList = () => setRefreshList(refreshList + 1);
+
 
     return (
         <>
@@ -72,14 +79,14 @@ const DishCheckout = () => {
                         </thead>
                         <tbody>
                             {dishesAvail.map((dish: any, key: any) => (
-                                <DishListItem dish={dish} index={key+1} />
+                                <DishListItem db={db} dish={dish} index={key+1} updateList={updateList}/>
                             ))}
                         </tbody>
                     </table>
                     {JSON.stringify(dishesAvail)}
+
                 </div>
             </Container>
-
         </>
     )
 }
