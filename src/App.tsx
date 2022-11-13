@@ -2,31 +2,52 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC0CRtoe1eoBS5hwAAJWyS8Us5C1K501mY",
-  authDomain: "dishzero-serviet.firebaseapp.com",
-  projectId: "dishzero-serviet",
-  storageBucket: "dishzero-serviet.appspot.com",
-  messagingSenderId: "273096823928",
-  appId: "1:273096823928:web:3ae7f21ca35890cc86098d",
-  measurementId: "G-YH3SYRJJ6D"
-};
+import {auth, provider} from './firebase';
+import { signInWithPopup } from 'firebase/auth';
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export const auth = getAuth(app);
+import { useDispatch, useSelector } from 'react-redux';
+
+import {selectUserEmail, setActiveUser} from './features/userSlice';
+
+
+
 
 function App() {
+
+  // TO-DO wrap <App /> with <Provider /> to make it access useDispatch as <App /> is currently a parent.
+  // This component will throw an error and nothing will be rendered unless the above is accmomplished.
+  const dispatch = useDispatch();
+  const userEmail = useSelector(selectUserEmail);
+
+  const handleSignIn = () => {
+    signInWithPopup(auth, provider)
+    .then((credentials) => {
+
+      if (!auth.currentUser?.email?.match('@ualberta.ca')){
+        auth.currentUser?.delete()
+        alert('User not valid. Please use your UAlberta email to login.')
+      } else {
+        dispatch(setActiveUser({
+          email: credentials.user.email
+        }))
+      }      
+    })
+    .catch(err => {
+      alert(err)
+    })
+
+  }
+
+
+
+  const handleSignOut = () => {
+
+    // TO-DO Create the signout function
+
+    return
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -43,6 +64,16 @@ function App() {
           Learn React
         </a>
       </header>
+      <div>
+
+        {
+          userEmail ? 
+          (<button onClick={handleSignOut}>Sign Out</button>) : 
+        
+          (<button onClick={handleSignIn}>Sign In</button>)
+        }
+
+      </div>
     </div>
   );
 }
