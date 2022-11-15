@@ -4,15 +4,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoffee, faSearch } from '@fortawesome/free-solid-svg-icons'
+import ScanQRCode from "./ScanQRCode";
 
-const CheckOutInput = () => {
-  const [DishID, setDishID] = useState("")
-  const onChange = () => {
-
+const CheckOutInput = ({setPopUp, DishID,setDishID}) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setPopUp(true)
+    return false;
   }
   return (
     <div>
-      <Form>
+      <Form onSubmit={handleSubmit}>
+        <ScanQRCode setDishID={setDishID} />
         <InputGroup className="mb-3">
           <InputGroup.Text>
             <FontAwesomeIcon icon={faSearch} />
@@ -21,7 +24,7 @@ const CheckOutInput = () => {
 
           </Form.Text>
           <Form.Control value={DishID} onChange={(e) => setDishID(e.target.value)} type="text" placeholder="Enter dish id #" />
-          <Button variant="outline-primary" type="submit" className="mr-sm-2">
+          <Button onSubmit={handleSubmit} variant="outline-primary" type="submit" className="mr-sm-2">
             Search
           </Button>
         </InputGroup >
