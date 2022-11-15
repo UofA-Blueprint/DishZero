@@ -11,8 +11,6 @@ import { auth } from './firebase';
 
 function App() {
 
-  // TO-DO wrap <App /> with <Provider /> to make it access useDispatch as <App /> is currently a parent.
-  // This component will throw an error and nothing will be rendered unless the above is accmomplished.
   const dispatch = useDispatch();
   const userEmail = useSelector(selectUserEmail);
 
@@ -28,6 +26,7 @@ function App() {
   }
 
   const handleSignOut = () => {
+    console.log(userEmail)
     auth.signOut()
     .then(() => {
       alert('User signed out')
@@ -37,8 +36,10 @@ function App() {
   return (
     <div className="App">
       <div>
-        <button onClick={handleSignOut}>Sign Out</button>
-        <button onClick={handleSignIn}>Sign In</button>
+        {
+          userEmail ? (<button onClick={handleSignOut}>Sign Out</button>) : 
+          (<button onClick={handleSignIn}>Sign In</button>)
+        }
       </div>
     </div>
   );
