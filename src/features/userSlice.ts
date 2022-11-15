@@ -9,7 +9,7 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         setActiveUser(state, action) {
-            state.userEmail = action.payload.user;
+            state.userEmail = action.payload.userEmail;
         },
         setLogOutState(state) {
             state.userEmail = null;
