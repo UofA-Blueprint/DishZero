@@ -5,30 +5,38 @@ import { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCoffee, faSearch } from '@fortawesome/free-solid-svg-icons'
 import ScanQRCode from "./ScanQRCode";
+import { faCamera, faCameraRotate } from '@fortawesome/free-solid-svg-icons'
 
-const CheckOutInput = ({setPopUp, DishID,setDishID}) => {
+const CheckOutInput = ({ setFacingMode, FacingMode, setPopUp, DishID, setDishID }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setPopUp(true)
     return false;
   }
   return (
-    <div>
+
+    <div className="start-0 position-fixed bottom-0 w-100 px-2" >
+      <div>
+      
       <Form onSubmit={handleSubmit}>
-        <ScanQRCode setDishID={setDishID} />
+
         <InputGroup className="mb-3">
+          
           <InputGroup.Text>
             <FontAwesomeIcon icon={faSearch} />
           </InputGroup.Text>
           <Form.Text className="text-muted">
 
           </Form.Text>
+
           <Form.Control value={DishID} onChange={(e) => setDishID(e.target.value)} type="text" placeholder="Enter dish id #" />
           <Button onSubmit={handleSubmit} variant="outline-primary" type="submit" className="mr-sm-2">
             Search
           </Button>
+          
         </InputGroup >
       </Form>
+      </div>
     </div>
   )
 }

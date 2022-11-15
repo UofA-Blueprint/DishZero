@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 
 import CheckOut from "./widgets/CheckOut"
+import CheckOutButton from "./widgets/CheckOutButton"
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -27,10 +28,13 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 function App() {
+  
+
   return (
     <div className="App">
       <header className="App-header">
-        <CheckOut/>
+        <CheckOut />
+
       </header>
     </div>
   );
