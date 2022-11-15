@@ -1,40 +1,45 @@
 import React from 'react';
 import './App.css';
 
-
 import { useDispatch, useSelector } from 'react-redux';
 
-import {selectUserEmail, setActiveUser} from './features/userSlice';
-import { authenticate } from './Auth';
-import { auth } from './firebase';
+import {selectUserEmail, setActiveUser, setLogOutState} from './features/userSlice';
+import { auth, provider } from './firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 
-function App() {
+function Login() {
 
   const dispatch = useDispatch();
   const userEmail = useSelector(selectUserEmail);
 
   const handleSignIn = () => {
-    const status = authenticate();
-    if (status !== false){
-      dispatch(setActiveUser({
-        userEmail: status.user.email
-      }))
-    } else {
-      alert('Error logging you in.')
-    }
+    signInWithPopup(auth, provider)
+    .then((credentials) => {
+      if (!credentials.user.email?.match('@ualberta.ca')) {
+        auth.currentUser?.delete();
+        alert('Cannot login with a non-ualberta account')
+      } else {
+        dispatch(setActiveUser({
+          userEmail: credentials.user.email
+        }))
+      }
+    })
+    .catch((err) => {
+      alert(err.message)
+    })
   }
 
   const handleSignOut = () => {
-    console.log(userEmail)
     auth.signOut()
     .then(() => {
+      dispatch(setLogOutState())
       alert('User signed out')
     })
   }
 
   return (
-    <div className="App">
+    <div>
       <div>
         {
           userEmail ? (<button onClick={handleSignOut}>Sign Out</button>) : 
@@ -45,4 +50,4 @@ function App() {
   );
 }
 
-export default App;
+export default Login;
