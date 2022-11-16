@@ -4,6 +4,8 @@ const initialState = {
     userEmail: null,
 };
 
+// A slice store (or sub-store) of the main redux app
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
