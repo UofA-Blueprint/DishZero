@@ -4,7 +4,9 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { GoogleAuthProvider } from 'firebase/auth';
 
-
+// This file stores the firebase configuration credentials and should not be changed. 
+// All the required functionalities (which themselves require these credentials) have been exported 
+// and can be imported in another file. Example: App.tsx, line: 7
 
 const firebaseConfig = {
     apiKey: "AIzaSyC0CRtoe1eoBS5hwAAJWyS8Us5C1K501mY",

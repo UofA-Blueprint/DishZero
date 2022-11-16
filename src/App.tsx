@@ -11,8 +11,13 @@ import { signInWithPopup } from 'firebase/auth';
 function Login() {
 
   const dispatch = useDispatch();
+
+  // a selector to access or read the userEmail state
   const userEmail = useSelector(selectUserEmail);
 
+
+  // fired on button click while the user is not signed in.
+  // the userEmail state is set (or "dispatched") after getting it from "credentials".
   const handleSignIn = () => {
     signInWithPopup(auth, provider)
     .then((credentials) => {
@@ -30,6 +35,7 @@ function Login() {
     })
   }
 
+  // sets logOutState (basically userEmail = null) or "dispatches" a null value to the userEmail state.
   const handleSignOut = () => {
     auth.signOut()
     .then(() => {
