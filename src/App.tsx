@@ -38,9 +38,6 @@ const router = createBrowserRouter(routes);
 function App() {
   return (
     <RouterProvider router={router} />
-    // <div className="App">
-    //   <DishCheckout db={db}/>
-    // </div>
   );
 }
 
