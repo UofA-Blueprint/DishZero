@@ -2,9 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { collection, addDoc } from "firebase/firestore";
 import {Button, Container} from "react-bootstrap";
-import CreateTempDishes from "./temp/CreateTempDishes";
-import {useEffect, useState} from "react";
-import DishApi from "../api/DishApi";
+import CreateTempDishes from "../../components/temp/CreateTempDishes";
+import {useEffect, useRef, useState} from "react";
+import DishApi from "../../api/DishApi";
+import {useParams} from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
 const DishListItem = ({db, dish, index, updateList}: any) => {
     let checkoutDish = async function () {
@@ -35,7 +37,8 @@ const DishListItem = ({db, dish, index, updateList}: any) => {
     )
 }
 
-const DishCheckout = ({db}: any) => {
+const TempDishCheckout = () => {
+    let db: any;
     const [dishesAvail, setDishesAvail] = useState([]);
     const [refreshList, setRefreshList] = useState(0);
 
@@ -64,13 +67,36 @@ const DishCheckout = ({db}: any) => {
                         </tr>
                         </thead>
                         <tbody>
-                            {dishesAvail.map((dish: any, key: any) => (
-                                <DishListItem key={key} db={db} dish={dish} index={key+1} updateList={updateList}/>
-                            ))}
+                        {dishesAvail.map((dish: any, key: any) => (
+                            <DishListItem key={key} db={db} dish={dish} index={key+1} updateList={updateList}/>
+                        ))}
                         </tbody>
                     </table>
                 </div>
             </Container>
+        </>
+    )
+}
+
+/**
+ * Component that checks out the dish and redirects to the page with the url
+ */
+const DishCheckout = ({db}: any) => {
+    let navigate = useNavigate();
+    const { id } = useParams();
+    // used to ensure that the checkout only happens once
+    const idLastCheckedOut = useRef("0");
+
+    useEffect(() => {
+        if (idLastCheckedOut.current != id) {
+            // TODO: Use handler function to update the status of the dish
+            console.log(`Use handler function, checkout: ${id}`)
+            idLastCheckedOut.current = id || "0";
+            navigate(`/QRCodeScanCheckout/${id}`);
+        }
+    }, [])
+    return (
+        <>
         </>
     )
 }
