@@ -1,8 +1,8 @@
 // All general purpose components / hooks export here
-import QRCodeCheckout from "./checkout/QRCodeCheckout";
 import DishCheckout from "./checkout/DishCheckout";
+import DishCheckoutLoginCallback from "./checkout/DishCheckoutLoginCallback";
 
 export {
-    QRCodeCheckout,
+    DishCheckoutLoginCallback,
     DishCheckout,
 }

@@ -16,7 +16,9 @@ const DishCheckout = ({db}: any) => {
             // TODO: Use handler function to update the status of the dish
             console.log(`Use handler function, checkout: ${id}`)
             idLastCheckedOut.current = id || "0";
-            navigate(`/QRCodeScanCheckout/${id}`);
+            // If user logged in then go to home page
+            // else
+            navigate(`/checkout/login/callback/${id}`);
         }
     }, [])
     return (

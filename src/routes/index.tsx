@@ -1,18 +1,18 @@
-import {QRCodeCheckout, DishCheckout} from "../widgets";
+import {DishCheckoutLoginCallback, DishCheckout} from "../widgets";
 
 // Export all routes here
 const router = [
     {
         path: "/",
-        element: <div>Hello world!</div>,
+        element: <div>DishZero!</div>,
     },
     {
         path: "/checkout/:id",
         element: <DishCheckout />,
     },
     {
-        path: "/QRCodeScanCheckout/:id",
-        element: <QRCodeCheckout />,
+        path: "/checkout/login/callback/:id",
+        element: <DishCheckoutLoginCallback />,
     },
 ];
 
