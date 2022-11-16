@@ -5,6 +5,7 @@ const QRCodeCheckout = () => {
 
     return (
         <>
+            {/*TODO: Add QR code functionality*/}
             QR-Code: {id}
         </>
     )

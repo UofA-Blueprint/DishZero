@@ -1,16 +1,13 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
 } from "react-router-dom";
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import DishCheckout from "./widgets/checkout/DishCheckout";
 import {getFirestore} from "firebase/firestore";
 import routes from "./routes";
 // TODO: Add SDKs for Firebase products that you want to use
