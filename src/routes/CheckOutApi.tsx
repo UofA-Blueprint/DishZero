@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
 import DishApi from "../stores/api"
 
-const CheckOut = async (db: any, dish: string, user: string) => {
+const CheckOut = async (dish: string, user: string) => {
     
-    const docRef = await DishApi.CheckOutDish(db, dish, user);
+    const docRef = await DishApi.CheckOutDish(dish, user);
     console.log(docRef.id);
 
 }
 
-const CheckOutApi = (props: any) => {
+const CheckOutApi = () => {
     const [DishID, setDishID] = useState("value")
     const [User, setUser] = useState("value")
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
         console.log(DishID)
-        CheckOut(props.db, DishID,User)
+        CheckOut(DishID, User)
 
         return false;
     }
