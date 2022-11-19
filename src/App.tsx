@@ -45,14 +45,13 @@ function Login() {
   }
 
   return (
-    <div>
-      <div>
-        {
-          userEmail ? (<button onClick={handleSignOut}>Sign Out</button>) : 
-          (<button onClick={handleSignIn}>Sign In</button>)
-        }
-      </div>
-    </div>
+    <div style={{ paddingBottom: 100, paddingTop: 100 }}>
+      <div style = {{textAlign:"center"}}>
+      <img src="https://image.shutterstock.com/image-vector/plate-vector-illustrationisolated-on-white-260nw-1815162875.jpg" ></img>
+      <h1>DishZero</h1>
+      <h2>Catch Phrase</h2>
+      <h3>Don't have account? <a href="/SignUp">Sign up</a></h3>
+      </div></div>
   );
 }
 
