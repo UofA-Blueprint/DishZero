@@ -1,6 +1,6 @@
 import { useState } from "react"
 import CheckOutModal from "../widgets/CheckOutModal"
-import ScanQRCode from "./ScanQRCode"
+import ScanQRCode from "../widgets/ScanQRCode"
 
 
 const Checkout = () => {

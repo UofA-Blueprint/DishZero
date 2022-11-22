@@ -6,15 +6,15 @@ import { useState } from "react"
 import '../styles/CheckOut.css';
 
 const ScanQRCode = ({mode, DishID, setDishID, PopUp, setPopUp}) => {
-  const [ShowCheckOut, setShowCheckOut] = useState(false)
+  const [ShowQRScanner, setShowQRScanner] = useState(false)
   const [FacingMode, setFacingMode] = useState(false)
   return (
     <div className="scanner-main">
       <div className="scanner-wrapper">
-        <ScanButton style={{ display: (ShowCheckOut ? "none" : "block") }} onClick={() => setShowCheckOut(!ShowCheckOut)} />
+        <ScanButton style={{ display: (ShowQRScanner ? "none" : "block") }} onClick={() => setShowQRScanner(!ShowQRScanner)} />
         {/* ScanQRCode */}
-        <div style={{ height: "100vh", width: "80%", display: (ShowCheckOut ? "block" : "none") }}>
-          <ScannerNav title={mode} style={{ top: 0, left: 0, position: "fixed", width: "100%" }} />
+        <div style={{ height: "100vh", width: "80%", display: (ShowQRScanner ? "block" : "none") }}>
+          <ScannerNav title={mode} style={{ top: 0, left: 0, position: "fixed", width: "100%" }} handleClose={()=>setShowQRScanner(false)} />
           <QRCanvas setFacingMode={setFacingMode} FacingMode={FacingMode} setDishID={setDishID} />
           <ManualInput setFacingMode={setFacingMode} FacingMode={FacingMode} setPopUp={setPopUp} setDishID={setDishID} DishID={DishID} />
         </div>
