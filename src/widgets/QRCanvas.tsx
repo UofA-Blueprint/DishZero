@@ -9,7 +9,7 @@ import QrReader from "react-qr-scanner";
 
 const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
   const [QRError, setQRError] = useState("");
-  const style = { height: 240, width: "320" };
+  const style = {height: "100%" };
 
   const [showQr, setShowQr] = useState(false);
   const handleError = (err: any) => {
@@ -52,7 +52,10 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
             <FontAwesomeIcon icon={faCameraRotate} />
           </Button>
         </div>
+
         <div className="qr-scanner-tag">
+        {/* <div className="crosshair"/> */}
+
           {showQr ? (
             <QrReader
               delay={100}
@@ -65,7 +68,7 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
             <div>
               {" "}
               {QRError ? (QRError) : (<><FontAwesomeIcon icon={faVideoCamera} /> Camera Disabled <br />{" "}
-                <p>Tap to Enable</p>{QRError}</>)}
+                <p style={{fontSize:"0.8em"}}>Tap to Enable</p>{QRError}</>)}
 
             </div>
           )}

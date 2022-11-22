@@ -13,23 +13,24 @@ const ManualInput = ({ setFacingMode, FacingMode, setPopUp, DishID, setDishID })
   }
   return (
 
-    <div className="start-0 position-fixed bottom-0 w-100 px-2" >
+    <div className="start-0 position-fixed bottom-0 w-100 px-5" >
       <div>
       
       <Form onSubmit={handleSubmit}>
 
         <InputGroup className="mb-3">
           
-          <InputGroup.Text>
+          <InputGroup.Text className="search-bar">
             <FontAwesomeIcon icon={faSearch} />
           </InputGroup.Text>
           <Form.Text className="text-muted">
 
           </Form.Text>
 
-          <Form.Control value={DishID} onChange={(e) => setDishID(e.target.value)} type="text" placeholder="Enter dish id #" />
-          <Button onSubmit={handleSubmit} variant="outline-primary" type="submit" className="mr-sm-2">
-            Search
+          <Form.Control className="search-bar" value={DishID} onChange={(e) => setDishID(e.target.value)} type="text" placeholder="Enter dish id #" />
+          
+          <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button">
+            Enter
           </Button>
           
         </InputGroup >
