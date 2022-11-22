@@ -1,7 +1,18 @@
 .scanner-main {
   text-align: center;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform: translateY(0);;
+  transition: transform 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
 }
+.scanner-main.hidden{
+  /* display: none; */
+  transform: translateY(100%);
 
+}
 .qr-scanner-wrapper{
   /* min-width: 30rem; */
   height: 90vh !important;

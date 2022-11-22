@@ -14,14 +14,6 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-.qr-scanner-wrapper{
-  /* min-width: 30rem; */
-  height: 90vh !important;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: center;
-}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -44,20 +36,4 @@
   to {
     transform: rotate(360deg);
   }
-}
-.qr-scanner-placeholder{
-  border-radius: 10px;
-  margin: 5px 5px;
-  height: 67vh !important;
-  
-  width: 100% !important;
-  background-color: rgba(0,0,0,0.5);
-
-}
-.qr-scanner-tag{
-  width: 100%;
-  height: 100%;
-  display:flex;
-  justify-content: center;
-  align-items: center;
 }
