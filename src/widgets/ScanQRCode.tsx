@@ -9,13 +9,16 @@ import { Button } from "react-bootstrap";
 import QrReader from "react-qr-scanner";
 
 const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
-  const [Log, setLog] = useState("");
+  const [QRError, setQRError] = useState("");
   const style = { height: 240, width: "320" };
 
   const [showQr, setShowQr] = useState(false);
   const handleError = (err: any) => {
-    console.error(err);
-    setLog(err);
+    console.error(err.message)
+    if (err.message == "Permission denied") {
+      setQRError("Camera Permission Denied")
+    }
+    setShowQr(false)
     // setLog(err)
   };
   const handleScan = (data: any) => {
@@ -62,13 +65,13 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
           ) : (
             <div>
               {" "}
-              <FontAwesomeIcon icon={faVideoCamera} /> Camera Disabled <br />{" "}
-              Tap to Enable
+              {QRError ? (QRError) : (<><FontAwesomeIcon icon={faVideoCamera} /> Camera Disabled <br />{" "}
+                <p>Tap to Enable</p>{QRError}</>)}
+
             </div>
           )}
         </div>
       </div>
-      {Log}
     </div>
   );
 };
