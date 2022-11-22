@@ -1,4 +1,4 @@
-.checkout-main {
+.scanner-main {
   text-align: center;
 }
 
@@ -10,7 +10,7 @@
   flex-direction: column;
   justify-content: center;
 }
-.checkout-wrapper {
+.scanner-wrapper {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;

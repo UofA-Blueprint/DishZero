@@ -1,5 +1,4 @@
 import {
-  faCamera,
   faCameraRotate,
   faVideoCamera,
 } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +14,7 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
   const [showQr, setShowQr] = useState(false);
   const handleError = (err: any) => {
     console.error(err.message)
-    if (err.message == "Permission denied") {
+    if (err.message === "Permission denied") {
       setQRError("Camera Permission Denied")
     }
     setShowQr(false)

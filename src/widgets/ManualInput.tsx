@@ -1,13 +1,11 @@
 import { Button, InputGroup } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCoffee, faSearch } from '@fortawesome/free-solid-svg-icons'
-import ScanQRCode from "./ScanQRCode";
-import { faCamera, faCameraRotate } from '@fortawesome/free-solid-svg-icons'
 
-const CheckOutInput = ({ setFacingMode, FacingMode, setPopUp, DishID, setDishID }) => {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSearch } from '@fortawesome/free-solid-svg-icons'
+
+const ManualInput = ({ setFacingMode, FacingMode, setPopUp, DishID, setDishID }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setPopUp(true)
@@ -41,4 +39,4 @@ const CheckOutInput = ({ setFacingMode, FacingMode, setPopUp, DishID, setDishID 
   )
 }
 
-export default CheckOutInput
+export default ManualInput

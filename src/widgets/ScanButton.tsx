@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faQrcode } from '@fortawesome/free-solid-svg-icons'
 
-const checkout = ({onClick,style}) => {
+const ScanButton = ({onClick,style}) => {
   return (
     <div style={style} className="position-absolute bottom-0 end-0">
       <Button onClick={onClick} variant="primary">
@@ -14,4 +14,4 @@ const checkout = ({onClick,style}) => {
   )
 }
 
-export default checkout
+export default ScanButton

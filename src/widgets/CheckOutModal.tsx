@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const CheckOutPopUp = ({setPopUp, PopUp, DishID}) => {
+const CheckOutModal = ({setPopUp, PopUp, DishID}) => {
   return (
     <div>
       <Modal onHide={()=>setPopUp(false)} show={PopUp} className="modal-dialog-centered modal-sm" centered>
@@ -23,4 +23,4 @@ const CheckOutPopUp = ({setPopUp, PopUp, DishID}) => {
   )
 }
 
-export default CheckOutPopUp
+export default CheckOutModal
