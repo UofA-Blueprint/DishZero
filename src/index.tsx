@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import store from './app/store';
 import { Provider } from 'react-redux';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+} from "react-router-dom";
 import Login from './routes/Login';
 
 // Considering redux a service which provides a centralized state which can be accessed
@@ -13,10 +17,18 @@ import Login from './routes/Login';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login />,
+  },
+]);
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Login />
+      <RouterProvider router={router} />
     </Provider>
   </React.StrictMode>
 );
