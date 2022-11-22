@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import store from './app/store';
 import { Provider } from 'react-redux';
 import Login from './routes/Login';
+import CheckOut from './routes/CheckOut';
 
 // Considering redux a service which provides a centralized state which can be accessed
 // through any component, we need to add it as a parent for all components. (Hence: <Provider/>)
@@ -16,7 +17,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <Login />
+      <CheckOut />
     </Provider>
   </React.StrictMode>
 );
