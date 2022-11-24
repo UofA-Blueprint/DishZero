@@ -1,11 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import store from './app/store';
 import { Provider } from 'react-redux';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Route,
+} from "react-router-dom";
 import Login from './routes/Login';
+import CheckOut from './routes/CheckOut';
+import CheckIn from './routes/CheckIn';
 
 // Considering redux a service which provides a centralized state which can be accessed
 // through any component, we need to add it as a parent for all components. (Hence: <Provider/>)
@@ -13,10 +19,21 @@ import Login from './routes/Login';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Login />,
+  },
+]);
+
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+      <RouterProvider router={router} />
       <Login />
+      <CheckOut />
+      <CheckIn />
     </Provider>
   </React.StrictMode>
 );
