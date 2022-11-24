@@ -35,11 +35,11 @@ export const Sidebar = ({pageWrapId, outerContainerId} : SidemenuProps) => {
                     src="https://cdn-icons-png.flaticon.com/512/76/76211.png"></img>
                 My dishes
             </a>
+            <div style={{paddingTop: 280}}></div>
             <a
                 className="menu-item"
                 href="/dishes"
                 style={{
-                paddingTop: 280
             }}>
                 <img
                     style={{paddingRight:20}}
