@@ -9,6 +9,7 @@ import {
   RouterProvider,
   Route,
 } from "react-router-dom";
+import routes from "./routes";
 import Login from './routes/Login';
 import CheckOut from './routes/CheckOut';
 import CheckIn from './routes/CheckIn';
@@ -20,20 +21,12 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Login />,
-  },
-]);
+const router = createBrowserRouter(routes);
 
 root.render(
   <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
-      <Login />
-      <CheckOut />
-      <CheckIn />
     </Provider>
   </React.StrictMode>
 );
