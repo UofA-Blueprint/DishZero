@@ -1,5 +1,5 @@
 import firebase from "firebase/compat";
-import { collection, Timestamp, addDoc } from "firebase/firestore";
+import { collection, Timestamp, addDoc, getDocs, query, where } from "firebase/firestore";
 
 
 const DishAPI = {
@@ -17,6 +17,15 @@ const DishAPI = {
 
         const docRef = await addDoc(collection(db, this.TransactionsCollectionName), docData);
         return docRef
+    },
+    getDishesbyQuery: async function (q:any){
+        const querySnapshot = await getDocs(q);
+        
+    },
+    getDishID: async function (db: any, user: string, qr_dish: string) {
+        const q = query(collection(db, this.DishCollectionName), where("qid", "==", qr_dish));
+        const dishes  = await this.getDishesbyQuery(q);
+        return dishes;
     },
 }
 export default DishAPI;
