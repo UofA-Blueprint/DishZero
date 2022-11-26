@@ -11,14 +11,13 @@ const CheckOutbyID = async (db: any, dish: string, user: string) => {
 const CheckOutbyQR = async (db: any, user: string, qid: string) => {
     
     const dish = await DishApi.getDishID(db, user, qid)
-    console.log(dish)
-    // const docRef = await DishApi.CheckOutDish(db, user, dish[0]);
-    // console.log(docRef.id);
+    const docRef = await DishApi.CheckOutDish(db, user, dish.docId);
+    console.log(docRef.id);
 
 }
 
 const CheckOutApi = (props: any) => {
-    const [DishID, setDishID] = useState("value")
+    const [DishID, setDishID] = useState("fJ2ohLer5kTutrJefW5O")
     const [DishQID, setDishQID] = useState("value")
     
     const [User, setUser] = useState("value")
@@ -26,9 +25,9 @@ const CheckOutApi = (props: any) => {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         console.log(DishID)
-        // CheckOutbyID(props.db, DishID,User)
+        
         CheckOutbyQR(props.db,User,"1")
-
+        CheckOutbyID(props.db, DishID,User)
         return false;
     }
     return (
