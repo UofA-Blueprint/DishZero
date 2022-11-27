@@ -12,6 +12,7 @@ import {
 import Login from './routes/Login';
 import CheckOut from './routes/CheckOut';
 import CheckIn from './routes/CheckIn';
+import CheckOutApi from './widgets/CheckOutApi';
 
 // Considering redux a service which provides a centralized state which can be accessed
 // through any component, we need to add it as a parent for all components. (Hence: <Provider/>)
@@ -31,9 +32,10 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
-      <Login />
+      {/* <Login /> */}
       <CheckOut />
       <CheckIn />
+      {/* <CheckOutApi /> */} {/* Template Component */} 
     </Provider>
   </React.StrictMode>
 );
