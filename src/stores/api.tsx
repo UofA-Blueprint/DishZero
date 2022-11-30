@@ -36,7 +36,7 @@ const DishAPI = {
         });
         return dishes;
     },
-    getDishID: async function (db: any, user: string, qr_dish: string) {
+    getDishID: async function (db: any, qr_dish: string) {
         const q = query(
             collection(db, this.DishCollectionName),
             where("qid", "==", qr_dish)

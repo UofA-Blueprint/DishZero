@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import QrReader from "react-qr-scanner";
+import QRCheckout from "./QRCheckout"
 
 const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
   const [QRError, setQRError] = useState("");
@@ -25,6 +26,7 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
       return;
     }
     setDishID(data.text);
+    QRCheckout(data.text);
     console.log(data);
   };
   return (

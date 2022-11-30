@@ -10,7 +10,7 @@ const CheckOutbyID = async (db: any, dish: string, user: string) => {
 
 const CheckOutbyQR = async (db: any, user: string, qid: string) => {
     
-    const dish = await DishApi.getDishID(db, user, qid)
+    const dish = await DishApi.getDishID(db, qid)
     const docRef = await DishApi.CheckOutDish(db, user, dish.docId);
     console.log(docRef.id);
 
