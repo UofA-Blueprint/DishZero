@@ -1,12 +1,5 @@
 import firebase from "firebase/compat";
-import {
-    collection,
-    Timestamp,
-    addDoc,
-    getDocs,
-    query,
-    where,
-} from "firebase/firestore";
+import { collection, Timestamp, addDoc, getDocs, query, where } from "firebase/firestore";
 
 const DishAPI = {
     TransactionsCollectionName: "transactions",
