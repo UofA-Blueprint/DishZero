@@ -7,7 +7,7 @@ import ScanButton from "../widgets/ScanButton"
 const CheckIn = () => {
   const [DishID, setDishID] = useState("")
   const [PopUp, setPopUp] = useState(false)
-  const [ShowQRScanner, setShowQRScanner] = useState(true)
+  const [ShowQRScanner, setShowQRScanner] = useState(false)
 
   return (
     <div>
