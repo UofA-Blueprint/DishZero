@@ -1,0 +1,39 @@
+
+rules_version = '2';
+service cloud.firestore {
+  function isSignedIn() {
+    return request.auth != null;
+  }
+  function getRole(rsc) {
+    return rsc.data.role;
+  }
+  function isOneOfRoles(rsc, array) {
+    return isSignedIn() && (getRole(rsc) in array);
+  }
+	
+  match /databases/{database}/documents {
+  
+  
+  	match /{document=**} { // Allow r/w for now
+    	allow read, write: if true;
+  	}
+    function canCheckIn(){
+      return isSignedIn() && isOneOfRoles(get(/databases/$(database)/documents/users/$(request.auth.uid)), ['volunteer','executive'])
+    }
+    function IsReturnFieldEmpty(request){
+    	return ((!request.resource.data.keys().hasAny(['returned'])) || request.resource.data['returned']!={})
+    }
+    
+		function isAuthor(request){
+     	return request.resource.data.user == request.auth.uid
+    }
+    function isAuthor2(resource,request){
+     	return resource.data.user == request.auth.uid
+    }
+    match /transactions/{transaction} {
+      allow create: if isSignedIn() && IsReturnFieldEmpty(request) && isAuthor(request)
+      allow read: if isSignedIn() && isAuthor2(resource,request)
+      allow write, read: if canCheckIn()
+    }
+  }
+}
