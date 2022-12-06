@@ -11,7 +11,8 @@ const CheckIn = () => {
 
   return (
     <div>
-      <ScanQRCode setShowQRScanner={setShowQRScanner} ShowQRScanner={ShowQRScanner} mode="Checkin dishes" DishID={DishID} setDishID={setDishID} setPopUp={setPopUp} PopUp={PopUp} />
+      <ScanQRCode setShowQRScanner={setShowQRScanner} ShowQRScanner={ShowQRScanner} mode="Checkin dishes" 
+	  		DishID={DishID} setDishID={setDishID} setPopUp={setPopUp} PopUp={PopUp} onScan={setDishID} /> {/* onScan temporary until CheckIn with QR DB update implemented */}
       <CheckOutModal DishID={DishID} setPopUp={setPopUp} PopUp={PopUp} />
     </div>
   )
