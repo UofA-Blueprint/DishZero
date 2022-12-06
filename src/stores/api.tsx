@@ -1,7 +1,6 @@
 import firebase from "firebase/compat";
 import { collection, Timestamp, addDoc, getDocs, query, where } from "firebase/firestore";
 
-
 const DishAPI = {
     TransactionsCollectionName: "transactions",
     DishCollectionName: "dishes",
@@ -28,7 +27,7 @@ const DishAPI = {
         return dishes;
         
     },
-    getDishID: async function (db: any, user: string, qr_dish: string) {
+    getDishID: async function (db: any, qr_dish: string) {
         const q = query(collection(db, this.DishCollectionName), where("qid", "==", qr_dish));
         const dishes  = await this.getDishesbyQuery(q);
         return dishes[0];

@@ -1,13 +1,19 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import CheckOutModal from "../widgets/CheckOutModal"
 import ScanQRCode from "../widgets/ScanQRCode"
 import ScanButton from "../widgets/ScanButton"
+import QRCheckout from "../widgets/QRCheckout"
 
 
 const Checkout = () => {
   const [DishID, setDishID] = useState("")
   const [PopUp, setPopUp] = useState(false)
   const [ShowQRScanner, setShowQRScanner] = useState(false)
+
+  useEffect(() => {
+    QRCheckout(DishID);
+  }, [DishID]);
+
   return (
     <div>
       <ScanButton style={{ display: (ShowQRScanner ? "none" : "block") }} onClick={() => setShowQRScanner(!ShowQRScanner)} />

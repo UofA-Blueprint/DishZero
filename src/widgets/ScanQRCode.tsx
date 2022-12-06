@@ -5,7 +5,7 @@ import QRCanvas from "../widgets/QRCanvas"
 import { useState } from "react"
 import '../styles/QRScanner.css';
 
-const ScanQRCode = ({mode, DishID, setDishID, PopUp, setPopUp, ShowQRScanner, setShowQRScanner}) => {
+const ScanQRCode = ({mode, DishID, setDishID, PopUp, setPopUp, ShowQRScanner, setShowQRScanner }) => {
   const [FacingMode, setFacingMode] = useState(false)
   return (
     <div className={`scanner-main ${ShowQRScanner ? "" : "hidden"}`}>
