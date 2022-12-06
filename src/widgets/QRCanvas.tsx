@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "react-bootstrap";
 import QrReader from "react-qr-scanner";
 
-const ScanQRCode = ({ setFacingMode, FacingMode, setDishID, onScan }) => {
+const ScanQRCode = ({ setFacingMode, FacingMode, setDishID }) => {
   const [QRError, setQRError] = useState("");
   const style = {height: "100%" };
 
@@ -25,7 +25,6 @@ const ScanQRCode = ({ setFacingMode, FacingMode, setDishID, onScan }) => {
       return;
     }
     setDishID(data.text);
-    onScan(data.text);
     console.log(data);
   };
   return (
