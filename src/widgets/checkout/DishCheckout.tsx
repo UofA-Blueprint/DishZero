@@ -26,7 +26,6 @@ const DishCheckout = () => {
 
     useEffect(() => {
         if (idLastCheckedOut.current != id) {
-            // TODO: Use handler function to update the status of the dish
             checkoutDish(id || "0")
             idLastCheckedOut.current = id || "0";
         }
