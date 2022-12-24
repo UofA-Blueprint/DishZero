@@ -3,7 +3,6 @@ import CheckOutModal from "../widgets/CheckOutModal"
 import ScanQRCode from "../widgets/ScanQRCode"
 import ScanButton from "../widgets/ScanButton"
 
-
 const CheckIn = () => {
   const [DishID, setDishID] = useState("")
   const [PopUp, setPopUp] = useState(false)

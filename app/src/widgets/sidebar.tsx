@@ -1,4 +1,6 @@
 import {slide as Menu} from "react-burger-menu";
+import { Link } from "react-router-dom";
+import { FirebaseAuth } from "../firebase";
 import "../styles/sidebar.css"
 
 type SidemenuProps = {
@@ -56,14 +58,14 @@ export const Sidebar = ({pageWrapId, outerContainerId} : SidemenuProps) => {
                     src="https://static.thenounproject.com/png/4653746-200.png"></img>
                 Our impact
             </a>
-            <a className="menu-item" href="/dishes">
+            <button className="menu-item" onClick={() => {FirebaseAuth.signOut()}}>
                 <img
                 style={{paddingRight:20}}
                     width={20}
                     height={20}
                     src="https://www.iconpacks.net/icons/2/free-exit-logout-icon-2857-thumb.png"></img>
                 Logout
-            </a>
+            </button>
         </Menu>
     );
 };

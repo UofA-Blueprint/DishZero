@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import DishApi from "../stores/api"
-import {db} from "../firebase"
+import DishApi from "../features/api"
+import {FirebaseDatabase} from "../firebase"
+
 const CheckOutbyID = async (db: any, dish: string, user: string) => {
     
     const docRef = await DishApi.CheckOutDish(db, user, dish);
@@ -26,8 +27,8 @@ const CheckOutApi = (props: any) => {
         e.preventDefault();
         console.log(DishID)
         
-        CheckOutbyQR(db,User,"1")
-        CheckOutbyID(db, DishID,User)
+        CheckOutbyQR(FirebaseDatabase,User,"1")
+        CheckOutbyID(FirebaseDatabase, DishID,User)
         return false;
     }
     return (
