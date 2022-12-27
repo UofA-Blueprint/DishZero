@@ -1,10 +1,8 @@
-import React, { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, User } from "firebase/auth";
+import { getAuth, User } from "firebase/auth";
 import { GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-
-import { useDispatch } from 'react-redux';
 
 // This file stores the firebase configuration credentials and should not be changed.
 // All the required functionalities (which themselves require these credentials) have been exported
@@ -20,12 +18,16 @@ const firebaseConfig = {
     measurementId: "G-YH3SYRJJ6D",
 };
 
+interface AppFirebase {
+    user: User | null
+}
+
 const app = initializeApp(firebaseConfig);
 
 const GoogleAuth = new GoogleAuthProvider();
 GoogleAuth.setCustomParameters({hd: 'ualberta.ca'})
 
-const FirebaseContext = createContext<any>(null);
+const FirebaseContext = createContext<AppFirebase | null>(null);
 const FirebaseAuth = getAuth(app);
 const FirebaseDatabase = getFirestore(app);
 
@@ -34,7 +36,7 @@ export { FirebaseContext, GoogleAuth, FirebaseAuth, FirebaseDatabase}
 export default ({ children }) => {
     const [user, setUser] = useState<User | null>(FirebaseAuth.currentUser);
     
-    let firebase = {
+    const firebase: AppFirebase = {
         user: user,
     }
 

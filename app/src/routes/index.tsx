@@ -1,47 +1,58 @@
 import {
     createBrowserRouter,
+    Outlet,
     RouterProvider,
+    useLocation,
     useNavigate,
   } from "react-router-dom";
-import Login from './Login';
-import CheckOutRoute from './CheckOut';
-import CheckInRoute from './CheckIn';
-import CheckOutApi from '../widgets/CheckOutApi';
+import LoginRoute from './login';
+import HomeRoute from './home';
+import BorrowRoute from './borrow';
+import ReturnRoute from './return';
 import { useContext, useEffect } from "react";
 import { FirebaseContext } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
 
-const AppRoute = () => {
+const UserRoute = () => {
     const fbContext = useContext(FirebaseContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!fbContext.user) {
+        if (!fbContext?.user) {
             navigate("/login");
         }
-    }, [fbContext.user]);
+    }, [fbContext?.user]);
 
     return (
-        <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+        <>
+            <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+            <Outlet/>
+        </>
     )
 }
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <AppRoute/>,
+        element: <UserRoute/>,
         children: [
             {
-                path: "home",
-                element: (
-                    <CheckInRoute/>
-                ),
+                index: true,
+                element: <HomeRoute/>,
             },
+            {
+                path: "/home",
+                element: <HomeRoute/>,
+            },
+            {
+                path: "/borrow",
+                element: <BorrowRoute/>,
+            }
         ]
     },
     {
-        path: "login",
-        element: <Login/>
+        path: "/login",
+        element: <LoginRoute/>
     },
 ]);
 
