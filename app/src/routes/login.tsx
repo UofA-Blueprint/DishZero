@@ -3,11 +3,7 @@ import {
     Stage,
     Layer,
     Rect,
-    Text,
-    Circle,
-    Line
 } from 'react-konva';
-import { Sidebar } from '../widgets/sidebar';
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -18,12 +14,12 @@ function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (fbContext.user) {
+        if (fbContext?.user) {
             navigate("/home");
         }
-    }, [fbContext.user]);
+    }, [fbContext?.user]);
 
-    if (fbContext.user) {
+    if (fbContext?.user) {
         return (<div/>)
     }
 

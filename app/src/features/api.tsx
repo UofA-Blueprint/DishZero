@@ -1,36 +1,45 @@
-import firebase from "firebase/compat";
-import { collection, Timestamp, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, Timestamp, addDoc, getDocs, query, where, runTransaction, doc } from "firebase/firestore";
+import { FirebaseDatabase } from "../firebase";
+
+const TransactionsCollectionName = "transactions"
+const DishCollectionName = "dishes"
+const UserCollectionName = "users"
+const QRCollectionName = "qr-codes"
 
 const DishAPI = {
-    TransactionsCollectionName: "transactions",
-    DishCollectionName: "dishes",
-    UserCollectionName: "users",
+  addDishBorrow: async function (qr: string, user: string | null) {
 
-    CheckOutDish: async function (db: any, user: string, dish: string) {
-        const docData = {
-            dish: dish,
-            user: user,
-            returned: {},
-            timestamp: Timestamp.fromDate(new Date(Date.now())),
+    console.log(FirebaseDatabase, QRCollectionName, qr)
+    const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
+
+    console.log("Transaction run for", qr, user)
+
+    try {
+      await runTransaction(FirebaseDatabase, async (transaction) => {
+        const qrDoc = await transaction.get(qrRef)
+        if (!qrDoc.exists()) {
+          throw "QR code not registered";
         }
 
-        const docRef = await addDoc(collection(db, this.TransactionsCollectionName), docData);
-        return docRef
-    },
-    getDishesbyQuery: async function (q:any){
-        const querySnapshot = await getDocs(q);
-        let dishes: any = [];
-        querySnapshot.forEach((doc) => {
-            let docData: any = doc.data()
-            dishes.push({docId: doc.id, ...docData})
-        });
-        return dishes;
-        
-    },
-    getDishID: async function (db: any, qr_dish: string) {
-        const q = query(collection(db, this.DishCollectionName), where("qid", "==", qr_dish));
-        const dishes  = await this.getDishesbyQuery(q);
-        return dishes[0];
-    },
+        const dish = qrDoc.data().dish
+
+        const docData = {
+          dish: dish,
+          user: user,
+          timestamp: Timestamp.now(),
+        }
+
+        const docRef = doc(collection(FirebaseDatabase, TransactionsCollectionName));
+
+        // TODO: handle no existing qr code case
+        await transaction.set(docRef, docData);
+
+        return docRef;
+      });
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed: ", e);
+    }
+  },
 }
 export default DishAPI;
