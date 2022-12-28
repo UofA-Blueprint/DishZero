@@ -1,23 +1,26 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Scanner from "../widgets/scanner"
+import DishAPI from "../features/api"
 
-const CheckIn = () => {
-    const [DishID, setDishID] = useState("")
+export default () => {
+    const [scanId, setScanId] = useState("")
     const [PopUp, setPopUp] = useState(false)
 
     const navigate = useNavigate()
 
+    const onScan = (id: string) => {
+        setScanId(id);
+        DishAPI.updateDishReturn(id);
+    }
+
     return (
         <div>
             <Scanner
-                mode="Checkin dishes"
-                onScan={setDishID}
+                mode="Scan Dishes"
+                onScan={onScan}
                 onClose={() => navigate("/home")}
             />
-            {/* <CheckOutModal DishID={DishID} setPopUp={setPopUp} PopUp={PopUp} /> */}
         </div>
     )
 }
-
-export default CheckIn
