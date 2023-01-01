@@ -78,3 +78,41 @@
   background-color: white !important;
   color: black !important;
 }
+
+.notif{
+  background-color: #F0F0F0;
+  width: 330px;
+  height: 80px;
+  margin-left: calc(50% - 165px);
+  margin-top: 85vh;
+  padding: 16px;
+  display: table;
+}
+.graphic{
+  float: left;
+  background-color: #D6D6D6;
+  width: 48px;
+  height: 100%;
+}
+.text-group{
+  float: left;
+  margin-left: 15px;
+  text-align: left;
+  width: 200px;
+  height: 34px;
+}
+.report-btn{
+  float: left;
+  width: 35px;
+  height: 35px;
+  margin-top: 6.5px;
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+}
+/* i can't make an octagon */
+.octagon{
+  width: 20px;
+  height: 20px;
+  margin-left: -5.5px;
+  background-color: #323232 !important;
+}
