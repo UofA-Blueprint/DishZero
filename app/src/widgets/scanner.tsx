@@ -102,7 +102,6 @@ const CameraInput = ({ onSubmit }) => {
             </div>
             <div
                 className="qr-scanner-placeholder"
-                onClick={() => setShowQr(!showQr)}
                 style={style}
             >
                 <div className="position-absolute">
@@ -114,7 +113,7 @@ const CameraInput = ({ onSubmit }) => {
                     </Button>
                 </div>
 
-                <div className="qr-scanner-tag">
+                <div className="qr-scanner-tag" onClick={() => setShowQr(!showQr)}>
                     {/* <div className="crosshair"/> */}
 
                     {showQr ? (
