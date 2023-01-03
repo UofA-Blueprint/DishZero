@@ -123,7 +123,8 @@ const CameraInput = ({ onSubmit }) => {
                             style={style}
                             onError={handleError}
                             onScan={handleScan}
-                            facingMode={frontCamera ? "front" : "read"}
+                            // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
+                            facingMode={frontCamera ? "user" : "environment"}
                         />
                     ) : (
                         <div>
