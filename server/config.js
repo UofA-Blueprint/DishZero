@@ -1,28 +1,20 @@
-const dotenv = require('dotenv');
-const assert = require('assert');
+import dotenv from 'dotenv';
+import assert from 'assert';
 
 dotenv.config();
 
 const {
     PORT,
-    API_KEY,
-    AUTH_DOMAIN,
-    DATABASE_URL,
-    PROJECT_ID,
-    STORAGE_BUCKET,
-    MESSAGING_SENDER_ID,
-    APP_ID
+    EMAIL_SERVICE,
+    EMAIL_USER,
+    EMAIL_PASS
 } = process.env;
 
 
 export default {
-    firebaseConfig: {
-        apiKey: API_KEY,
-        authDomain: AUTH_DOMAIN,
-        databaseURL: DATABASE_URL,
-        projectId: PROJECT_ID,
-        storageBucket: STORAGE_BUCKET,
-        messagingSenderId: MESSAGING_SENDER_ID,
-        appId: APP_ID
+    emailConfig: {
+        service: EMAIL_SERVICE,
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
     }
 }
