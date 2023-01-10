@@ -43,10 +43,9 @@ const DishAPI = {
   },
 
   updateDishReturn: async function (qr: string) {
-    console.log(FirebaseDatabase, QRCollectionName, qr)
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
-    console.log("Transaction run for ", qr)
+    console.log("Transaction run for", qr)
 
     try {
       await runTransaction(FirebaseDatabase, async (transaction) => {
@@ -56,27 +55,25 @@ const DishAPI = {
         }
         
         const dish = qrDoc.data().dish;
-
         // get most recent transaction for the given qr code
         const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("dish", "==", dish), orderBy("timestamp", "desc"), limit(1));
-        const docRef = await getDocs(q);
+        const qSnapshot = await getDocs(q);
+        const docRef = qSnapshot.docs[0].ref;
 
         // TODO: handle no existing qr code case
-        transaction.update(docRef, { returned: [{timestamp: Timestamp.now()}] });
-
-        return docRef;
+        transaction.update(docRef, { returned: {timestamp: Timestamp.now()} });
+        return "docRef";
       });
       console.log("Transaction successfully committed!");
     } catch (e) {
       console.log("Transaction failed: ", e);
+      return null;
     }
   },
 
   updateDishCondition: async function (qr: string, condition: string) {
-    console.log(FirebaseDatabase, QRCollectionName, qr)
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
-
-    console.log("Transaction run for ", qr)
+    console.log("Transaction run for", qr)
 
     try {
       await runTransaction(FirebaseDatabase, async (transaction) => {
@@ -89,21 +86,21 @@ const DishAPI = {
 
         // get most recent transaction for the given qr code
         const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("dish", "==", dish), orderBy("timestamp", "desc"), limit(1));
-        const docRef = await getDocs(q);
-        const doc = await transaction.get(docRef);
+        const qSnapshot = await getDocs(q);
+        const doc = qSnapshot.docs[0];
+        if (doc) {
+          let returned = doc.data().returned;
+          returned["condition"] = condition;
 
-        let returned = doc.data().returned;
-        returned["condition"] = condition;
-
-        // TODO: handle no existing qr code case
-        transaction.update(docRef, { returned: returned });
-
-        return docRef;
+          // TODO: handle no existing qr code case
+          transaction.update(doc.ref, { returned: returned });
+        }
+        return doc.ref;
       });
       console.log("Transaction successfully committed!");
     } catch (e) {
-      console.log("Transaction failed: ", e);
+      console.log("Transaction failed:", e);
     }
-  },
+  }
 }
 export default DishAPI;
