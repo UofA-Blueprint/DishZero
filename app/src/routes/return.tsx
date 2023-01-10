@@ -5,7 +5,7 @@ import DishAPI from "../features/api"
 import '../styles/QRScanner.css';
 import { Button, Modal } from 'react-bootstrap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClose, faExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faExclamation } from '@fortawesome/free-solid-svg-icons'
 
 const Report = ({ show, onSubmit, onCancel, id }) => {
     const conditions = ["Small Chip/Crack", "Large chunk", "Shattered"]
@@ -16,6 +16,7 @@ const Report = ({ show, onSubmit, onCancel, id }) => {
 
     const submitCondition = () => {
         setSelectedCondition("");
+        onSubmit(selectedCondition);
     }
 
     const closeReport = () => {
