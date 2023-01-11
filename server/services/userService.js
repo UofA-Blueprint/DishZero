@@ -11,6 +11,14 @@ let userService = {
         }
         user = user.data();
         return new User(userId, user.role);
+    },
+
+    getAdminConfig: async function() {
+        let adminConfig = await db.collection('config').doc("admin").get()
+        if (!adminConfig.exists) {
+            throw Error("The admin config does not exist");
+        }
+        return adminConfig.data();
     }
 };
 

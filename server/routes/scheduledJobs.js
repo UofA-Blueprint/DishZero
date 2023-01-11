@@ -10,7 +10,7 @@ router.get('/dishCheckout', async (req, res, next) => {
         let transId = req.query.transId;
         let userId = req.query.userId;
         let dishId = req.query.dishId;
-        scheduledJobsController.dishCheckoutReturnReminder(transId, userId, dishId);
+        await scheduledJobsController.dishCheckoutReturnReminder(transId, userId, dishId);
         res.send('Request Confirmed');
     } catch(err) {
         res.status(400).send(err.message);
