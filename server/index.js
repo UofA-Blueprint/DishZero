@@ -20,8 +20,6 @@ admin.initializeApp({
 async function serializeDatabase() {
   const db = admin.firestore();
   const transactionsRef = db.collection("transactions");
-  const filename = "output.csv";
-  const writeableStream = fs.createWriteStream(filename); // output stream
   const columns = [
     "timestamp_check_out",
     "taken_by",
@@ -81,28 +79,26 @@ async function serializeDatabase() {
     });
   });
 
-  stringifier.pipe(writeableStream, { end: true });
+  return stringifier;
 }
 
 app.get("/api/v1/transactions", async (req, res) => {
   // generate the CSV file on the server
-  await serializeDatabase();
-
-  // get the location of the CSV file on the server
-  const file = __dirname + "/output.csv";
-
-  // const filename = path.basename(file);
-  // const mimetype = mime.lookup(file);
+  const stringifier = await serializeDatabase();
 
   res.setHeader(
     "Content-disposition",
     "attachment; filename=" + "transactions.csv"
   );
-  res.setHeader("Content-type", "text/csv");
+  res.setHeader("Content-type", "application/csv");
 
   // send the file as a response to the client
-  const fileStream = fs.createReadStream(file);
-  fileStream.pipe(res);
+  stringifier.on("readable", () => {
+    const data = stringifier.read();
+    res.write(data, () => {
+      res.end();
+    });
+  });
 
   res.status(200);
 });
