@@ -1,8 +1,5 @@
 const express = require("express");
 const admin = require("firebase-admin");
-const fs = require("fs");
-const mime = require("mime");
-const path = require("path");
 const { stringify } = require("csv-stringify");
 require("dotenv").config();
 
@@ -83,21 +80,25 @@ async function serializeDatabase() {
 }
 
 app.get("/api/v1/transactions", async (req, res) => {
-  // generate the CSV file on the server
+  // generate stringifier stream containing the csv data
   const stringifier = await serializeDatabase();
 
+  // set the response header to be an attachment
   res.setHeader(
     "Content-disposition",
     "attachment; filename=" + "transactions.csv"
   );
   res.setHeader("Content-type", "application/csv");
 
-  // send the file as a response to the client
+  // write the csv data to the response object
   stringifier.on("readable", () => {
-    const data = stringifier.read();
-    res.write(data, () => {
-      res.end();
-    });
+    let data;
+    while ((data = stringifier.read())) {
+      res.write(data); // keep writing data to response until reaches end of stringifier
+    }
+
+    stringifier.end(); // end stringifier
+    res.end(); // end response
   });
 
   res.status(200);
