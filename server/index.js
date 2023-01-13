@@ -94,13 +94,14 @@ async function serializeDatabase(from = null, to = null) {
 }
 
 app.get("/api/v1/transactions", async (req, res) => {
-  // generate stringifier stream containing the csv data
-  const stringifier = await serializeDatabase(
-    "2023-01-01T03:22:03+0000",
-    "2023-01-13T03:22:03+0000"
-  );
+  // get query parameters
+  const from = req.query.from;
+  const to = req.query.to;
 
-  // set the response header to be an attachment
+  // generate stringifier stream containing the csv data
+  const stringifier = await serializeDatabase(from, to);
+
+  // set the response to be an attachment
   res.setHeader(
     "Content-disposition",
     "attachment; filename=" + "transactions.csv"
@@ -121,8 +122,7 @@ app.get("/api/v1/transactions", async (req, res) => {
       res.end(); // end response
     });
   }
+
   // transactions is empty
-  else {
-    res.end();
-  }
+  else res.end();
 });
