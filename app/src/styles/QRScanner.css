@@ -78,3 +78,88 @@
   background-color: white !important;
   color: black !important;
 }
+
+.notif{
+  background-color: #F0F0F0;
+  width: 330px;
+  height: 80px;
+  margin-left: calc(50% - 165px);
+  padding: 16px;
+  display: table;
+  margin-bottom: 70px;
+}
+.graphic{
+  float: left;
+  background-color: #D6D6D6;
+  width: 48px;
+  height: 48px;
+}
+.text-group{
+  float: left;
+  margin-left: 15px;
+  text-align: left;
+  width: 200px;
+  height: 34px;
+}
+.report-btn{
+  float: left;
+  width: 35px;
+  height: 35px;
+  margin-top: 6.5px;
+  background-color: #d9d9d9 !important;
+  border-color: #d9d9d9 !important;
+}
+/* i can't make an octagon */
+.octagon{
+  width: 20px;
+  height: 20px;
+  margin-left: -5.5px;
+  background-color: #323232 !important;
+}
+
+.report-modal {
+  font: Inter;
+  margin-left: calc(50% - 124px) !important;
+  width: 248px !important;
+}
+.report-modal-height {
+  height: 366px!important;
+}
+.report-modal-header {
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #F0F0F0 !important;
+  border-bottom: 0 !important;
+  justify-content: center !important;
+  padding-top: 15px !important;
+  padding-bottom: 5px !important;
+}
+.report-modal-title {
+  position: absolute;
+  text-align: center !important;
+  font-weight: 600px;
+}
+.report-modal-close {
+  border: none !important;
+  background-color: #f0f0f0 !important;
+  color: black !important;
+  margin-left: auto;
+}
+.report-modal-body {
+  justify-content: center !important;;
+  background-color: #F0F0F0 !important;
+  border: 0 !important;
+  padding: 10px !important;
+  font-size: 15px;
+  font-weight: 400;
+}
+.large-graphic{
+  margin-left: calc(50% - 49.5px);
+  background-color: #D6D6D6;
+  width: 99px;
+  height: 99px;
+}
+.report-modal-footer {
+  background-color: #F0F0F0 !important;
+  border-top: 0 !important;
+}
