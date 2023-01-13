@@ -14,7 +14,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-async function serializeDatabase() {
+async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
   const transactionsRef = db.collection("transactions");
   const columns = [
@@ -26,11 +26,26 @@ async function serializeDatabase() {
     "condition",
   ];
   const stringifier = stringify({ header: true, columns: columns }); // stringifier stream
+  let emptyTransactions = false; // emptyTransactions flag
+
+  // target dates
+  const dateFrom = from ? new Date(from) : null;
+  const dateTo = to ? new Date(to) : null;
 
   // query transactions
-  transactionsRef.get().then((querySnapshot) => {
-    // get all transactions documents
-    let docs = querySnapshot.docs;
+  await transactionsRef.get().then((querySnapshot) => {
+    // get all transactions documents between the specified date
+    let docs =
+      dateFrom && dateTo
+        ? querySnapshot.docs.filter((doc) => {
+            return (
+              doc.get("timestamp").toDate() >= dateFrom &&
+              doc.get("timestamp").toDate() <= dateTo
+            );
+          })
+        : querySnapshot.docs;
+
+    if (docs.length === 0) emptyTransactions = true; // docs has no results
 
     // process every documents
     docs.forEach(async (doc) => {
@@ -41,7 +56,6 @@ async function serializeDatabase() {
       // extract fields
       const timestampCheckOut = doc.get("timestamp").toDate().toISOString();
       const takenBy = takenByUserDocSnapshot.get("id");
-      // const takenBy = takenByUserDocSnapshot.get("email").split("@")[0];
       const dishId = dishesDocSnapshot.get("id");
 
       // returned field
@@ -53,7 +67,6 @@ async function serializeDatabase() {
         if (returned.user) {
           const returnedByUserDocSnapshot = await returned.user.get();
           returnedBy = returnedByUserDocSnapshot.get("id");
-          // returnedBy = returnedByUserDocSnapshot.get("email").split("@")[0];
         }
         if (returned.timestamp) {
           timestampCheckIn = returned.timestamp.toDate().toISOString();
@@ -76,30 +89,40 @@ async function serializeDatabase() {
     });
   });
 
+  if (emptyTransactions) return null; // empty transactions
   return stringifier;
 }
 
 app.get("/api/v1/transactions", async (req, res) => {
   // generate stringifier stream containing the csv data
-  const stringifier = await serializeDatabase();
+  const stringifier = await serializeDatabase(
+    "2023-01-01T03:22:03+0000",
+    "2023-01-13T03:22:03+0000"
+  );
 
   // set the response header to be an attachment
   res.setHeader(
     "Content-disposition",
     "attachment; filename=" + "transactions.csv"
   );
-  res.setHeader("Content-type", "application/csv");
-
-  // write the csv data to the response object
-  stringifier.on("readable", () => {
-    let data;
-    while ((data = stringifier.read())) {
-      res.write(data); // keep writing data to response until reaches end of stringifier
-    }
-
-    stringifier.end(); // end stringifier
-    res.end(); // end response
-  });
-
+  res.setHeader("Content-type", "text/csv");
   res.status(200);
+
+  // transactions is not empty
+  if (stringifier) {
+    // write the csv data to the response object
+    stringifier.on("readable", () => {
+      let data;
+      while ((data = stringifier.read())) {
+        res.write(data); // keep writing data to response until reaches end of stringifier
+      }
+
+      stringifier.end(); // end stringifier
+      res.end(); // end response
+    });
+  }
+  // transactions is empty
+  else {
+    res.end();
+  }
 });
