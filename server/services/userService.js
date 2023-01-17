@@ -1,5 +1,6 @@
 import db from "../db.js";
 import _ from "lodash"
+import {getAuth} from "firebase-admin/auth"
 
 import User from "../model/user.js"
 
@@ -12,6 +13,14 @@ let userService = {
         user = user.data();
         return new User(userId, user.role);
     },
+
+    getUserFromAuth: async function(uid) {
+        try {
+            return await getAuth().getUser(uid);
+        } catch(err) {
+            throw Error("Couldn't get the user");
+        }
+    }, 
 
     getAdminConfig: async function() {
         let adminConfig = await db.collection('config').doc("admin").get()
