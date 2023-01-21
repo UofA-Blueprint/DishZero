@@ -1,5 +1,5 @@
-import db from "../db.js";
-import _ from "lodash"
+const db = require("../db.js");
+const _ = require("lodash");
 
 
 /**

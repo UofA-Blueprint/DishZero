@@ -1,6 +1,6 @@
-import {initializeApp, cert} from 'firebase-admin/app';
-import serviceAccount from "./secrets/dishzero-serviet-firebase-adminsdk-bcfs3-a76bae2ee3.json" assert { type: "json" };
-import { getFirestore } from 'firebase-admin/firestore';
+const {initializeApp, cert} = require('firebase-admin/app');
+const { getFirestore } = require('firebase-admin/firestore');
+const serviceAccount = require(process.env.PRIVATE_KEY_PATH); // generate private key from Firebase console
 
 initializeApp({
     credential: cert(serviceAccount)
@@ -8,4 +8,6 @@ initializeApp({
 
 const db = getFirestore();
 
-export default db;
+module.exports = {
+    db,
+}
