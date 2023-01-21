@@ -47,6 +47,10 @@ const router = createBrowserRouter([
             {
                 path: "/borrow",
                 element: <BorrowRoute/>,
+            },
+            {
+                path: "/return",
+                element: <ReturnRoute/>,
             }
         ]
     },

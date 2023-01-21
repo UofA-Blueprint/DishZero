@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon ./index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +17,7 @@
     "lodash": "^4.17.21",
     "node-schedule": "^2.1.0",
     "nodemailer": "^6.8.0",
+    "csv-stringify": "^6.2.3",
     "nodemon": "^2.0.20"
   }
 }
