@@ -1,12 +1,12 @@
-import nodemailer from "nodemailer"
+const nodemailer = require("nodemailer");
 
-import config from "../config.js";
+const {emailConfig} = require("../config.js");
 
 const transporter = nodemailer.createTransport({
-    service: config.emailConfig.service,
+    service: emailConfig.service,
     auth: {
-      user: config.emailConfig.user,
-      pass: config.emailConfig.pass,
+      user: emailConfig.user,
+      pass: emailConfig.pass,
     }
 });
 
@@ -30,4 +30,6 @@ const emailService = {
     }
 };
 
-export default emailService;
+module.exports = {
+    emailService,
+}

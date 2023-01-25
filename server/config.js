@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-import assert from 'assert';
+const dotenv = require('dotenv');
+const assert = require('assert');
 
 dotenv.config();
 
@@ -10,11 +10,12 @@ const {
     EMAIL_PASS
 } = process.env;
 
+const emailConfig = {
+    service: EMAIL_SERVICE,
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+};
 
-export default {
-    emailConfig: {
-        service: EMAIL_SERVICE,
-        user: EMAIL_USER,
-        pass: EMAIL_PASS,
-    }
+module.exports = {
+    emailConfig,    
 }
