@@ -1,4 +1,4 @@
-import { collection, Timestamp, addDoc, getDocs, query, where, runTransaction, doc, orderBy, limit } from "firebase/firestore";
+import { collection, Timestamp, addDoc, getDocs, query, where, runTransaction, doc, orderBy, limit, getDoc } from "firebase/firestore";
 import { FirebaseDatabase } from "../firebase";
 
 const TransactionsCollectionName = "transactions"
@@ -101,6 +101,51 @@ const DishAPI = {
     } catch (e) {
       console.log("Transaction failed:", e);
     }
-  }
+  },
+  checkAdmin: async function (user:string| undefined) {
+    try{
+      if(user===undefined){
+        return false;
+      }
+      const userRef = doc(FirebaseDatabase, UserCollectionName, user);
+      const userDoc = await getDoc(userRef);
+      if (!userDoc.exists()) {
+        throw "User doesn't exists";
+      }
+    } catch(e) {
+      return false;
+    }
+  },
+  updateDishBorrow: async function (docRef: ) {
+    const qrRef = docRef;
+    console.log("Transaction run for", qr)
+
+    try {
+      await runTransaction(FirebaseDatabase, async (transaction) => {
+        const qrDoc = await transaction.get(qrRef)
+        if (!qrDoc.exists()) {
+          throw "QR code not registered";
+        }
+        
+        const dish = qrDoc.data().dish;
+
+        // get most recent transaction for the given qr code
+        const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("dish", "==", dish), orderBy("timestamp", "desc"), limit(1));
+        const qSnapshot = await getDocs(q);
+        const doc = qSnapshot.docs[0];
+        if (doc) {
+          let returned = doc.data().returned;
+          returned["condition"] = condition;
+
+          // TODO: handle no existing qr code case
+          transaction.update(doc.ref, { returned: returned });
+        }
+        return doc.ref;
+      });
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed:", e);
+    }
+  },
 }
 export default DishAPI;
