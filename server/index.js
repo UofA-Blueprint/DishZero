@@ -1,12 +1,21 @@
 /*
   Should we make const db = admin.firestore(); global?
-  Function definition in another file?
+  Function definition in another files
+  Users incorrectly defined
+  Where should I define the route dir for /admin?
+  Another port number for DishZero
+  Installed cors, is it fine?
 */
 
 
 const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
+const { response } = require("express");
+var cors = require('cors')
+var bodyParser = require('body-parser')
+
+// var jsonParser = bodyParser.json()
 
 // const { initializeApp, } = require('firebase-admin/app');
 
@@ -14,7 +23,11 @@ require("dotenv").config();
 
 // initialize express
 const app = express();
-const PORT = 3000;
+app.use(bodyParser.json())
+
+app.use(cors())
+
+const PORT = 8000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
 
 // initialize Firebase Admin
@@ -102,6 +115,33 @@ async function serializeDatabase(from = null, to = null) {
   return stringifier;
 }
 
+
+async function getRole(user_id){
+  const db = admin.firestore();
+  const usersRef = db.collection("users");
+  const userDoc = usersRef.doc(user_id);
+  const userDocSnapshot = await userDoc.get();
+  if (!userDocSnapshot.exists) {
+    // throw new Error ("User doesn't exists!");
+    return false;
+  }
+  console.log(userDocSnapshot)
+  // catch(error=>{
+  //   throw new Error ("Error getting document");
+  // })
+  // .then(async (userDocSnapshot)=>{
+  //   if (!userDocSnapshot.exists) {
+  //     throw new Error ("User doesn't exists!");
+  //   }
+  //   console.log(userDocSnapshot);
+  //   }).catch(error=>{
+  //     console.log(error)
+  //     throw new Error ("Error updating document");
+  //   })
+  // // });
+  // return true
+}
+
 async function changeRole(user_id,newrole){
   const db = admin.firestore();
   const usersRef = db.collection("users");
@@ -123,7 +163,28 @@ async function changeRole(user_id,newrole){
   return true
 }
 
+async function checkAdmin(req){
+  
+  let token = req.body.idToken;
+  // Creating charge
+  let decodedToken = await admin.auth().verifyIdToken(token);
+  // console.log(decodedToken.uid)
+  const role = await getRole(decodedToken.uid)
+  // Checking if user is admin
+  return (decodedToken.uid === adminId);
+}
 
+app.post("/api/v1/whoami", async (req, res, next) => {
+  try{
+    const res = await checkAdmin(req);
+    res.json({isAdmin:res})
+  } catch(err){
+    console.log(err)
+    res.status(500).json({
+      error:err.message 
+    })
+  }
+})
 app.get("/api/v1/useractions/changerole", async (req, res, next) => {
   try{
     const user_id = req.query.userid;
