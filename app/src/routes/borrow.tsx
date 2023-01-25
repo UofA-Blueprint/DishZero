@@ -7,6 +7,9 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import DishAPI from "../features/api";
 import { FirebaseContext } from "../firebase";
+import Login from "./login";
+import { GoogleAuth, FirebaseAuth } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const Confirm = ({ show, onSubmit, onCancel, id }) => {
     return (
@@ -41,8 +44,28 @@ export default () => {
     const onConfirm = confirm ? () => {
         setConfirm(false)
         const user = firebase?.user?.uid || null;
-
+        console.log("USER: " + user)
         DishAPI.addDishBorrow(scanId, user)
+
+        if (!firebase?.user) {
+            console.log("USER IS NULL")
+            signInWithPopup(FirebaseAuth, GoogleAuth)
+            .then((credentials) => {
+                if (!credentials.user.email?.match('@ualberta.ca')) {
+                    credentials.user?.delete();
+                    alert('Please login with your University of Alberta CCID')
+                }
+            })
+            .catch((err) => {
+                alert(err.message)
+            })
+        }
+        console.log(user)
+
+        //update the firebase document with the user id
+        
+
+
     } : null
 
     const onCancel = confirm ? () => {

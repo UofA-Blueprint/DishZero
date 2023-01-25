@@ -33,6 +33,10 @@ const UserRoute = () => {
 
 const router = createBrowserRouter([
     {
+        path: "/borrow",
+        element: <BorrowRoute/>
+    },
+    {
         path: "/",
         element: <UserRoute/>,
         children: [
@@ -58,6 +62,7 @@ const router = createBrowserRouter([
         path: "/login",
         element: <LoginRoute/>
     },
+    
 ]);
 
 export default () => {
