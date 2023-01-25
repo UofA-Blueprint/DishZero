@@ -1,6 +1,15 @@
+/*
+  Should we make const db = admin.firestore(); global?
+  Function definition in another file?
+*/
+
+
 const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
+
+// const { initializeApp, } = require('firebase-admin/app');
+
 require("dotenv").config();
 
 // initialize express
@@ -93,6 +102,20 @@ async function serializeDatabase(from = null, to = null) {
   return stringifier;
 }
 
+async function changeRole(user_id,newrole){
+  const db = admin.firestore();
+  const usersRef = db.collection("users");
+  await usersRef.doc(user_id).update({role: newrole}).then((userDoc)=>{
+    console.log(userDoc)
+  })
+}
+
+
+app.get("/api/v1/useractions/changerole", async (req, res) => {
+  const user_id = req.query.userid;
+  const new_role = req.query.new_role;
+  await changeRole(user_id,new_role);
+})
 app.get("/api/v1/transactions", async (req, res) => {
   // get query parameters
   const from = req.query.from;
