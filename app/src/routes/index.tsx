@@ -9,11 +9,29 @@ import LoginRoute from './login';
 import HomeRoute from './home';
 import BorrowRoute from './borrow';
 import ReturnRoute from './return';
+import UserEditRoute from './admin/modify-user';
 import { useContext, useEffect } from "react";
 import { FirebaseContext } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
 
 const UserRoute = () => {
+    const fbContext = useContext(FirebaseContext);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!fbContext?.user) {
+            navigate("/login");
+        }
+    }, [fbContext?.user]);
+
+    return (
+        <>
+            <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+            <Outlet/>
+        </>
+    )
+}
+const AdminRoute = () => {
     const fbContext = useContext(FirebaseContext);
     const navigate = useNavigate();
 
@@ -51,9 +69,20 @@ const router = createBrowserRouter([
             {
                 path: "/return",
                 element: <ReturnRoute/>,
+            },
+            {
+                path: "/admin",
+                element: <AdminRoute/>,
+                children: [
+                    {
+                        path: '/editUser',
+                        element: <UserEditRoute/>
+                    }
+                ]
             }
         ]
     },
+    
     {
         path: "/login",
         element: <LoginRoute/>
