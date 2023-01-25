@@ -105,16 +105,38 @@ async function serializeDatabase(from = null, to = null) {
 async function changeRole(user_id,newrole){
   const db = admin.firestore();
   const usersRef = db.collection("users");
-  await usersRef.doc(user_id).update({role: newrole}).then((userDoc)=>{
-    console.log(userDoc)
+  const userDoc = usersRef.doc(user_id);
+  await userDoc.get().
+  catch(error=>{
+    throw new Error ("Error getting document");
   })
+  .then(async (userDocSnapshot)=>{
+    if (!userDocSnapshot.exists) {
+      throw new Error ("User doesn't exists!");
+    }
+    await userDoc.update({role: newrole}).then((result)=>{
+      // return true
+    }).catch(error=>{
+      throw new Error ("Error updating document");
+    })
+  });
+  return true
 }
 
 
-app.get("/api/v1/useractions/changerole", async (req, res) => {
-  const user_id = req.query.userid;
-  const new_role = req.query.new_role;
-  await changeRole(user_id,new_role);
+app.get("/api/v1/useractions/changerole", async (req, res, next) => {
+  try{
+    const user_id = req.query.userid;
+    const new_role = req.query.new_role;
+    const result = await changeRole(user_id,new_role);
+
+    res.json({result:result})
+  } catch(err){
+    console.log(err)
+    res.status(500).json({
+      error:err.message 
+    })
+  }
 })
 app.get("/api/v1/transactions", async (req, res) => {
   // get query parameters
