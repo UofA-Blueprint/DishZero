@@ -62,10 +62,6 @@ const router = createBrowserRouter([
         path: "/login",
         element: <LoginRoute/>
     },
-    {
-        path: "/login/:transaction_id",
-        element: <LoginRoute/>
-    },
     
 ]);
 

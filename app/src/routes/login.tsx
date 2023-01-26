@@ -8,20 +8,13 @@ import {
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { useNavigate } from "react-router-dom";
-import { useParams } from 'react-router-dom'
 
 function Login() {
     const fbContext = useContext(FirebaseContext);
     const navigate = useNavigate();
-    const { handle } = useParams()
-    // useEffect(() => {
-    //     console.log("USING",handle)
-    //   }, [handle])
-    
+
     useEffect(() => {
         if (fbContext?.user) {
-            console.log(handle)
-
             navigate("/home");
         }
     }, [fbContext?.user]);
