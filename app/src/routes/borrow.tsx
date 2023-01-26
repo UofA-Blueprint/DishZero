@@ -35,7 +35,7 @@ export default () => {
     const [confirm, setConfirm] = useState(false)
     const firebase = useContext(FirebaseContext);
     const navigate = useNavigate();
-    const [Buffer, setBuffer] = useState(false)
+
     const onScan = confirm ? null : (id: string) => {
         setScanId(id)
         setConfirm(true)
@@ -46,22 +46,20 @@ export default () => {
         const user = firebase?.user?.uid || null;
         console.log("USER: " + user)
         DishAPI.addDishBorrow(scanId, user)
-        setBuffer(true)
 
-        // navigate("/login")
-        // if (!firebase?.user) {
-        //     console.log("USER IS NULL")
-        //     signInWithPopup(FirebaseAuth, GoogleAuth)
-        //     .then((credentials) => {
-        //         if (!credentials.user.email?.match('@ualberta.ca')) {
-        //             credentials.user?.delete();
-        //             alert('Please login with your University of Alberta CCID')
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         alert(err.message)
-        //     })
-        // }
+        if (!firebase?.user) {
+            console.log("USER IS NULL")
+            signInWithPopup(FirebaseAuth, GoogleAuth)
+            .then((credentials) => {
+                if (!credentials.user.email?.match('@ualberta.ca')) {
+                    credentials.user?.delete();
+                    alert('Please login with your University of Alberta CCID')
+                }
+            })
+            .catch((err) => {
+                alert(err.message)
+            })
+        }
         console.log(user)
 
         //update the firebase document with the user id
