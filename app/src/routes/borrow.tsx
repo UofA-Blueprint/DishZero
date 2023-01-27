@@ -41,34 +41,26 @@ export default () => {
         setConfirm(true)
     }
 
-    const onConfirm = confirm ? () => {
+    const onConfirm =  async () => {
+        if(!confirm){
+            return false;
+        }
         setConfirm(false)
         const user = firebase?.user?.uid || null;
         console.log("USER: " + user)
-        DishAPI.addDishBorrow(scanId, user)
+        const docRef = await DishAPI.addDishBorrow(scanId, user)
         setBuffer(true)
 
-        // navigate("/login")
-        // if (!firebase?.user) {
-        //     console.log("USER IS NULL")
-        //     signInWithPopup(FirebaseAuth, GoogleAuth)
-        //     .then((credentials) => {
-        //         if (!credentials.user.email?.match('@ualberta.ca')) {
-        //             credentials.user?.delete();
-        //             alert('Please login with your University of Alberta CCID')
-        //         }
-        //     })
-        //     .catch((err) => {
-        //         alert(err.message)
-        //     })
-        // }
-        console.log(user)
 
-        //update the firebase document with the user id
-        
+        console.log("doc ref" + docRef?.id)
+        const transactionID = docRef?.id
 
-
-    } : null
+        if (!firebase?.user) {
+            console.log("USER IS NULL")
+            navigate(`/login/?transaction_id=${transactionID}`)
+        }
+        console.log("LOGGEd out user" + user)
+    }
 
     const onCancel = confirm ? () => {
         setScanId("")
@@ -85,7 +77,7 @@ export default () => {
             <Confirm
                 show={confirm}
                 id={scanId}
-                onSubmit={onConfirm}
+                onSubmit={async()=>{ await onConfirm()}}
                 onCancel={onCancel}
             />
         </>
