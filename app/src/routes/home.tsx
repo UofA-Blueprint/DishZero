@@ -11,9 +11,6 @@ export default () => {
             <Link to={"/borrow"}>
                 <FontAwesomeIcon icon={faQrcode} size="4x" />
             </Link>
-            <Link to={"/return"}>
-                <FontAwesomeIcon icon={faAngleDoubleLeft} size="4x" />
-            </Link>
         </div>
     )
 }
