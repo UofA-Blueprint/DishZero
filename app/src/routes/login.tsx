@@ -7,14 +7,26 @@ import {
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+
+import DishAPI from "../features/api";
+
+const useQuery = () => new URLSearchParams(useLocation().search);
 
 function Login() {
     const fbContext = useContext(FirebaseContext);
     const navigate = useNavigate();
-
+    // const {transaction_id} = useParams();
+    const query = useQuery();
+    const transaction_id = query.get("transaction_id");
     useEffect(() => {
         if (fbContext?.user) {
+            console.log(transaction_id)
+            if(transaction_id){
+                DishAPI.updateDocWithUserID(transaction_id, fbContext?.user?.uid);  
+                //send a firebase request to add the user to the document with the handle
+                
+            }
             navigate("/home");
         }
     }, [fbContext?.user]);

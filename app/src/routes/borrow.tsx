@@ -7,6 +7,9 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import DishAPI from "../features/api";
 import { FirebaseContext } from "../firebase";
+import Login from "./login";
+import { GoogleAuth, FirebaseAuth } from '../firebase';
+import { signInWithPopup } from 'firebase/auth';
 
 const Confirm = ({ show, onSubmit, onCancel, id }) => {
     return (
@@ -32,18 +35,32 @@ export default () => {
     const [confirm, setConfirm] = useState(false)
     const firebase = useContext(FirebaseContext);
     const navigate = useNavigate();
-
+    const [Buffer, setBuffer] = useState(false)
     const onScan = confirm ? null : (id: string) => {
         setScanId(id)
         setConfirm(true)
     }
 
-    const onConfirm = confirm ? () => {
+    const onConfirm =  async () => {
+        if(!confirm){
+            return false;
+        }
         setConfirm(false)
         const user = firebase?.user?.uid || null;
+        console.log("USER: " + user)
+        const docRef = await DishAPI.addDishBorrow(scanId, user)
+        setBuffer(true)
 
-        DishAPI.addDishBorrow(scanId, user)
-    } : null
+
+        console.log("doc ref" + docRef?.id)
+        const transactionID = docRef?.id
+
+        if (!firebase?.user) {
+            console.log("USER IS NULL")
+            navigate(`/login/?transaction_id=${transactionID}`)
+        }
+        console.log("LOGGEd out user" + user)
+    }
 
     const onCancel = confirm ? () => {
         setScanId("")
@@ -60,7 +77,7 @@ export default () => {
             <Confirm
                 show={confirm}
                 id={scanId}
-                onSubmit={onConfirm}
+                onSubmit={async()=>{ await onConfirm()}}
                 onCancel={onCancel}
             />
         </>

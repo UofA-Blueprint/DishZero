@@ -15,7 +15,7 @@ const DishAPI = {
     console.log("Transaction run for", qr, user)
 
     try {
-      await runTransaction(FirebaseDatabase, async (transaction) => {
+      const out = await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
           throw "QR code not registered";
@@ -33,10 +33,11 @@ const DishAPI = {
 
         // TODO: handle no existing qr code case
         await transaction.set(docRef, docData);
-
+        console.log(docRef.id)
         return docRef;
       });
       console.log("Transaction successfully committed!");
+      return out;
     } catch (e) {
       console.log("Transaction failed: ", e);
     }
@@ -94,6 +95,26 @@ const DishAPI = {
 
           // TODO: handle no existing qr code case
           transaction.update(doc.ref, { returned: returned });
+        }
+        return doc.ref;
+      });
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed:", e);
+    }
+  },
+  updateDocWithUserID: async function (transaction_id: string, user_id: string) {
+    const transactionRef = doc(FirebaseDatabase, TransactionsCollectionName, transaction_id);
+    console.log("Transaction run for", transaction_id)
+
+
+    try {
+      await runTransaction(FirebaseDatabase, async (transaction) => {
+        const doc = await transaction.get(transactionRef);
+        
+        if (doc) {
+          let returned = doc.data();
+          transaction.update(doc.ref, { user: user_id });
         }
         return doc.ref;
       });
