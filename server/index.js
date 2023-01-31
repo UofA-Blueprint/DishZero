@@ -1,18 +1,14 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
+
 require("dotenv").config();
 
 // initialize express
 const app = express();
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
-
-// initialize Firebase Admin
-const serviceAccount = require(process.env.PRIVATE_KEY_PATH); // generate private key from Firebase console
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const scheduledJobsRouter = require("./routes/scheduledJobs.js");
 
 async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
@@ -126,3 +122,5 @@ app.get("/api/v1/transactions", async (req, res) => {
   // transactions is empty
   else res.end();
 });
+
+app.use('/scheduledJobs', scheduledJobsRouter.router)
