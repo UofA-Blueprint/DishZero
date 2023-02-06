@@ -25,7 +25,7 @@ const UserRoute = () => {
 
     return (
         <>
-            <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+            <Sidebar/>
             <Outlet/>
         </>
     )
@@ -53,7 +53,8 @@ const router = createBrowserRouter([
                 element: <BorrowRoute/>,
             },
             {
-                path: "/return",
+                // TODO: wrap in "VOLUNTEER" route
+                path: "/volunteer/return",
                 element: <ReturnRoute/>,
             }
         ]

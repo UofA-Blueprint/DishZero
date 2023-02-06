@@ -1,14 +1,21 @@
+import { useContext } from "react";
 import {slide as Menu} from "react-burger-menu";
-import { Link } from "react-router-dom";
-import { FirebaseAuth } from "../firebase";
+import { Link } from "react-router-dom"; // TODO: convert <a> tags to <Link> components
+import { FirebaseAuth, FirebaseContext, Role } from "../firebase";
 import "../styles/sidebar.css"
 
-type SidemenuProps = {
-    pageWrapId: string;
-    outerContainerId: string;
-};
+export const Sidebar = () => {
 
-export const Sidebar = ({pageWrapId, outerContainerId} : SidemenuProps) => {
+    const fbContext = useContext(FirebaseContext);
+    let showAdmin = false;
+    let showVolunteer = false;
+    if (fbContext?.role == Role.ADMIN) {
+        showAdmin = true;
+        showVolunteer = true;
+    } else if (fbContext?.role == Role.VOLUNTEER) {
+        showVolunteer = true
+    }
+
     return (
         <Menu>
             <p
@@ -21,22 +28,30 @@ export const Sidebar = ({pageWrapId, outerContainerId} : SidemenuProps) => {
                     width={20}
                     height={20}
                     src="https://image.shutterstock.com/image-vector/plate-vector-illustrationisolated-on-white-260nw-1815162875.jpg"></img>DishZero</p>
-            <a className="menu-item" href="/home">
+            <Link className="menu-item" to="/home">
                 <p>MENU</p><img
                 style={{paddingRight:20}}
                     width={20}
                     height={20}
                     src="https://cdn-icons-png.flaticon.com/512/25/25694.png"></img>
                 Home
-            </a>
-            <a className="menu-item" href="/dishes">
+            </Link>
+            {showAdmin && <Link className="menu-item" to="/admin/dashboard">
                 <img
                   style={{paddingRight:20}}
                     width={20}
                     height={20}
                     src="https://cdn-icons-png.flaticon.com/512/76/76211.png"></img>
-                My dishes
-            </a>
+                Admin Dashboard
+            </Link>}
+            {showVolunteer && <Link className="menu-item" to="/volunteer/return">
+                <img
+                  style={{paddingRight:20}}
+                    width={20}
+                    height={20}
+                    src="https://cdn-icons-png.flaticon.com/512/76/76211.png"></img>
+                Return Dishes
+            </Link>}
             <div style={{paddingTop: 280}}></div>
             <a
                 className="menu-item"
