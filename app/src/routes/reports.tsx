@@ -9,12 +9,6 @@ const Reports = () => {
   ]);
   const [startDate, endDate] = dateRange;
 
-  // const handleClick = () => {
-  //   fetch(
-  //     `http://localhost:8080/api/v1/transactions?from=${dateRange[0]?.toISOString()}&to=${dateRange[1]?.toISOString()}`
-  //   );
-  // };
-
   return (
     <div>
       <h1>Dish Transactions</h1>
@@ -43,7 +37,11 @@ const Reports = () => {
             }}
           />
         </div>
-        <a href={`http://localhost:8080/api/v1/transactions`}>
+        <a
+          href={`http://localhost:8080/api/v1/transactions?from=${
+            dateRange[0] ? dateRange[0] : ""
+          }&to=${dateRange[1] ? dateRange[1] : ""}`}
+        >
           <button>Export to CSV</button>
         </a>
       </div>

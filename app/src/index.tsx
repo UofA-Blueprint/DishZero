@@ -6,7 +6,6 @@ import store from "./app/store";
 import { Provider } from "react-redux";
 import FirebaseProvider from "./firebase";
 import Router from "./routes";
-import Reports from "./routes/reports";
 
 // Considering redux a service which provides a centralized state which can be accessed
 // through any component, we need to add it as a parent for all components. (Hence: <Provider/>)
@@ -19,8 +18,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <FirebaseProvider>
-        {/* <Router/> */}
-        <Reports />
+        <Router />
       </FirebaseProvider>
     </Provider>
   </React.StrictMode>

@@ -8,13 +8,9 @@ require("dotenv").config();
 // initialize express
 const app = express();
 const PORT = process.env.PORT || 8080;
-const serviceAccount = require(process.env.PRIVATE_KEY_PATH);
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
 app.use(cors());
 app.listen(PORT, () => console.log("listening on port " + PORT));
-// const scheduledJobsRouter = require("./routes/scheduledJobs.js");
+const scheduledJobsRouter = require("./routes/scheduledJobs.js");
 
 async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
@@ -91,8 +87,8 @@ async function serializeDatabase(from = null, to = null) {
     });
   });
 
-  console.log("Finished serializing transactions")
-  
+  console.log("Finished serializing transactions");
+
   if (emptyTransactions) return null; // empty transactions
   return stringifier;
 }
@@ -131,4 +127,4 @@ app.get("/api/v1/transactions", async (req, res) => {
   else res.end();
 });
 
-// app.use('/scheduledJobs', scheduledJobsRouter.router)
+app.use("/scheduledJobs", scheduledJobsRouter.router);
