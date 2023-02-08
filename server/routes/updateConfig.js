@@ -8,8 +8,8 @@ router.get('/notificationReturnHourThreshold', async (req, res, next) => {
     await updateConfigController.updateNotificationReturnHourThreshold(req, res);
 });
 
-router.get('/update/returnDishNotificationFrequency', async (req, res, next) => {
-    await scheduledJobsController.updateDishReturnReminder(req, res);
+router.get('/userEmailReturnNotificationJob', async (req, res, next) => {
+    await updateConfigController.updateUserEmailReturnNotificationJob(req, res);
 });
 
 module.exports = {

@@ -57,7 +57,14 @@ class RemoteConfig {
     async updateUserEmailReturnNotificationHourThreshold(updatedHour) {
         let configTemplate = await this.getConfigTemplate();
         configTemplate.parameters.userEmailReturnNotificationHourThreshold.defaultValue.value = updatedHour;
-        this.updateConfig(configTemplate);
+        await this.updateConfig(configTemplate);
+    }
+
+    // gets the hour threshold for the email
+    async updateUserEmailReturnNotificationJob(updatedSchedule) {
+        let configTemplate = await this.getConfigTemplate();
+        configTemplate.parameters.userEmailReturnNotificationJob.defaultValue.value = updatedSchedule;
+        await this.updateConfig(configTemplate);
     }
 };
 
