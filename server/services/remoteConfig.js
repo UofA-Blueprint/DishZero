@@ -31,20 +31,33 @@ class RemoteConfig {
         this.cacheInit = false;
     }
 
-    async getConfig() {
+    async getConfigTemplate() {
         return await this.config.getTemplate();
+    }
+
+    // Updates the template in the remote config
+    async updateConfig(updatedTemplate) {
+        await this.config.publishTemplate(updatedTemplate);
+        this.resyncConfig();
     }
 
     // Gets the cron schedule for running the jobs
     async getUserEmailReturnNotificationJob() {
-        let config = await this.getConfig();
+        let config = await this.getConfigTemplate();
         return config.parameters?.userEmailReturnNotificationJob?.defaultValue?.value || "* * * * * *";
     }
 
     // gets the hour threshold for the email
     async getUserEmailReturnNotificationHourThreshold() {
-        let config = await this.getConfig();
+        let config = await this.getConfigTemplate();
         return config.parameters?.userEmailReturnNotificationHourThreshold?.defaultValue?.value || 168;
+    }
+
+    // gets the hour threshold for the email
+    async updateUserEmailReturnNotificationHourThreshold(updatedHour) {
+        let configTemplate = await this.getConfigTemplate();
+        configTemplate.parameters.userEmailReturnNotificationHourThreshold.defaultValue.value = updatedHour;
+        this.updateConfig(configTemplate);
     }
 };
 

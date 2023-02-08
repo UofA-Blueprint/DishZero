@@ -4,12 +4,7 @@ const {cronService} = require("../services/cronService");
 
 const router = Router()
 
-// Schedules the reminder to return the dish
-// Requires transId, userId, dishId as query params
-router.get('/dishCheckout', async (req, res, next) => {
-    await scheduledJobsController.dishCheckoutReturnReminder(req, res);
-});
-
+// Updates the notification service to use the value from remote config
 router.get('/update/returnDishNotificationFrequency', async (req, res, next) => {
     await scheduledJobsController.updateDishReturnReminder(req, res);
 });
