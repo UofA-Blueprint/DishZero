@@ -9,6 +9,7 @@ const app = express();
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
 const scheduledJobsRouter = require("./routes/scheduledJobs.js");
+const {router: updateConfigRouter} = require("./routes/updateConfig.js");
 
 async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
@@ -123,4 +124,5 @@ app.get("/api/v1/transactions", async (req, res) => {
   else res.end();
 });
 
-app.use('/scheduledJobs', scheduledJobsRouter.router)
+app.use('/scheduledJobs', scheduledJobsRouter.router);
+app.use('/updateConfig', updateConfigRouter);
