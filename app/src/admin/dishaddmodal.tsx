@@ -1,14 +1,23 @@
 import { Button, Modal } from 'react-bootstrap'
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/admin.css';
+import DishAPI from "../features/api";
 
 //const AddDishModal 
-export default function ({ show, addDish, addMultiple, onCancel }) {
+export default function ({ show, onCancel }) {
     const dishTypes = ["Container", "Mug"];
     const [QRCode, setQRCode] = useState("");
     const [selectedType, setSelectedType] = useState("");
-    let uploadedCSV = "";
+    const [file, setFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        if (file != null) {
+            addFromCSV();
+        };
+    })
     
+    const fileButton = useRef<HTMLInputElement | null>(null);
+
     const onTypeChange = e => {
         setSelectedType(e.target.value);
     };
@@ -20,16 +29,29 @@ export default function ({ show, addDish, addMultiple, onCancel }) {
     }
 
     const addOne = () => {
-        addDish(QRCode, selectedType);
+        if (!QRCode || !selectedType) {
+            alert("Please fill in all fields");
+            return;
+        }
+        DishAPI.addNewDish(QRCode, selectedType);
         setQRCode("");
-        setSelectedType("");
     }
 
     const addFromCSV = () => {
-        // parse CSV here
-        addMultiple();
-        setQRCode("");
-        setSelectedType("");
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = (e.target!.result as string).split("\r\n");
+            data.forEach(row => {
+                var dish = row.split(",");
+                // skip header if any
+                if (dish[0].toLowerCase().indexOf("qr") > -1) {
+                    return;
+                }
+                DishAPI.addNewDish(dish[0], dish[1]);
+            });
+        }
+
+        reader.readAsText(file!);
     }
 
     return (
@@ -61,7 +83,8 @@ export default function ({ show, addDish, addMultiple, onCancel }) {
                 <hr className="col-5 my-2" />
                 <p className="mb-0 col-6 sub-header-2">Add Multiple Dishes</p>
                 <div className="col-6" >
-                    <Button className="body admin-btn" onClick={addFromCSV}>Upload as CSV</Button>
+                    <input hidden type="file" accept=".csv" ref={fileButton} onChange={(e) => {setFile(e.target.files![0])}} />
+                    <Button className="body admin-btn" onClick={() => fileButton.current!.click()}>Upload as CSV</Button>
                 </div>
             </Modal.Body>
         </Modal>
