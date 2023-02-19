@@ -7,6 +7,26 @@ const UserCollectionName = "users"
 const QRCollectionName = "qr-codes"
 
 const DishAPI = {
+  addNewDish: async function (qr: string, type: string) {
+    const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
+    try {
+      const result = await runTransaction(FirebaseDatabase, async (transaction) => {
+        const qrDoc = await transaction.get(qrRef);
+        if (qrDoc.exists()) {
+          alert("QR code already registered");
+        } else {
+          const dishRef = doc(collection(FirebaseDatabase, DishCollectionName));
+          const dishData = { type: type, qid: qr, registered: Timestamp.now() };
+          await transaction.set(dishRef, dishData);
+          const qrData = { dish: dishRef };
+          await transaction.set(qrRef, qrData);
+        }
+      });
+    } catch (err) { 
+      alert("There was an issue adding the dish to the database.")
+      console.log(err);
+    }
+  },
   addDishBorrow: async function (qr: string, user: string | null) {
 
     console.log(FirebaseDatabase, QRCollectionName, qr)
