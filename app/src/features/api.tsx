@@ -32,9 +32,6 @@ const DishAPI = {
     console.log(FirebaseDatabase, QRCollectionName, qr)
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
-    console.log("Transaction run for", qr, user)
-
-    try {
       const out = await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
@@ -51,24 +48,15 @@ const DishAPI = {
 
         const docRef = doc(collection(FirebaseDatabase, TransactionsCollectionName));
 
-        // TODO: handle no existing qr code case
         await transaction.set(docRef, docData);
-        console.log(docRef.id)
-        return docRef;
+        return docRef.id;
       });
-      console.log("Transaction successfully committed!");
       return out;
-    } catch (e) {
-      console.log("Transaction failed: ", e);
-    }
   },
 
   updateDishReturn: async function (qr: string) {
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
-    console.log("Transaction run for", qr)
-
-    try {
       await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
@@ -85,11 +73,7 @@ const DishAPI = {
         transaction.update(docRef, { returned: {timestamp: Timestamp.now()} });
         return "docRef";
       });
-      console.log("Transaction successfully committed!");
-    } catch (e) {
-      console.log("Transaction failed: ", e);
       return null;
-    }
   },
 
   updateDishCondition: async function (qr: string, condition: string) {

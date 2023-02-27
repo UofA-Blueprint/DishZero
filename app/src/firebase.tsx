@@ -4,7 +4,6 @@ import { getAuth, User as FirebaseUser } from "firebase/auth";
 import { GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getDoc, doc } from "firebase/firestore";
-import { useResolvedPath } from 'react-router-dom';
 
 // This file stores the firebase configuration credentials and should not be changed.
 // All the required functionalities (which themselves require these credentials) have been exported

@@ -22,7 +22,7 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
             </Modal.Body>
             <Modal.Footer className="justify-content-center">
                 <Button variant="secondary" onClick={onSubmit}>
-                    Check Out
+                    Borrow
                 </Button>
             </Modal.Footer>
         </Modal>
