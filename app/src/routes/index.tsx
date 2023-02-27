@@ -2,40 +2,44 @@ import {
     createBrowserRouter,
     Outlet,
     RouterProvider,
-    useLocation,
     useNavigate,
   } from "react-router-dom";
 import LoginRoute from './login';
 import HomeRoute from './home';
 import BorrowRoute from './borrow';
 import ReturnRoute from './return';
-import { useContext, useEffect } from "react";
-import { FirebaseContext } from "../firebase";
+import { useContext } from "react";
+import { FirebaseContext, Role } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
+import { Error404 } from "./misc";
+import DishAPI from "../features/api";
 
 const UserRoute = () => {
     const fbContext = useContext(FirebaseContext);
-    const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!fbContext?.user) {
-            navigate("/login");
-        }
-    }, [fbContext?.user]);
+    if (fbContext?.user) {
+        return (
+            <>
+                <Sidebar/>
+                <Outlet/>
+            </>
+        )
+    }
 
-    return (
-        <>
-            <Sidebar/>
-            <Outlet/>
-        </>
-    )
+    return <LoginRoute passthrough/>
+
+}
+
+const PermissionsRoute = (props: any) => {
+    const fbContext = useContext(FirebaseContext);
+
+    if (props?.validator && props.validator(fbContext?.role)) {
+        return (<Outlet/>)
+    }
+    return (<Error404/>)
 }
 
 const router = createBrowserRouter([
-    {
-        path: "/borrow",
-        element: <BorrowRoute/>
-    },
     {
         path: "/",
         element: <UserRoute/>,
@@ -51,11 +55,39 @@ const router = createBrowserRouter([
             {
                 path: "/borrow",
                 element: <BorrowRoute/>,
+                loader: async ({ request }) => {
+                    const url = new URL(request.url);
+                    const qid = url.searchParams.get("q");
+                    if (!qid) {
+                        return null
+                    }
+
+                    try {
+                        const tid = await DishAPI.addDishBorrow(qid, null)
+                        return {qid: qid, tid: tid}
+                    } catch (e) {
+                        console.log("Unable to immediately borrow:", e)
+                        return {qid: qid, error: e}
+                    }
+                }
             },
             {
-                // TODO: wrap in "VOLUNTEER" route
-                path: "/volunteer/return",
-                element: <ReturnRoute/>,
+                path: "/volunteer",
+                element: <PermissionsRoute validator={(r) => r == Role.VOLUNTEER || r == Role.ADMIN}/>,
+                children: [
+                    {
+                        // TODO: wrap in "VOLUNTEER" route
+                        path: "/volunteer/return",
+                        element: <ReturnRoute/>,
+                    }
+                ]
+            },
+            {
+                path: "/admin",
+                element: <PermissionsRoute validator={(r) => r == Role.ADMIN}/>,
+                children: [
+                    // TODO: put admin related children here
+                ]
             }
         ]
     },
@@ -72,6 +104,6 @@ const router = createBrowserRouter([
 
 export default () => {
     return (
-        <RouterProvider router={router} />
+        <RouterProvider router={router} fallbackElement={<Error404/>}/>
     )
 }

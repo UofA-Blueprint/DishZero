@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
 import reportWebVitals from './reportWebVitals';
-import store from './app/store';
-import { Provider } from 'react-redux';
 import FirebaseProvider from './firebase'
 import Router from './routes'
 
@@ -16,11 +14,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
       <FirebaseProvider>
         <Router/>
       </FirebaseProvider>
-    </Provider>
   </React.StrictMode>
 );
 
