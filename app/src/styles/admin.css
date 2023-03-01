@@ -128,3 +128,60 @@ input[type="radio"] {
     padding: 5px;
     width: 100%;
 }
+
+
+/*
+ * Sidebar
+ */
+
+ .sidebar {
+    background-color: #464646;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100; /* Behind the navbar */
+    padding: 0; /* Height of navbar */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        top: 5rem;
+    }
+}
+
+.sidebar-icon {
+    height: 16px;
+    padding-right: 10px;
+}
+
+.sidebar-sticky {
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background: #464646;
+    color: white
+}
+
+.sidebarNavLink {
+    font-weight: 500;
+    color: #333;
+}
+
+.sidebar-heading {
+    font-size: small;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: large;
+}
+
+a.nav-link:hover {
+    color: white;
+    background: #5E5E5E;
+}
