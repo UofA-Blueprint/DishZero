@@ -12,7 +12,7 @@ import ReturnRoute from './return';
 import { useContext, useEffect } from "react";
 import { FirebaseContext } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
-
+import  DishData  from "../admin/dishList"; 
 const UserRoute = () => {
     const fbContext = useContext(FirebaseContext);
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ const UserRoute = () => {
 
     return (
         <>
-            <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
+            <Sidebar/>
             <Outlet/>
         </>
     )
@@ -35,6 +35,10 @@ const router = createBrowserRouter([
     {
         path: "/borrow",
         element: <BorrowRoute/>
+    },
+    {
+        path:"/test",
+        element:<DishData/>
     },
     {
         path: "/",
@@ -53,7 +57,8 @@ const router = createBrowserRouter([
                 element: <BorrowRoute/>,
             },
             {
-                path: "/return",
+                // TODO: wrap in "VOLUNTEER" route
+                path: "/volunteer/return",
                 element: <ReturnRoute/>,
             }
         ]
