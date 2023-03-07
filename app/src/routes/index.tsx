@@ -26,7 +26,7 @@ const UserRoute = () => {
         )
     }
 
-    return <LoginRoute passthrough/>
+    return <LoginRoute/>
 
 }
 
