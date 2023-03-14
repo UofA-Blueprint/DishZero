@@ -1,52 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import {Card} from 'react-bootstrap';
-import { dishes } from './constants';
+import Toolbar from './toolbar';
 
-const DishCard = ({dishId, dishType, dishStatus, dishOverdue, dishTimesBorrowed, dishDateAdded, selected}) => {
-    const [checked, SetChecked] = useState(selected);
-
-    const handleCheckChange = () => {
-        // add or remove from above select list
-        SetChecked(!checked);
-        
-    }
-    return (
-    <Card>
-        <Card.Body>
-            <input 
-                type="checkbox"           
-                checked={checked}
-                onChange={handleCheckChange}
-            />
-            <div className='dishId-card'>
-                {dishId}
-            </div>
-            <div className='dishType-card'>
-                {dishType}
-            </div>
-            <div className='dishStatus-card'>
-                {dishStatus}
-            </div>
-            <div className='dishOverdue-card'>
-                {dishOverdue} Days
-            </div>
-            <div className='dishTimesBorrowed-card'>
-                {dishTimesBorrowed}
-            </div>
-            <div className='dishDateAdded-card'>
-                {dishDateAdded}
-            </div>
-        </Card.Body>
-    </Card>
-    )
-}
-
-const AdminDishTableRow = ({dish, selectedHandler}) => {
+const AdminDishTableRow = ({dish, selectedHandler, index, selectedList}) => {
     return (
         <>
             <tr>
                 <th scope="row">
-                    <input type="checkbox" />
+                    <input checked={selectedList[index]} type="checkbox" onClick={() => selectedHandler(index)}/>
                 </th>
                 <td>{dish.id}</td>
                 <td>{dish.type}</td>
@@ -59,12 +19,12 @@ const AdminDishTableRow = ({dish, selectedHandler}) => {
     );
 }
 
-const DishData = () =>{
+const DishData = ({origDishList}) =>{
     // get dishlist using useEffect
-    const [dishList, SetDishList] = useState(dishes);
+    const [dishList, SetDishList] = useState(origDishList);
     const [query, setQuery] = useState("");
     const [headerChecked, setHeaderChecked] = useState(false);
-    const [selectedList, setSelectedList] = useState({});
+    const [selectedList, setSelectedList] = useState(Array(dishList.length).fill(false));
     const [selectedCount, setSelectedCount] = useState(0);
     const [shownDishList, setShownDishList] = useState(dishList);
     const [dishTypeFilter, setDishTypeFilter] = useState({"All":false, "Mug":false, "Dish":false});
@@ -158,23 +118,29 @@ const DishData = () =>{
     const handleMugFilter = () =>{
         setDishTypeFilter({...dishTypeFilter, "Mug":!dishTypeFilter.Mug});
     }
-    ///
-    const createSelectedList = ()=>{
+    
 
+    // Handles state change of checkbox in rows
+    const selectItemHandler = (i: number) =>{
+        const newSelItems = [...selectedList];
+        if (i >= newSelItems.length) {return;}
+        newSelItems[i] = !newSelItems[i];
+        setSelectedList(newSelItems);
+        console.log(`Len: ${selectedList.length}; ${selectedList[i]}`);
     }
+
+    // Handles the state change of the checkbox in table head
     const handleHeaderCheckChange = () => {
-        // todo
-        // add or remove from above select list
-        setHeaderChecked(!headerChecked);
-        if (headerChecked){
-            // select all the dishes
+        const newHeaderVal = !headerChecked;
+        setHeaderChecked(newHeaderVal);
+        if (newHeaderVal){
+            setSelectedList(Array(selectedList.length).fill(true));
         }
         else{
-            // unselect all the dishes
-
+            setSelectedList(Array(selectedList.length).fill(false));
         }
-        
     }
+
     const getSearchedDishes = (query, dishes) =>{
         if (!query){
             return dishes;
@@ -189,7 +155,7 @@ const DishData = () =>{
     return(
         <div className='mx-5 my-3'>
             <div className='dishDashboard-main-title fw-bold fs-4'>
-                Dishes' Data
+                Dish Data
             </div>
             <div className='dishDashboard-data '>
                 {/* Top text fields */}
@@ -214,19 +180,38 @@ const DishData = () =>{
                 </div>
 
                 <table className="table">
-                    <thead>
+                    <thead className="table-secondary">
                         <tr>
                         <th scope="col">
-                            <input className="form-check-input mt-0" type="checkbox" />
+                            <input type="checkbox" checked={headerChecked} onChange={handleHeaderCheckChange}/>
                         </th>
                         <th scope="col">Dish ID</th>
+
                         <th scope="col">
                             <div className="dropdown">
-                                <button className="btn  dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button className="btn  dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                    onClick={handleDishFilterClick}>
                                     Dish type  
                                 </button>
                                 <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">Action</a></li>
+                                    <li>
+                                        <input checked={dishTypeFilter.All} type="checkbox" onChange={handleAllFilter} className="mx-2"/>
+                                        <label>
+                                            All
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <input checked={dishTypeFilter.Dish} type="checkbox" onChange={handleDishFilter} className="mx-2"/>
+                                        <label>
+                                            Dish
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <input checked={dishTypeFilter.Mug} type="checkbox" onChange={handleMugFilter} className="mx-2"/>
+                                        <label>
+                                            Mug
+                                        </label>
+                                    </li>
                                 </ul>
                             </div>
                         </th>
@@ -236,7 +221,30 @@ const DishData = () =>{
                                     Status
                                 </button>
                                 <ul className="dropdown-menu">
-                                    <li><a className="dropdown-item" href="#">Action</a></li>
+                                    <li>
+                                        <input checked={dishStatusFilter.All} type="checkbox" onChange={handleAllStatus} className="mx-2" />
+                                        <label>
+                                            All
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <input checked={dishStatusFilter.InUse} type="checkbox" onChange={handleInUseFilter} className="mx-2"/>
+                                        <label>
+                                            In Use
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <input checked={dishStatusFilter.Returned} type="checkbox" onChange={handleReturnFilter} className="mx-2"/>
+                                        <label>
+                                            Returned
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <input checked={dishStatusFilter.Overdue} type="checkbox" onChange={handleOverdueFilter} className="mx-2"/>
+                                        <label>
+                                            Overdue
+                                        </label>
+                                    </li>
                                 </ul>
                             </div>
                         </th>
@@ -260,92 +268,13 @@ const DishData = () =>{
                     </thead>
                     <tbody>
                         {shownDishList.map((dish, key) => (
-                            <AdminDishTableRow dish={dish} key={key} selectedHandler={null} />
+                            <AdminDishTableRow dish={dish} key={key} selectedHandler={selectItemHandler} index={key} selectedList={selectedList}/>
                         ))}
                     </tbody>
                 </table>
 
-                <div className='dishDashboard-header-row'>
-                    <input type="checkbox" checked={headerChecked} onChange={handleHeaderCheckChange}/>
-                    <div className='dishId-text'>
-                        Dish ID
-                    </div>
-                    <div>
-                        <div onClick={handleDishFilterClick} className='dish-text'>
-                            Dish Type
-                        </div>
-                        {dishFilterClick && <div className = "dish-filters">
-                            <ul>
-                                <li>
-                                    <input checked={dishTypeFilter.All} type="checkbox" onChange={handleAllFilter}/>
-                                    <label>
-                                        All
-                                    </label>
-                                </li>
-                                <li>
-                                    <input checked={dishTypeFilter.Dish} type="checkbox" onChange={handleDishFilter}/>
-                                    <label>
-                                        Dish
-                                    </label>
-                                </li>
-                                <li>
-                                    <input checked={dishTypeFilter.Mug} type="checkbox" onChange={handleMugFilter}/>
-                                    <label>
-                                        Mug
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>}
-                    </div>
-                    <div>
-                        <div onClick={handleDishStatusClick} className='dish-text'>
-                            Dish Status
-                        </div>
-                        {dishStatusClick && <div className = "dish-filters">
-                            <ul>
-                                <li>
-                                    <input checked={dishStatusFilter.All} type="checkbox" onChange={handleAllStatus}/>
-                                    <label>
-                                        All
-                                    </label>
-                                </li>
-                                <li>
-                                    <input checked={dishStatusFilter.InUse} type="checkbox" onChange={handleInUseFilter}/>
-                                    <label>
-                                        In Use
-                                    </label>
-                                </li>
-                                <li>
-                                    <input checked={dishStatusFilter.Returned} type="checkbox" onChange={handleReturnFilter}/>
-                                    <label>
-                                        Returned
-                                    </label>
-                                </li>
-                                <li>
-                                    <input checked={dishStatusFilter.Overdue} type="checkbox" onChange={handleOverdueFilter}/>
-                                    <label>
-                                        Overdue
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>}
-                    </div>
-                </div>
-                {shownDishList.map((dish) => {
-                    return (
-                        <DishCard
-                            dishId={dish.id}
-                            dishType={dish.type}
-                            dishStatus={dish.status}
-                            dishOverdue={dish.overdue}
-                            dishTimesBorrowed={dish.timesBorrowed}
-                            dishDateAdded={dish.dateAdded}
-                            selected = {false}
-                        />
-                    )
-                })}
                 <div className='dishDashboard-pagenumber'>
-                    page number
+                    {/* TODO: Add pagination */}
                 </div>
             </div>
         </div>
