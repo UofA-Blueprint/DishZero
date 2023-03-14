@@ -22,7 +22,7 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
             </Modal.Body>
             <Modal.Footer className="justify-content-center">
                 <Button variant="secondary" onClick={onSubmit}>
-                    Check Out
+                    Borrow
                 </Button>
             </Modal.Footer>
         </Modal>
@@ -52,12 +52,12 @@ export default () => {
         setBuffer(true)
 
 
-        console.log("doc ref" + docRef?.id)
-        const transactionID = docRef?.id
+        // console.log("doc ref" + docRef?.id)
+        // const transactionID = docRef?.id
 
         if (!firebase?.user) {
             console.log("USER IS NULL")
-            navigate(`/login/?transaction_id=${transactionID}`)
+            // navigate(`/login/?transaction_id=${transactionID}`)
         }
         console.log("LOGGEd out user" + user)
     }

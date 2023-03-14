@@ -169,15 +169,32 @@ const DishData = () =>{
     }
     
     return(
-        <div>
-            <div className='dishDashboard-main-title'>
+        <div className='mx-5 my-3'>
+            <div className='dishDashboard-main-title fw-bold fs-4'>
                 Dishes' Data
             </div>
-            <div className='dishDashboard-data'>
-                <div className='dishDashboard-search-row'>
-                    <input type="text" placeholder='Enter an id' onChange={e => searchBarHandleChange(e.target.value)}/>
-                    <button>Add dish</button>
+            <div className='dishDashboard-data '>
+                {/* Top text fields */}
+                <div className='d-flex flex-row mb-3 justify-content-between'>
+                    <div className='d-flex flex-row mb-3'>
+                        <div className="input-group me-3 rounded-pill border border-dark py-1 px-2">
+                            <input type="text" className="form-control border-0" placeholder="Type text here" />
+                        </div>
+                        <button type="button" className="btn rounded-pill bg-transparen border border-success text-success px-4">
+                            Search
+                        </button>
+                    </div>
+
+                    <div className='d-flex flex-row mb-3'>
+                        <div className="input-group me-3 rounded-pill border border-dark py-1 px-2">
+                            <input type="text" className="form-control border-0" placeholder="Enter an id" />
+                        </div>
+                        <button type="button" className="btn rounded-pill btn-success px-4">
+                            + Add new dish
+                        </button>
+                    </div>
                 </div>
+
                 <div className='dishDashboard-header-row'>
                     <input type="checkbox" checked={headerChecked} onChange={handleHeaderCheckChange}/>
                     <div className='dishId-text'>
