@@ -27,7 +27,7 @@ const UserRoute = () => {
     );
   }
 
-  return <LoginRoute passthrough />;
+  return <LoginRoute />;
 };
 
 const PermissionsRoute = (props: any) => {

@@ -53,11 +53,11 @@ export default () => {
     setConfirm(false);
     const user = firebase?.user?.uid || null;
     console.log("USER: " + user);
-    const docRef = await DishAPI.addDishBorrow(scanId, user);
+    const docId = await DishAPI.addDishBorrow(scanId, user);
     setBuffer(true);
 
-    console.log("doc ref" + docRef?.id);
-    const transactionID = docRef?.id;
+    console.log("doc ref" + docId);
+    const transactionID = docId;
 
     if (!firebase?.user) {
       console.log("USER IS NULL");
