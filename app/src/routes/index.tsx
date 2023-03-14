@@ -12,6 +12,9 @@ import Admin from "./admin";
 import { useContext } from "react";
 import { FirebaseContext, Role } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
+import { Error404 } from "./misc";
+import DishAPI from "../features/api";
+
 const UserRoute = () => {
   const fbContext = useContext(FirebaseContext);
 
