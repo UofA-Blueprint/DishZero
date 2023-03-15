@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const serverless = require('serverless-http');
 const { stringify } = require("csv-stringify");
 require("dotenv").config();
-import { serializeDatabase } from "./fb_function";
+import { serializeDatabase } from "../fb_function";
 
 // initialize express
 const app = express();
