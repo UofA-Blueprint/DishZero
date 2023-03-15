@@ -11,6 +11,8 @@ app.listen(PORT, () => console.log("listening on port " + PORT));
 const scheduledJobsRouter = require("./routes/scheduledJobs.js");
 const {router: updateConfigRouter} = require("./routes/updateConfig.js");
 
+adminId = 'iamadmin'
+
 async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
   const transactionsRef = db.collection("transactions");
@@ -90,6 +92,17 @@ async function serializeDatabase(from = null, to = null) {
   return stringifier;
 }
 
+async function checkAdmin(req){
+  let token = req.query.idToken;
+  let decodedToken = await admin.auth().verifyIdToken(token);
+  const role = await getRole(decodedToken.uid)
+  return (decodedToken.uid === adminId);
+}
+async function validateUser(req){
+  if(!checkAdmin(req)){
+    throw new Error("Sorry, you need admin permissions to access!")
+  }
+}
 app.get("/", async (req, res) => {
   res.send("Welcome to DishZero's Admin Back-end! If you can see this, you are awesome!")
 })
@@ -114,8 +127,11 @@ async function changeRole(user_id,newrole){
   return true
 }
 
-app.get("/api/v1/useractions/changerole", async (req, res, next) => {
+app.post("/api/v1/useractions/changerole", async (req, res, next) => {
   try{
+    // await checkAdmin(req); Must be uncommented before production 
+
+
     const user_id = req.query.userid;
     const new_role = req.query.new_role;
     if(new_role=="volunteer" || new_role=="admin" || new_role=="customer"){
