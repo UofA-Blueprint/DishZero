@@ -43,6 +43,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <UserRoute />,
+    errorElement: <Error404 />,
     children: [
       {
         index: true,
