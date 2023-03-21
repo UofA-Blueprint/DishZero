@@ -3,7 +3,7 @@ import '../styles/index.css'
 export default ({dish}) => {
     const dateFormat = { day: 'numeric', year: 'numeric', month: 'short'}
     return (
-        <div className="dish-card">
+        <div className="dish-card mb-3">
             <div className="type-icon">
                 <img />
             </div>

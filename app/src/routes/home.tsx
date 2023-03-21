@@ -1,4 +1,7 @@
+import { useContext } from "react";
+import { FirebaseContext, Role } from "../firebase";
 import { Link } from "react-router-dom";
+import DishAPI from "../features/api";
 import { faAngleDoubleLeft, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import scan_icon from "../assets/scan.svg";
@@ -9,7 +12,7 @@ import '../styles/index.css'
 
 const DishLog = ({dishes}) => {
   return (
-    <div id="dish-log" style={{marginTop: '16px'}}>
+    <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
         return <DishCard dish={dish} />
       }) }
@@ -25,11 +28,8 @@ const NewUser = () => {
   )
 };
 
-const ExistingUser = () => {
-  const dishes = [
-    { id: 2002, checkedOut: new Date("2022-05-01"), due: new Date("2022-05-27"), type: 'Mug' },
-    { id: 2003, checkedOut: new Date("2022-05-06"), due: new Date("2022-06-01"), type: 'Container' },
-  ];
+const ExistingUser = (user) => {
+  let dishes = DishAPI.getUserActiveDishes(user.uid);
   return (
     <div style={{padding:'24px', paddingTop:'12vh'}}>
       <div id="impact" className="sub-header-3">
@@ -50,9 +50,9 @@ const ExistingUser = () => {
       <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
-          <p className="details-2 mt-1">{dishes.length} in use</p>
+          <p className="details-2 mt-1">{dishes?.length} in use</p>
         </div>
-        { dishes.length ? <DishLog dishes={dishes} /> :
+        { dishes?.length ? <DishLog dishes={dishes} /> :
           <div className="d-flex flex-column">
             <div className="mt-5 d-flex justify-content-center">
               <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
@@ -84,11 +84,12 @@ const Footer = () => {
   )
 }
 
-export default (isNewUser) => {
+export default () => {
+  const fbContext = useContext(FirebaseContext);
   return (
     <div>
       <div id="content">
-        {false ? <NewUser /> : <ExistingUser />}
+        {fbContext?.user ? <NewUser /> : <ExistingUser user="fbContext.user" />}
       </div>
       <Footer />
     </div>
