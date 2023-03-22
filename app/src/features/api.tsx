@@ -12,7 +12,15 @@ const DishAPI = {
       const result = runTransaction(FirebaseDatabase, async (transaction) => {
         const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("user", "==", uid), where("returned", "==", null), orderBy("timestamp", "desc"));
         const qSnapshot = await getDocs(q);
-        return qSnapshot.docs.map((doc) => doc.data());
+        const transactions = qSnapshot.docs.map((doc) => doc.data());
+        var dishRefs = transactions.reduce((t, dishRefs) => {
+          dishRefs.push(t.dish);
+          return dishRefs;
+        }, []);
+        var dishes = dishRefs.reduce(async (dishRef, dishes) => {
+          dishes.push(await transaction.get(dishRef))
+        });
+        return dishes.map((dish) => dish.data());
       });
     } catch (err) {
       alert("There was an issue getting active dishes.\nError: " + err);
