@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Toolbar from './toolbar';
+import adminApi from "./adminApi";
+import {Simulate} from "react-dom/test-utils";
+import load = Simulate.load;
 
 const AdminDishTableRow = ({dish, selectedHandler, index, selectedList}) => {
     return (
@@ -13,7 +16,7 @@ const AdminDishTableRow = ({dish, selectedHandler, index, selectedList}) => {
                 <td>{dish.status}</td>
                 <td>{dish.overdue}</td>
                 <td>{dish.timesBorrowed}</td>
-                <td>{dish.dateAdded}</td>
+                <td>{dish.dateAdded || ""}</td>
             </tr>
         </>
     );
@@ -21,7 +24,7 @@ const AdminDishTableRow = ({dish, selectedHandler, index, selectedList}) => {
 
 const DishData = ({origDishList}) =>{
     // get dishlist using useEffect
-    const [dishList, SetDishList] = useState(origDishList);
+    const [dishList, setDishList] = useState(origDishList);
     const [query, setQuery] = useState("");
     const [headerChecked, setHeaderChecked] = useState(false);
     const [selectedList, setSelectedList] = useState(Array(dishList.length).fill(false));
@@ -72,7 +75,34 @@ const DishData = ({origDishList}) =>{
             dishType
         }
     }
-    
+
+    const loadDataFromBackend = async function() {
+        let dishData = await adminApi.getAllDishes();
+        setDishList(dishData);
+        resetStateVars(dishData);
+    }
+
+    const resetStateVars = function(dishData) {
+        setQuery("");
+        setHeaderChecked(false);
+        setSelectedList(Array(dishList.length).fill(false));
+        setSelectedCount(0);
+        setShownDishList(dishData);
+        setDishTypeFilter({"All":false, "Mug":false, "Dish":false});
+        setDishFilterClick(false);
+        setDishStatusFilter({"All":false, "InUse":false, "Returned":false, "Overdue":false})
+        setDishStatusClick(false);
+    }
+
+
+    useEffect(() => {
+        if (origDishList.length == 0) {
+            // load the data again
+            loadDataFromBackend();
+        }
+    }, [])
+
+
     useEffect(() => {
         const filter = CreateFilter();
         setShownDishList(GetfilteredDish(filter, dishList));

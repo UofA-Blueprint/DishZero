@@ -20,8 +20,7 @@ class DishService {
         let allDishes = await firestoreService.getAllDishes();
         let allTrans = await firestoreService.getAllTransactions();
         const dishTransMap = this.mapDishToLatestTrans(allTrans);
-        const dishListVm = this.mapToDishVm(allDishes, dishTransMap);
-        return dishListVm;
+        return this.mapToDishVm(allDishes, dishTransMap);
     }
 
     /**

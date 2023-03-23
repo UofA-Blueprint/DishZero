@@ -1,3 +1,5 @@
+const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+
 class DishTableVm {
     constructor(id, type, status, overdue, timesBorrowed, dateAdded) {
         this.id = id;
@@ -5,7 +7,7 @@ class DishTableVm {
         this.status = status;
         this.overdue = overdue;
         this.timesBorrowed = timesBorrowed;
-        this.dataAdded = dateAdded;
+        this.dateAdded = dateAdded?.toLocaleDateString('en-us', dateOptions);
     }
 }
 

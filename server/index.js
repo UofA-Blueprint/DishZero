@@ -1,11 +1,13 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
+const cors = require('cors')
 
 require("dotenv").config();
 
 // initialize express
 const app = express();
+app.use(cors())
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
 const scheduledJobsRouter = require("./routes/scheduledJobs.js");
