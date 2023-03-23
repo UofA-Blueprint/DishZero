@@ -2,11 +2,11 @@ const {dishService} = require("../services/dishService");
 
 const dishDataController = {
     getAllDishes: async function(req, res) {
-        try {
+        // try {
             res.send(await dishService.getAllDishes());
-        } catch (err) {
-            res.status(400).send(err.message);
-        }
+        // } catch (err) {
+        //     res.status(400).send(err.message);
+        // }
     }
 };
 

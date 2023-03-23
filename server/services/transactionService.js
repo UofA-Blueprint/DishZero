@@ -22,7 +22,7 @@ const transactionService = {
     },
 
     // determines if the dish is returned for the transaction object
-    isDishReturnedForTransactionObject: async function(transObj) {
+    isDishReturnedForTransactionObject: function(transObj) {
             return !_.isEmpty(transObj?.returned || {});
     },
 
@@ -30,7 +30,6 @@ const transactionService = {
         const transRef = db.collection('transactions');
         let trans = await transRef.get();
         return trans.docs;
-
     },
 
     getAllTransactionsData: async function() {
