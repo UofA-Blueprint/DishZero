@@ -9,6 +9,7 @@ const app = express();
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
 const scheduledJobsRouter = require("./routes/scheduledJobs.js");
+const dishDataRouter = require("./routes/dishData");
 const {router: updateConfigRouter} = require("./routes/updateConfig.js");
 
 async function serializeDatabase(from = null, to = null) {
@@ -126,3 +127,4 @@ app.get("/api/v1/transactions", async (req, res) => {
 
 app.use('/scheduledJobs', scheduledJobsRouter.router);
 app.use('/updateConfig', updateConfigRouter);
+app.use('/dish', dishDataRouter.router);
