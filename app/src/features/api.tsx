@@ -7,6 +7,27 @@ const UserCollectionName = "users"
 const QRCollectionName = "qr-codes"
 
 const DishAPI = {
+  getUserActiveDishes: function (uid: string) {
+    try {
+      const result = runTransaction(FirebaseDatabase, async (transaction) => {
+        const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("user", "==", uid), where("returned", "==", null), orderBy("timestamp", "desc"));
+        const qSnapshot = await getDocs(q);
+        const transactions = qSnapshot.docs.map((doc) => doc.data());
+        var dishRefs = transactions.reduce((t, dishRefs) => {
+          dishRefs.push(t.dish);
+          return dishRefs;
+        }, []);
+        var dishes = dishRefs.reduce(async (dishRef, dishes) => {
+          dishes.push(await transaction.get(dishRef))
+        });
+        return dishes.map((dish) => dish.data());
+      });
+    } catch (err) {
+      alert("There was an issue getting active dishes.\nError: " + err);
+      console.log(err);
+      return [];
+    }
+  },
   addNewDish: async function (qr: string, type: string) {
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
     try {
