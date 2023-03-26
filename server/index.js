@@ -1,14 +1,17 @@
 const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
+const cors = require('cors')
 
 require("dotenv").config();
 
 // initialize express
 const app = express();
+app.use(cors())
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
 const scheduledJobsRouter = require("./routes/scheduledJobs.js");
+const dishDataRouter = require("./routes/dishData");
 const {router: updateConfigRouter} = require("./routes/updateConfig.js");
 
 adminId = 'iamadmin'
@@ -183,3 +186,4 @@ app.get("/api/v1/transactions", async (req, res) => {
 
 app.use('/scheduledJobs', scheduledJobsRouter.router);
 app.use('/updateConfig', updateConfigRouter);
+app.use('/dish', dishDataRouter.router);
