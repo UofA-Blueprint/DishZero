@@ -1,67 +1,115 @@
 import {
-    createBrowserRouter,
-    Outlet,
-    RouterProvider,
-    useLocation,
-    useNavigate,
-  } from "react-router-dom";
-import LoginRoute from './login';
-import HomeRoute from './home';
-import BorrowRoute from './borrow';
-import ReturnRoute from './return';
-import { useContext, useEffect } from "react";
-import { FirebaseContext } from "../firebase";
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  useNavigate,
+} from "react-router-dom";
+import LoginRoute from "./login";
+import HomeRoute from "./home";
+import BorrowRoute from "./borrow";
+import ReturnRoute from "./return";
+import Admin from "./admin";
+import { useContext } from "react";
+import { FirebaseContext, Role } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
+import { Error404 } from "./misc";
+import DishAPI from "../features/api";
 
 const UserRoute = () => {
-    const fbContext = useContext(FirebaseContext);
-    const navigate = useNavigate();
+  const fbContext = useContext(FirebaseContext);
 
-    useEffect(() => {
-        if (!fbContext?.user) {
-            navigate("/login");
-        }
-    }, [fbContext?.user]);
-
+  if (fbContext?.user) {
     return (
-        <>
-            <Sidebar pageWrapId={"page-wrap"} outerContainerId={"outer-container"} />
-            <Outlet/>
-        </>
-    )
-}
+      <>
+        <Sidebar />
+        <Outlet />
+      </>
+    );
+  }
+
+  return <LoginRoute passthrough />;
+};
+
+const PermissionsRoute = (props: any) => {
+  const fbContext = useContext(FirebaseContext);
+
+  if (props?.validator && props.validator(fbContext?.role)) {
+    return <Outlet />;
+  }
+  return <Error404 />;
+};
 
 const router = createBrowserRouter([
-    {
-        path: "/",
-        element: <UserRoute/>,
+  {
+    path: "/",
+    element: <UserRoute />,
+    errorElement: <Error404 />,
+    children: [
+      {
+        index: true,
+        element: <HomeRoute />,
+      },
+      {
+        path: "/home",
+        element: <HomeRoute />,
+      },
+      {
+        path: "/borrow",
+        element: <BorrowRoute />,
+        loader: async ({ request }) => {
+          const url = new URL(request.url);
+          const qid = url.searchParams.get("q");
+          if (!qid) {
+            return null;
+          }
+
+          try {
+            const tid = await DishAPI.addDishBorrow(qid, null);
+            return { qid: qid, tid: tid };
+          } catch (e) {
+            console.log("Unable to immediately borrow:", e);
+            return { qid: qid, error: e };
+          }
+        },
+      },
+      {
+        path: "/volunteer",
+        element: (
+          <PermissionsRoute
+            validator={(r) => r == Role.VOLUNTEER || r == Role.ADMIN}
+          />
+        ),
         children: [
-            {
-                index: true,
-                element: <HomeRoute/>,
-            },
-            {
-                path: "/home",
-                element: <HomeRoute/>,
-            },
-            {
-                path: "/borrow",
-                element: <BorrowRoute/>,
-            },
-            {
-                path: "/return",
-                element: <ReturnRoute/>,
-            }
-        ]
-    },
-    {
-        path: "/login",
-        element: <LoginRoute/>
-    },
+          {
+            // TODO: wrap in "VOLUNTEER" route
+            path: "/volunteer/return",
+            element: <ReturnRoute />,
+          },
+        ],
+      },
+      {
+        path: "/admin",
+        element: <PermissionsRoute validator={(r) => r == Role.ADMIN} />,
+        children: [
+          // TODO: put admin related children here
+          {
+            path: "/admin",
+            element: <Admin />,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/login",
+    element: <LoginRoute />,
+  },
+  {
+    path: "/login/:transaction_id",
+    element: <LoginRoute />,
+  },
 ]);
 
 export default () => {
-    return (
-        <RouterProvider router={router} />
-    )
-}
+  return <RouterProvider router={router} fallbackElement={<Error404 />} />;
+};

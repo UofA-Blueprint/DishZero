@@ -7,15 +7,53 @@ const UserCollectionName = "users"
 const QRCollectionName = "qr-codes"
 
 const DishAPI = {
+  getUserActiveDishes: function (uid: string) {
+    try {
+      const result = runTransaction(FirebaseDatabase, async (transaction) => {
+        const q = query(collection(FirebaseDatabase, TransactionsCollectionName), where("user", "==", uid), where("returned", "==", null), orderBy("timestamp", "desc"));
+        const qSnapshot = await getDocs(q);
+        const transactions = qSnapshot.docs.map((doc) => doc.data());
+        var dishRefs = transactions.reduce((t, dishRefs) => {
+          dishRefs.push(t.dish);
+          return dishRefs;
+        }, []);
+        var dishes = dishRefs.reduce(async (dishRef, dishes) => {
+          dishes.push(await transaction.get(dishRef))
+        });
+        return dishes.map((dish) => dish.data());
+      });
+    } catch (err) {
+      alert("There was an issue getting active dishes.\nError: " + err);
+      console.log(err);
+      return [];
+    }
+  },
+  addNewDish: async function (qr: string, type: string) {
+    const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
+    try {
+      const result = await runTransaction(FirebaseDatabase, async (transaction) => {
+        const qrDoc = await transaction.get(qrRef);
+        if (qrDoc.exists()) {
+          alert("QR code already registered");
+        } else {
+          const dishRef = doc(collection(FirebaseDatabase, DishCollectionName));
+          const dishData = { type: type, qid: qr, registered: Timestamp.now() };
+          await transaction.set(dishRef, dishData);
+          const qrData = { dish: dishRef };
+          await transaction.set(qrRef, qrData);
+        }
+      });
+    } catch (err) { 
+      alert("There was an issue adding the dish to the database.")
+      console.log(err);
+    }
+  },
   addDishBorrow: async function (qr: string, user: string | null) {
 
     console.log(FirebaseDatabase, QRCollectionName, qr)
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
-    console.log("Transaction run for", qr, user)
-
-    try {
-      await runTransaction(FirebaseDatabase, async (transaction) => {
+      const out = await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
           throw "QR code not registered";
@@ -31,23 +69,15 @@ const DishAPI = {
 
         const docRef = doc(collection(FirebaseDatabase, TransactionsCollectionName));
 
-        // TODO: handle no existing qr code case
         await transaction.set(docRef, docData);
-
-        return docRef;
+        return docRef.id;
       });
-      console.log("Transaction successfully committed!");
-    } catch (e) {
-      console.log("Transaction failed: ", e);
-    }
+      return out;
   },
 
   updateDishReturn: async function (qr: string) {
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
-    console.log("Transaction run for", qr)
-
-    try {
       await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
@@ -64,11 +94,7 @@ const DishAPI = {
         transaction.update(docRef, { returned: {timestamp: Timestamp.now()} });
         return "docRef";
       });
-      console.log("Transaction successfully committed!");
-    } catch (e) {
-      console.log("Transaction failed: ", e);
       return null;
-    }
   },
 
   updateDishCondition: async function (qr: string, condition: string) {
@@ -94,6 +120,26 @@ const DishAPI = {
 
           // TODO: handle no existing qr code case
           transaction.update(doc.ref, { returned: returned });
+        }
+        return doc.ref;
+      });
+      console.log("Transaction successfully committed!");
+    } catch (e) {
+      console.log("Transaction failed:", e);
+    }
+  },
+  updateDocWithUserID: async function (transaction_id: string, user_id: string) {
+    const transactionRef = doc(FirebaseDatabase, TransactionsCollectionName, transaction_id);
+    console.log("Transaction run for", transaction_id)
+
+
+    try {
+      await runTransaction(FirebaseDatabase, async (transaction) => {
+        const doc = await transaction.get(transactionRef);
+        
+        if (doc) {
+          let returned = doc.data();
+          transaction.update(doc.ref, { user: user_id });
         }
         return doc.ref;
       });

@@ -1,0 +1,27 @@
+.error404-wrapper {
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-404 {
+  background: #68B49A;
+  border-radius: 50px;
+  color: #F6F8F5;
+  line-height: 1.5rem;
+  font-weight: 600;
+  padding: 0.5rem 3rem;
+  border: none;
+}
+
+.heading-404 {
+  font-size: 2.25rem;
+}
+
+.subheading-404 {
+  font-size: 1.75rem;
+}
+
+.text-404 {
+  font-size: 0.875rem;
+  max-width: 244px;
+}
