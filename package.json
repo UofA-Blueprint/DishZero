@@ -3,7 +3,10 @@
     "netlify-cli": "^12.10.0"
   },
   "scripts": {
-    "start": "./server/node_modules/.bin/netlify-lambda serve server",
+    "start": "concurrently \"cd app && npm start\" \"./server/node_modules/.bin/netlify-lambda serve server\"",
     "build": "./server/node_modules/.bin/netlify-lambda build server"
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
   }
 }
