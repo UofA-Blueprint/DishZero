@@ -3,6 +3,8 @@ const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
 const cors = require('cors')
 
+const serverless = require('serverless-http');
+
 require("dotenv").config();
 
 // initialize express
@@ -186,4 +188,9 @@ app.get("/api/v1/transactions", async (req, res) => {
 
 app.use('/scheduledJobs', scheduledJobsRouter.router);
 app.use('/updateConfig', updateConfigRouter);
+
 app.use('/dish', dishDataRouter.router);
+
+app.use('/dish', dishDataRouter.router);
+
+module.exports.handler = serverless(app);
