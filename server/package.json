@@ -13,14 +13,13 @@
     "csv-stringify": "^6.2.3",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "firebase-admin": "^11.4.1",
-    "netlify-lambda": "^2.0.16",
-    "nodemon": "^2.0.20",
-    "serverless-http": "^3.1.1"
+    "firebase-admin": "^11.5.0",
     "lodash": "^4.17.21",
+    "netlify-lambda": "^2.0.16",
     "node-cron": "^3.0.2",
     "node-schedule": "^2.1.0",
     "nodemailer": "^6.8.0",
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "serverless-http": "^3.1.1"
   }
 }
