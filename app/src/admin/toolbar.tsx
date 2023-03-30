@@ -5,8 +5,8 @@ import "../styles/admin.css"
 export default () => {
     return (
         <>
-        <nav id="sidebarMenu" className={`col-md-3 col-lg-2 d-md-block bg-light sidebar collapse`} >
-                <div className={`position-sticky pt-3 sidebar-sticky`}>
+        <nav id="sidebarMenu" className={`col-md-3 col-lg-2 d-md-block bg-light sidebar width-20 margin-right-1`} >
+                <div className={`pt-3 sidebar-sticky`}>
                     
                     <ul className="nav flex-column">
                         <div className="sidebar-heading d-flex align-items-center px-3 mt-4 mb-1  justify-content-start">

@@ -14,6 +14,7 @@ import { FirebaseContext, Role } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
 import { Error404 } from "./misc";
 import DishAPI from "../features/api";
+import AdminUser from "./users";
 
 const UserRoute = () => {
   const fbContext = useContext(FirebaseContext);
@@ -27,7 +28,7 @@ const UserRoute = () => {
     );
   }
 
-  return <LoginRoute passthrough />;
+  return <LoginRoute  />;
 };
 
 const PermissionsRoute = (props: any) => {
@@ -88,12 +89,16 @@ const router = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: <PermissionsRoute validator={(r) => r == Role.ADMIN} />,
+        // element: <PermissionsRoute validator={(r) => r == Role.ADMIN} />,
         children: [
           // TODO: put admin related children here
           {
             path: "/admin",
             element: <Admin />,
+          },
+          {
+            path: "/admin/users",
+            element: <AdminUser />,
           },
         ],
       },
