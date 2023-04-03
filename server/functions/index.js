@@ -12,9 +12,9 @@ const app = express();
 app.use(cors())
 const PORT = 3000;
 app.listen(PORT, () => console.log("listening on port " + PORT));
-const scheduledJobsRouter = require("./routes/scheduledJobs.js");
-const dishDataRouter = require("./routes/dishData");
-const {router: updateConfigRouter} = require("./routes/updateConfig.js");
+const scheduledJobsRouter = require("../routes/scheduledJobs.js");
+const dishDataRouter = require("../routes/dishData");
+const {router: updateConfigRouter} = require("../routes/updateConfig.js");
 
 adminId = 'iamadmin'
 

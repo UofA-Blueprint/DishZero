@@ -1,12 +1,17 @@
 {
-  "devDependencies": {
-    "netlify-cli": "^12.10.0"
-  },
+  "name": "dishzero",
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
   "scripts": {
-    "start": "concurrently \"cd app && npm start\" \"./server/node_modules/.bin/netlify-lambda serve server\"",
-    "build": "./server/node_modules/.bin/netlify-lambda build server"
+    "start": "concurrently \"./server/node_modules/.bin/netlify-lambda serve server --config webpack.config.js\" \"cd app && npm start\"",
+    "build": "./server/node_modules/.bin/netlify-lambda build server --config ./webpack.config.js"
   },
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "concurrently": "^7.6.0"
+    "concurrently": "^8.0.1",
+    "netlify-cli": "^13.2.2",
+    "webpack-node-externals": "^3.0.0"
   }
 }
