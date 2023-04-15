@@ -2,8 +2,7 @@ const express = require("express");
 const admin = require("firebase-admin");
 const { stringify } = require("csv-stringify");
 const cors = require('cors')
-
-const serverless = require('serverless-http');
+const functions = require('firebase-functions');
 
 require("dotenv").config();
 
@@ -16,7 +15,7 @@ const scheduledJobsRouter = require("./routes/scheduledJobs.js");
 const dishDataRouter = require("./routes/dishData.js");
 const {router: updateConfigRouter} = require("./routes/updateConfig.js");
 
-adminId = 'iamadmin'
+const adminId = 'iamadmin'
 
 async function serializeDatabase(from = null, to = null) {
   const db = admin.firestore();
@@ -193,4 +192,4 @@ app.use('/dish', dishDataRouter.router);
 
 app.use('/dish', dishDataRouter.router);
 
-module.exports.handler = serverless(app);
+export const webAPI = functions.https.onRequest(app);
