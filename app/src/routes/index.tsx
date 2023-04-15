@@ -27,7 +27,7 @@ const UserRoute = () => {
     );
   }
 
-  return <LoginRoute passthrough />;
+  return <LoginRoute />;
 };
 
 const PermissionsRoute = (props: any) => {
@@ -87,16 +87,16 @@ const router = createBrowserRouter([
           },
         ],
       },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <PermissionsRoute validator={(r) => r == Role.ADMIN} />,
+    children: [
+      // TODO: put admin related children here
       {
         path: "/admin",
-        element: <PermissionsRoute validator={(r) => r == Role.ADMIN} />,
-        children: [
-          // TODO: put admin related children here
-          {
-            path: "/admin",
-            element: <Admin />,
-          },
-        ],
+        element: <Admin />,
       },
     ],
   },
