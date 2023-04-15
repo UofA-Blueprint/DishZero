@@ -14,6 +14,9 @@ import { FirebaseContext, Role } from "../firebase";
 import { Sidebar } from "../widgets/sidebar";
 import { Error404 } from "./misc";
 import DishAPI from "../features/api";
+import Dishes from "../admin/dishes";
+import Email from "../admin/email";
+import Users from "../admin/users";
 
 const UserRoute = () => {
   const fbContext = useContext(FirebaseContext);
@@ -97,6 +100,15 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: <Admin />,
+      }, {
+        path: "/admin/dishes",
+        element: <Dishes />,
+      }, {
+        path: "/admin/users",
+        element: <Users />,
+      }, {
+        path: "/admin/email",
+        element: <Email />,
       },
     ],
   },

@@ -1,6 +1,7 @@
 import React from "react";
 import leaf_icon from "../assets/leaf.svg";
 import { MobileView, BrowserView } from "react-device-detect";
+import Toolbar from "../admin/toolbar";
 
 function admin() {
   return (
@@ -18,6 +19,7 @@ function admin() {
       {/* on desktop */}
       <BrowserView>
         {/* TODO: implement browser view when user is on desktop */}
+        <Toolbar />
       </BrowserView>
     </>
   );
