@@ -5,12 +5,12 @@ import "../styles/admin.css"
 export default () => {
     return (
         <>
-        <nav id="sidebarMenu" className={`col-md-3 col-lg-2 d-md-block bg-light sidebar collapse`} >
+            <nav id="sidebarMenu" className={`col-md-3 col-lg-2 d-md-block bg-light sidebar collapse`} >
                 <div className={`position-sticky pt-3 sidebar-sticky`}>
-                    
+
                     <ul className="nav flex-column">
                         <div className="sidebar-heading d-flex align-items-center px-3 mt-4 mb-1  justify-content-start">
-                            <img src="/admin_logo.svg"/>
+                            <img src="/admin_logo.svg" />
                             <h4>
                                 DishZero
                             </h4>
@@ -19,26 +19,26 @@ export default () => {
                             Admin Panel
                         </p>
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} >
-                                <FontAwesomeIcon icon={faHouse} className="sidebar-icon"/>    
+                            <a className={`nav-link mt-3`} href="/admin">
+                                <FontAwesomeIcon icon={faHouse} className="sidebar-icon" />
                                 Home
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} >
-                                <FontAwesomeIcon icon={faBellConcierge} className="sidebar-icon"/>    
+                            <a className={`nav-link mt-3`} href="/admin/dishes">
+                                <FontAwesomeIcon icon={faBellConcierge} className="sidebar-icon" />
                                 Dishes
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link mt-3">
-                                <FontAwesomeIcon icon={faUser} className="sidebar-icon"/>    
+                            <a className="nav-link mt-3" href="/admin/users">
+                                <FontAwesomeIcon icon={faUser} className="sidebar-icon" />
                                 Users
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} aria-current="page">
-                                <FontAwesomeIcon icon={faEnvelope} className="sidebar-icon"/>    
+                            <a className={`nav-link mt-3`} aria-current="page" href="/admin/email">
+                                <FontAwesomeIcon icon={faEnvelope} className="sidebar-icon" />
                                 Email
                             </a>
                         </li>
