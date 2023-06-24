@@ -1,8 +1,7 @@
-import { app } from './app';
-import nodeConfig from 'config';
+import { app } from './app'
 
-const port = nodeConfig.get('server.port') || 3000;
+const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
-});
+    console.log(`Server is listening on port ${port}`)
+})

@@ -1,30 +1,30 @@
-import express, { Response, Request, NextFunction } from 'express';
-import * as dotenv from 'dotenv';
-import cors from 'cors';
-import pinoHttp from 'pino-http';
+import express, { Response, Request, NextFunction } from 'express'
+import * as dotenv from 'dotenv'
+import cors from 'cors'
+import pinoHttp from 'pino-http'
 
-const app = express();
-dotenv.config();
+const app = express()
+dotenv.config()
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 if (process.env.NODE_ENV !== 'test') {
-    app.use(pinoHttp(
-        {
+    app.use(
+        pinoHttp({
             transport: {
                 target: 'pino-pretty',
                 options: {
                     levelFirst: true,
                     colorize: true,
-                    translateTime: true
-                }
-            }
-        }
-    ));
+                    translateTime: true,
+                },
+            },
+        })
+    )
 }
 
-app.get('/health', (req: Request, res: Response) => {
-    res.status(200).send('OK');
-});
+app.get('/health', (_: Request, res: Response) => {
+    res.status(200).send('OK')
+})
 
-export { app };
+export { app }
