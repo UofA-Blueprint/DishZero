@@ -1,4 +1,4 @@
-import express, { Response, Request, NextFunction } from 'express'
+import express, { Response, Request } from 'express'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
 import pinoHttp from 'pino-http'
