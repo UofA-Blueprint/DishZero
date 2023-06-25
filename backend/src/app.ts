@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 import cors from 'cors'
 import pinoHttp from 'pino-http'
 import { dishRouter } from './routes/dish'
+import { transactionsRouter } from './routes/transactions'
 
 const app = express()
 dotenv.config()
@@ -29,5 +30,6 @@ app.get('/health', (_: Request, res: Response) => {
 })
 
 app.use('/api/dish', dishRouter)
+app.use('/api/transactions', transactionsRouter)
 
 export { app }
