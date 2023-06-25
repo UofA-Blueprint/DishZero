@@ -2,6 +2,7 @@ import express, { Response, Request } from 'express'
 import * as dotenv from 'dotenv'
 import cors from 'cors'
 import pinoHttp from 'pino-http'
+import { dishRouter } from './routes/dish'
 
 const app = express()
 dotenv.config()
@@ -26,5 +27,7 @@ if (process.env.NODE_ENV !== 'test') {
 app.get('/health', (_: Request, res: Response) => {
     res.status(200).send('OK')
 })
+
+app.use('/api/dish', dishRouter)
 
 export { app }
