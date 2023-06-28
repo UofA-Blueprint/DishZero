@@ -1,0 +1,95 @@
+.root-desktop {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-desktop {
+    width: 28vw;
+    height: 28vw;
+    border-radius: 10px;
+    margin-right: 50px;
+}
+
+.right-frame-desktop {
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+
+.root-mobile {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-image: url('../assets//leaf-mobile-background.png');
+    background-size: cover;
+}
+
+.logo-mobile {
+    width: 40vw;
+    height: 40vw;
+    margin-top: 130px;
+    margin-bottom: 15px;
+}
+
+.right-frame-mobile {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    align-items: center;
+}
+
+.dish-zero-heading {
+    font-size: 2.215rem;
+    font-weight: bold;
+    color: #4c4242;
+}
+
+.subheading {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #4c4242;
+}
+
+.sign-in-button-desktop {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 50px;
+    border-radius: 20px;
+    background-color: #68B49A;
+    border-width: 0;
+    margin-top: 30px;
+}
+
+.sign-in-button-mobile {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 50px;
+    border-radius: 20px;
+    background-color: #68B49A;
+    border-width: 0;
+    margin-top: 80px;
+}
+
+.signInButtonLogo {
+    width: 30px;
+    height: 40px;
+    margin-right: 7px;
+}
+
+.signInButtonText {
+    font-size: 1.125rem;
+    color: white;
+    margin-top: 15px;
+    margin-left: 7px;
+}

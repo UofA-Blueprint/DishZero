@@ -1,5 +1,8 @@
-import React, { useContext, useEffect } from "react";
-import { Stage, Layer, Rect } from "react-konva";
+import React, { useContext, useEffect, useState } from "react";
+import "../styles/login.css";
+import desktopLogo from "../assets/dishzero-logo-desktop.png";
+import mobileLogo from "../assets/dishzero-logo-mobile.png";
+import signInButtonLogo from "../assets/sign-in-button-logo.png";
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -12,6 +15,7 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 function Login() {
   const fbContext = useContext(FirebaseContext);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   // const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
@@ -26,6 +30,17 @@ function Login() {
           navigate("/home");
       }
   }, [fbContext?.user]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   if (fbContext?.user) {
     return <div />;
@@ -47,33 +62,38 @@ function Login() {
   };
 
   return (
-    <div
-      className="App"
-      id="outer-container"
-      style={{
-        paddingBottom: 50,
-        paddingTop: 10,
-        textAlign: "center",
-      }}
-    >
-      <h1
-        style={{
-          fontWeight: "bolder",
-        }}
-      >
-        DishZero
-      </h1>
-      <h3>
-        Helping the planet one dish<br></br>
-        at a time
-      </h3>
-      <Stage width={window.innerWidth} height={200}>
-        <Layer>
-          <Rect x={125} y={0} width={150} height={150} fill="#D6D6D6" />
-        </Layer>
-      </Stage>
-      <br></br>
-      <button onClick={handleSignIn}>Login with Google</button>
+    <div className={ 
+      isMobile ? 
+        "root-mobile" 
+        : "root-desktop"
+    }>
+      <img src={ 
+        isMobile ? 
+          mobileLogo 
+          : desktopLogo 
+      } className={ 
+        isMobile ? 
+          "logo-mobile" 
+        : "logo-desktop" 
+      } />
+      <div className={ 
+        isMobile ? 
+          "right-frame-mobile" 
+          : "right-frame-desktop" 
+      }>
+        <p className="dish-zero-heading">DishZero</p>
+        <p className="subheading">Helping the planet one dish at a time</p>
+        <button className={ 
+          isMobile ? 
+            "sign-in-button-mobile" 
+            : "sign-in-button-desktop" 
+          } 
+          onClick={handleSignIn}
+        >
+          <img src={signInButtonLogo} className="signInButtonLogo"/>
+          <p className="signInButtonText">Sign in with CCID</p>
+        </button>
+      </div>
     </div>
   );
 }
