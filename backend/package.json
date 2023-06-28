@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "NODE_ENV=prod node ./build/src/server.js",
+    "start": "NODE_ENV=prod node ./build/server.js",
     "dev": "NODE_ENV=dev ts-node ./src/server.ts",
     "format": "prettier --write 'src/**/*.ts'"
   },
