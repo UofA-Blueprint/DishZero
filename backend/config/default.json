@@ -8,5 +8,15 @@
             "access": "1h",
             "refresh": "7d"
         }
+    },
+    "featureFlags": {
+        "routes": {
+            "dish": {
+                "enabled": true
+            },
+            "transactions": {
+                "enabled": true
+            }
+        }
     }
 }
