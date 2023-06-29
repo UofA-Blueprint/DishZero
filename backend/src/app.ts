@@ -30,10 +30,10 @@ app.get('/health', (_: Request, res: Response) => {
     res.status(200).send('OK')
 })
 
-if (getFeatureFlag("routes.dish.enabled")) {
+if (getFeatureFlag('routes.dish.enabled')) {
     app.use('/api/dish', dishRouter)
 }
-if (getFeatureFlag("routes.transactions.enabled")) {
+if (getFeatureFlag('routes.transactions.enabled')) {
     app.use('/api/transactions', transactionsRouter)
 }
 

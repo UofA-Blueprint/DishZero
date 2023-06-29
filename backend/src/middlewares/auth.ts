@@ -4,6 +4,12 @@ dotenv.config()
 
 const API_KEY = process.env.API_KEY
 
+/**
+ * verifies the api key in the request header
+ * @param req Request
+ * @param res Response
+ * @param next NextFunction
+ */
 export const verifyApiKey = (req: Request, res: Response, next: NextFunction) => {
     const apikey = req.header('x-api-key')
     if (!apikey) {
