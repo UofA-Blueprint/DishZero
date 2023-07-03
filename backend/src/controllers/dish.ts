@@ -21,6 +21,7 @@ export const getDishes = async (req: Request, res: Response) => {
         })
     } catch (e) {
        internalServerError(req, res, e, 'Error when fetching dishes from firebase')
+       return
     }
 
     req.log.info({message: 'Retrieved dish data from firebase'})
@@ -28,6 +29,7 @@ export const getDishes = async (req: Request, res: Response) => {
     if (req.query.transaction !== 'yes') {
         req.log.info({message: 'Sending dish data without transactions'})
         res.status(200).json(rawDishData)
+        return
     }
 
     // fine, or replace it later with call to transaction api?
@@ -47,6 +49,7 @@ export const getDishes = async (req: Request, res: Response) => {
         });
     } catch (e) {
         internalServerError(req, res, e, 'Error when fetching dishes transactions from firebase')
+        return
     }
 
     req.log.info({message: 'Retrieved transactions from firebase'})
@@ -60,20 +63,23 @@ export const getDishes = async (req: Request, res: Response) => {
 
     try {
         dishTransMap = mapDishesToLatestTransaction(transactions)
-        req.log.info('Mapped dishes to transactions')
+        req.log.info({message: 'Mapped dishes to transactions'})
     } catch (e) {
         internalServerError(req, res, e, 'Error when mapping dishes to transactions')
+        return
     }
 
     try {    
         allDishesVM = mapToDishVM(rawDishData, dishTransMap)
-        req.log.info('Mapped transactions to view model')
+        req.log.info({message:'Mapped transactions to view model'})
     } catch (e) {
         internalServerError(req, res, e, 'Error when mapping dishes to vm')
+        return
     }
 
     // send response
     res.status(200).json(allDishesVM)
+    return
 }
 
 function internalServerError(req: Request, res: Response, error : any, message: string) {
