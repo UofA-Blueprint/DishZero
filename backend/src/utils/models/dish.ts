@@ -6,11 +6,11 @@ export type Dish = {
 }
 
 export enum DishStatus {
-    overdue =  "Overdue",
-    inUse = "In Use",
-    returned = "Returned",
-    broken = "Broken",
-    lost = "Lost"
+    overdue =  "overdue",
+    inUse = "in_use",
+    returned = "returned",
+    broken = "broken",
+    lost = "lost"
 }
 
 export type DishTableVM = {
