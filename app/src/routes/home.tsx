@@ -7,8 +7,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import scan_icon from "../assets/scan.svg";
 import leaf_white from "../assets/leaf-white.svg";
 import leaf_green from "../assets/leaf-green.svg";
+import external_link from "../assets/external_link.svg"
 import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
+import { Box, AppBar, Typography } from "@mui/material";
+
 
 const DishLog = ({dishes}) => {
   return (
@@ -20,34 +23,34 @@ const DishLog = ({dishes}) => {
   )
 };
 
-const NewUser = () => {
-  return (
-    <div>
-
-    </div>
-  )
-};
-
-const ExistingUser = (user) => {
-  let dishes = DishAPI.getUserActiveDishes(user.uid);
-  return (
-    <div style={{padding:'24px', paddingTop:'12vh'}}>
-      <div id="impact" className="sub-header-3">
-        My Impact
-        <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
-          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
-            <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{0}</p>
-            <p className="sub-header-3 mb-1">Dishes Used</p>
-          </div>
-          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
-            <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{0}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
-            <p className="sub-header-3 mb-1">Waste Diverted</p>
-          </div>
+const NewUser = (user) => {
+  const content = getDishes(user)
+  return(
+    <div style={{padding:'24px'}}>
+      <div className="sub-header-3">
+        How It Works
+        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'328px', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+          <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
+          <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
         </div>
       </div>
-      <div id="dishes" style={{marginTop: '24px'}}>
+      <div className="sub-header-3" style={{marginTop: '24px'}}>
+        Our Impact
+        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'328px', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+          <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> Learn more about the impact we are leaving on the environment.</p>
+          <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
+        </div>
+      </div>
+      {content}
+    </div>
+  )
+
+};
+
+const getDishes = (user) =>{
+  let dishes = DishAPI.getUserActiveDishes(user.uid);
+  return (
+    <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
           <p className="details-2 mt-1">{dishes?.length} in use</p>
@@ -70,6 +73,41 @@ const ExistingUser = (user) => {
           </div>
         }
       </div>
+  )
+}
+
+const ExistingUser = (user) => {
+  const content = getDishes(user)
+  return (
+    <div style={{padding:'24px'}}>
+      <div id="impact" className="sub-header-3">
+        My Impact
+        <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
+          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
+            <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
+            <p className="header mb-0">{0}</p>
+            <p className="sub-header-3 mb-1">Dishes Used</p>
+          </div>
+          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
+            <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
+            <div className="d-flex"><p className="header mb-0">{0}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <p className="sub-header-3 mb-1">Waste Diverted</p>
+          </div>
+        </div>
+      </div>
+      {content}
+    </div>
+  )
+}
+
+const Header = () => {
+  return (
+    <div>
+      <Box sx={{flexGrow:1, position:'relative', height:'14vh'}}>
+        <AppBar position="static" sx={{backgroundColor:'#68B49A', height:'100%', alignItems:"center", justifyContent:"center"}}>
+          <Typography sx={{fontWeight:'500', fontSize:'20px', mb:'-24px'}}> Home </Typography>
+        </AppBar>
+      </Box>
     </div>
   )
 }
@@ -86,11 +124,16 @@ const Footer = () => {
 
 export default () => {
   const fbContext = useContext(FirebaseContext);
+  var content;
+  if (!fbContext?.user){ // user is not null
+    content = ExistingUser(fbContext?.user)
+  } else {
+    content = NewUser(fbContext?.user)
+  }
   return (
     <div>
-      <div id="content">
-        {fbContext?.user ? <NewUser /> : <ExistingUser user="fbContext.user" />}
-      </div>
+      <Header/>
+      {content}
       <Footer />
     </div>
   );
