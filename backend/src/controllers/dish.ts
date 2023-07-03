@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { db } from '../services/firebase'
 import { Dish, DishTableVM } from '../utils/models/dish'
 import { Transaction } from '../utils/models/transaction'
-import { mapDishesToLatestTransaction, mapToDishVM } from '../utils/service/dish'
+import { mapDishesToLatestTransaction, mapToDishVM } from '../service/dish'
 
 export const getDishes = async (req: Request, res: Response) => {
     // get dishes from firebase

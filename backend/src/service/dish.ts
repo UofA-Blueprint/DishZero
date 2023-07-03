@@ -1,6 +1,7 @@
-import { Dish, DishStatus, DishTableVM, Transaction } from "../types";
+import { Dish, DishStatus, DishTableVM } from "../utils/models/dish"
+import { Transaction } from "../utils/models/transaction"
 
-function mapDishesToLatestTransaction (transactions : Array<Transaction>) :
+export function mapDishesToLatestTransaction (transactions : Array<Transaction>) :
     Map<string, { transaction : Transaction, count : number}> {
         const map = new Map()
         transactions.forEach(transaction => {
@@ -25,7 +26,7 @@ function mapDishesToLatestTransaction (transactions : Array<Transaction>) :
         return map
 }
 
-function mapToDishVM(dishes : Array<Dish>, dishTransMap : Map<string, { transaction : Transaction, count : number}>)
+export function mapToDishVM(dishes : Array<Dish>, dishTransMap : Map<string, { transaction : Transaction, count : number}>)
     : Array<DishTableVM> {
         let allDishesVM = <Array<DishTableVM>>[]
 
@@ -63,5 +64,3 @@ function findDishStatus(transaction : Transaction | undefined) : DishStatus {
 
     return DishStatus.returned
 }
-
-export {mapDishesToLatestTransaction, mapToDishVM}
