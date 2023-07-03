@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { db } from '../services/firebase'
 import { Dish, DishTableVM } from '../utils/models/dish'
 import { Transaction } from '../utils/models/transaction'
-import { mapDishesToLatestTransaction, mapToDishVM } from '../service/dish'
+import { mapDishesToLatestTransaction, mapToDishVM } from '../services/dish'
 
 export const getDishes = async (req: Request, res: Response) => {
     // get dishes from firebase
@@ -85,5 +85,5 @@ export const getDishes = async (req: Request, res: Response) => {
 function internalServerError(req: Request, res: Response, error : any, message: string) {
     req.log.info({message: message})
     req.log.error({error : error})
-    res.sendStatus(500)
+    res.status(500).json({error : 'internal server error'})
 }
