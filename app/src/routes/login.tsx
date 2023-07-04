@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
-import "../styles/login.css";
+import { Button, Typography, Box, Avatar } from '@mui/material';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
 import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
+import MobileBackground from '../assets/leaf-mobile-background.png';
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -62,39 +63,141 @@ function Login() {
   };
 
   return (
-    <div className={ 
-      isMobile ? 
-        "root-mobile" 
-        : "root-desktop"
-    }>
-      <img src={ 
-        isMobile ? 
-          mobileLogo 
-          : desktopLogo 
-      } className={ 
-        isMobile ? 
-          "logo-mobile" 
-        : "logo-desktop" 
-      } />
-      <div className={ 
-        isMobile ? 
-          "right-frame-mobile" 
-          : "right-frame-desktop" 
-      }>
-        <p className="dish-zero-heading">DishZero</p>
-        <p className="subheading">Helping the planet one dish at a time</p>
-        <button className={ 
-          isMobile ? 
-            "sign-in-button-mobile" 
-            : "sign-in-button-desktop" 
-          } 
+    <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
+      <Box
+        sx={isMobile ? styles.logoMobile : styles.logoDesktop}
+      />
+      <Box sx={isMobile ? styles.rightFrameMobile : styles.rightFrameDesktop}>
+        <Typography variant="h1" sx={styles.dishZeroHeading}>
+          DishZero
+        </Typography>
+        <Typography variant="subtitle1" sx={styles.subheading}>
+          Helping the planet one dish at a time
+        </Typography>
+        <Button
+          variant="contained"
+          sx={isMobile ? styles.signInButtonMobile : styles.signInButtonDesktop}
           onClick={handleSignIn}
         >
-          <img src={signInButtonLogo} className="signInButtonLogo"/>
-          <p className="signInButtonText">Sign in with CCID</p>
-        </button>
-      </div>
-    </div>
+          <Avatar
+            src={signInButtonLogo}
+            sx={styles.signInButtonLogo}
+            alt="Sign In Button Logo"
+          />
+          <Typography sx={styles.signInButtonText}>
+            Sign in with CCID
+          </Typography>
+        </Button>
+      </Box>
+    </Box>
   );
 }
 export default Login;
+
+const styles = {
+  rootDesktop: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  rootMobile: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundImage: `url(${MobileBackground})`,
+    backgroundSize: 'cover'
+  },
+
+  logoMobile: {
+    width: '42vw',
+    height: '34vw',
+    marginTop: '130px',
+    marginBottom: '15px',
+    backgroundImage: `url(${mobileLogo})`,
+    backgroundSize: 'cover'
+  },
+
+  logoDesktop: {
+    width: '28vw',
+    height: '28vw',
+    borderRadius: '10px',
+    marginRight: '50px',
+    backgroundImage: `url(${desktopLogo})`,
+    backgroundSize: 'cover'
+  },
+
+  rightFrameMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '15px',
+    alignItems: 'center',
+  },
+
+  rightFrameDesktop: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '50px',
+  },
+
+  dishZeroHeading: {
+    fontSize: '2.215rem',
+    fontWeight: 'bold',
+    color: '#4c4242',
+  },
+
+  subheading: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    color: '#4c4242',
+    marginTop: '15px',
+  },
+
+  signInButtonMobile: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '300px',
+    height: '50px',
+    borderRadius: '20px',
+    backgroundColor: '#68B49A',
+    borderWidth: '0',
+    marginTop: '80px',
+    '&:hover': {
+      backgroundColor: '#68B49A',
+    },
+  },
+
+  signInButtonDesktop: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '300px',
+    height: '50px',
+    borderRadius: '20px',
+    backgroundColor: '#68B49A',
+    borderWidth: '0',
+    marginTop: '30px',
+    '&:hover': {
+      backgroundColor: '#68B49A',
+    },
+  },
+
+  signInButtonLogo: {
+    width: '30px',
+    height: '40px',
+    marginRight: '7px',
+  },
+
+  signInButtonText: {
+    fontSize: '1.125rem',
+    color: 'white',
+    marginLeft: '7px',
+  },
+};
