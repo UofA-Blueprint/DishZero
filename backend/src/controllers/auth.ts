@@ -39,7 +39,7 @@ export const login = async (req: Request, res: Response) => {
 
 // handle logout request
 export const logout = async (req: Request, res: Response) => {
-    const sessionCookie = req.header('session') || req.cookies.session || ''
+    const sessionCookie = req.header('session-token') || req.cookies.session || ''
     res.clearCookie('session')
     auth.verifySessionCookie(sessionCookie)
         .then((decodedClaims) => {
@@ -83,7 +83,7 @@ const getUser = async (req: Request) => {
             role: 'customer',
         }
         const claims = await auth.verifyIdToken(idToken)
-        await auth.setCustomUserClaims(claims.sub, { dish_role: 'customer' })
+        await auth.setCustomUserClaims(claims.sub, { dishrole: 'customer' })
         try {
             db.collection('users').doc(claims.uid).set(User)
             let retrieveUser = await getUserByEmail(email)

@@ -5,6 +5,7 @@ import pinoHttp from 'pino-http'
 import { dishRouter } from './routes/dish'
 import { transactionsRouter } from './routes/transactions'
 import { userRouter } from './routes/users'
+import { authRouter } from './routes/auth'
 
 const app = express()
 dotenv.config()
@@ -30,6 +31,7 @@ app.get('/health', (_: Request, res: Response) => {
     res.status(200).send('OK')
 })
 
+app.use('/api/auth', authRouter)
 app.use('/api/dish', dishRouter)
 app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)

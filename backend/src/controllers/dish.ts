@@ -4,8 +4,16 @@ import { db } from '../services/firebase'
 import { Dish } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { mapDishesToLatestTransaction, mapToDishVM } from '../services/dish'
+import { CustomRequest } from '../middlewares/auth'
 
 export const getDishes = async (req: Request, res: Response) => {
+    // TODO: send dish information based on user role
+
+    // Example of how to get user claims
+
+    // let userClaims = (req as CustomRequest).firebase
+    // userClaims.dishrole
+
     // get dishes from firebase
     let rawDishData = <Array<Dish>>[]
     try {
