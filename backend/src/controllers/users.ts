@@ -3,6 +3,9 @@ import { getAllUsers, getUsersWithRole, verifyRole } from '../services/users'
 
 export const getUsers = async (req: Request, res: Response) => {
     let role = req.query['role']?.toString()
+
+    // TODO: only send users information if user is admin
+
     if (role && verifyRole(role)) {
         try {
             let users = await getUsersWithRole(role)

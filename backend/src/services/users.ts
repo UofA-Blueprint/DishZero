@@ -29,6 +29,19 @@ export const getAllUsers = async () => {
     return users
 }
 
+export const getUserByEmail = async (email: string) => {
+    const snapshot = await db.collection('users').where('email', '==', email).get()
+    if (snapshot.empty) {
+        return null
+    }
+    let data = snapshot.docs[0].data()
+    return {
+        id: snapshot.docs[0].id,
+        role: data.role,
+        email: data.email,
+    }
+}
+
 export const verifyRole = (role: string) => {
     return role === 'admin' || role === 'volunteer' || role === 'customer'
 }
