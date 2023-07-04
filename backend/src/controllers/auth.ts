@@ -7,14 +7,19 @@ import { getUserByEmail } from '../services/users'
 export const login = async (req: Request, res: Response) => {
     // Get the ID token passed.
     const idToken = req.body.idToken.toString()
+    if (!idToken) {
+        req.log.error({
+            message: 'No id token provided',
+        })
+        return res.status(401).send({ error: 'unauthorized_request' })
+    }
 
     // TODO: add protection against csrf attacks
 
     const expiresIn = 60 * 60 * 24 * 5 * 1000 // 5 days
     try {
         let sessionCookie = await createSessionCookie(idToken, expiresIn)
-        let { email } = (req as CustomRequest).firebase
-        let user = await getUser(email!)
+        let user = await getUser(req)
         res.cookie('session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true })
         req.log.info({
             message: 'Created firebase session cookie',
@@ -61,22 +66,26 @@ const createSessionCookie = async (idToken: string, expiresIn: number) => {
 }
 
 // Get user from firebase collection or create new user if not exists
-const getUser = async (email: string) => {
+const getUser = async (req: Request) => {
+    let { email } = (req as CustomRequest).firebase
+    let idToken = req.body.idToken.toString()
     if (!email) {
         throw new Error('Email is not provided')
     }
     let userExists = await getUserByEmail(email)
 
-    // DISCUSS: all pass additional user information to frontend like displayName, photoURL, phoneNumber, etc.
+    // DISCUSS: pass additional user information to frontend like displayName, photoURL, phoneNumber, etc.
 
     if (!userExists) {
-        // TODO: create user in firebase collection
+        // Creates a new user in the firebase collection, set custom claims and return the user
         let User = {
             email,
             role: 'customer',
         }
+        const claims = await auth.verifyIdToken(idToken)
+        await auth.setCustomUserClaims(claims.sub, { dish_role: 'customer' })
         try {
-            db.collection('users').add(User)
+            db.collection('users').doc(claims.uid).set(User)
             let retrieveUser = await getUserByEmail(email)
             return retrieveUser
         } catch (error) {
