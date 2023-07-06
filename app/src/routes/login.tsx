@@ -4,6 +4,7 @@ import desktopLogo from "../assets/dishzero-logo-desktop.png";
 import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
+import 'typeface-poppins';
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -145,16 +146,17 @@ const styles = {
   },
 
   dishZeroHeading: {
-    fontSize: '2.215rem',
+    fontSize: '3.5rem',
     fontWeight: 'bold',
+    fontFamily: 'Poppins, sans-serif',
     color: '#4c4242',
   },
 
   subheading: {
-    fontSize: '1rem',
-    fontWeight: 'bold',
+    fontSize: '1.25rem',
+    fontFamily: 'Poppins, sans-serif',
     color: '#4c4242',
-    marginTop: '15px',
+    marginTop: '7px',
   },
 
   signInButtonMobile: {
@@ -162,7 +164,7 @@ const styles = {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '300px',
+    width: '250px',
     height: '50px',
     borderRadius: '20px',
     backgroundColor: '#68B49A',
@@ -178,25 +180,26 @@ const styles = {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '300px',
+    width: '250px',
     height: '50px',
     borderRadius: '20px',
     backgroundColor: '#68B49A',
     borderWidth: '0',
-    marginTop: '30px',
+    marginTop: '50px',
     '&:hover': {
       backgroundColor: '#68B49A',
     },
   },
 
   signInButtonLogo: {
-    width: '30px',
-    height: '40px',
+    width: '25px',
+    height: '30px',
     marginRight: '7px',
   },
 
   signInButtonText: {
-    fontSize: '1.125rem',
+    fontSize: '1.025rem',
+    fontFamily: 'Poppins, sans-serif',
     color: 'white',
     marginLeft: '7px',
   },
