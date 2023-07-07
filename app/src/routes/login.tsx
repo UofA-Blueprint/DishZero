@@ -1,5 +1,10 @@
-import React, { useContext, useEffect } from "react";
-import { Stage, Layer, Rect } from "react-konva";
+import React, { useContext, useEffect, useState } from "react";
+import { Button, Typography, Box, Avatar } from '@mui/material';
+import desktopLogo from "../assets/dishzero-logo-desktop.png";
+import mobileLogo from "../assets/dishzero-logo-mobile.png";
+import signInButtonLogo from "../assets/sign-in-button-logo.png";
+import MobileBackground from '../assets/leaf-mobile-background.png';
+import 'typeface-poppins';
 
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
@@ -12,6 +17,7 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 function Login() {
   const fbContext = useContext(FirebaseContext);
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   // const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
@@ -26,6 +32,17 @@ function Login() {
           navigate("/home");
       }
   }, [fbContext?.user]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   if (fbContext?.user) {
     return <div />;
@@ -47,34 +64,143 @@ function Login() {
   };
 
   return (
-    <div
-      className="App"
-      id="outer-container"
-      style={{
-        paddingBottom: 50,
-        paddingTop: 10,
-        textAlign: "center",
-      }}
-    >
-      <h1
-        style={{
-          fontWeight: "bolder",
-        }}
-      >
-        DishZero
-      </h1>
-      <h3>
-        Helping the planet one dish<br></br>
-        at a time
-      </h3>
-      <Stage width={window.innerWidth} height={200}>
-        <Layer>
-          <Rect x={125} y={0} width={150} height={150} fill="#D6D6D6" />
-        </Layer>
-      </Stage>
-      <br></br>
-      <button onClick={handleSignIn}>Login with Google</button>
-    </div>
+    <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
+      <Box
+        sx={isMobile ? styles.logoMobile : styles.logoDesktop}
+      />
+      <Box sx={isMobile ? styles.rightFrameMobile : styles.rightFrameDesktop}>
+        <Typography variant="h1" sx={styles.dishZeroHeading}>
+          DishZero
+        </Typography>
+        <Typography variant="subtitle1" sx={styles.subheading}>
+          Helping the planet one dish at a time
+        </Typography>
+        <Button
+          variant="contained"
+          sx={isMobile ? styles.signInButtonMobile : styles.signInButtonDesktop}
+          onClick={handleSignIn}
+        >
+          <Avatar
+            src={signInButtonLogo}
+            sx={styles.signInButtonLogo}
+            alt="Sign In Button Logo"
+          />
+          <Typography sx={styles.signInButtonText}>
+            Sign in with CCID
+          </Typography>
+        </Button>
+      </Box>
+    </Box>
   );
 }
 export default Login;
+
+const styles = {
+  rootDesktop: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  rootMobile: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundImage: `url(${MobileBackground})`,
+    backgroundSize: 'cover'
+  },
+
+  logoMobile: {
+    width: '42vw',
+    height: '34vw',
+    marginTop: '130px',
+    marginBottom: '15px',
+    backgroundImage: `url(${mobileLogo})`,
+    backgroundSize: 'cover'
+  },
+
+  logoDesktop: {
+    width: '28vw',
+    height: '28vw',
+    borderRadius: '10px',
+    marginRight: '50px',
+    backgroundImage: `url(${desktopLogo})`,
+    backgroundSize: 'cover'
+  },
+
+  rightFrameMobile: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: '15px',
+    alignItems: 'center',
+  },
+
+  rightFrameDesktop: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '50px',
+  },
+
+  dishZeroHeading: {
+    fontSize: '3.5rem',
+    fontWeight: 'bold',
+    fontFamily: 'Poppins, sans-serif',
+    color: '#4c4242',
+  },
+
+  subheading: {
+    fontSize: '1.25rem',
+    fontFamily: 'Poppins, sans-serif',
+    color: '#4c4242',
+    marginTop: '7px',
+  },
+
+  signInButtonMobile: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '250px',
+    height: '50px',
+    borderRadius: '20px',
+    backgroundColor: '#68B49A',
+    borderWidth: '0',
+    marginTop: '80px',
+    '&:hover': {
+      backgroundColor: '#68B49A',
+    },
+  },
+
+  signInButtonDesktop: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '250px',
+    height: '50px',
+    borderRadius: '20px',
+    backgroundColor: '#68B49A',
+    borderWidth: '0',
+    marginTop: '50px',
+    '&:hover': {
+      backgroundColor: '#68B49A',
+    },
+  },
+
+  signInButtonLogo: {
+    width: '25px',
+    height: '30px',
+    marginRight: '7px',
+  },
+
+  signInButtonText: {
+    fontSize: '1.025rem',
+    fontFamily: 'Poppins, sans-serif',
+    color: 'white',
+    marginLeft: '7px',
+  },
+};
