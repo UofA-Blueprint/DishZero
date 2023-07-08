@@ -8,7 +8,7 @@ export const getTransactions = async (req: Request, res: Response) => {
     // TODO: send transactions information based on user role
 
     let userClaims = (req as CustomRequest).firebase
-    if (userClaims.dishrole !== 'admin') {
+    if (userClaims.role !== 'admin') {
         req.log.error({
             message: 'User is not admin',
         })
