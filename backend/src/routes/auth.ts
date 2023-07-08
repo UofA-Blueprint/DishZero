@@ -1,10 +1,10 @@
 import express from 'express'
-import { verifyApiKey } from '../middlewares/auth'
+import { verifyApiKey, verifyFirebaseToken } from '../middlewares/auth'
 import { login, logout } from '../controllers/auth'
 
 const router = express.Router()
 
-router.post('/login', verifyApiKey, login)
+router.post('/login', verifyApiKey, verifyFirebaseToken, login)
 router.post('/logout', verifyApiKey, logout)
 
 export { router as authRouter }
