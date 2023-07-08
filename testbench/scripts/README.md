@@ -21,3 +21,7 @@ export ADMIN_ID="admin id"
 API_KEY can be any string, ADMIN_ID is the ID of an admin user on firestore.
 
 Once you run get_tokens.py, .id_token and .session_token will be created, allowing you to use the other scripts that require the tokens as environment variables.
+
+## Running a script
+
+Run ```get_tokens.py``` before running any scripts that require id and session tokens. To run a script, do ```./<filename>```. For now they print the response by the server.
