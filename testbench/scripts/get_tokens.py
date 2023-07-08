@@ -4,6 +4,7 @@ from firebase_admin import auth
 import os
 import requests
 import datetime
+import sys
 
 API_KEY = os.environ['API_KEY']
 
@@ -26,6 +27,12 @@ res = requests.post(
         'returnSecureToken': True
     }
 )
+
+if res.status_code != 200:
+    print('Unable to get an id token')
+    print(res.json())
+    sys.exit(1)
+
 data = res.json()
 id_token = data['idToken']
 with open('.id_token', 'w') as f:

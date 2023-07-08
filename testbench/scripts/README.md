@@ -18,7 +18,7 @@ Create a ```.env``` file in the scripts directory with the following variables.
 export API_KEY="api_key"
 export ADMIN_ID="admin id"
 ```
-API_KEY can be any string, ADMIN_ID is the ID of an admin user on firestore.
+API_KEY is the Web API key of our firebase app and can be found in project settings in the firebase console. ADMIN_ID is the ID of an admin user on firestore.
 
 You will also need a ```credentials.json``` file in the same directory. You can get it from the backend channel in the discord.
 
@@ -26,4 +26,4 @@ Once you run get_tokens.py, .id_token and .session_token will be created, allowi
 
 ## Running a script
 
-Run ```get_tokens.py``` before running any scripts that require id and session tokens. To run a script, do ```./<filename>```. For now they print the response by the server.
+Run ```source .env``` and then ```get_tokens.py``` before running any scripts that require id and session tokens. To run a script, do ```./<filename>```. For now they print the response by the server.
