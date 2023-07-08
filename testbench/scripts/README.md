@@ -20,6 +20,8 @@ export ADMIN_ID="admin id"
 ```
 API_KEY can be any string, ADMIN_ID is the ID of an admin user on firestore.
 
+You will also need a ```credentials.json``` file in the same directory. You can get it from the backend channel in the discord.
+
 Once you run get_tokens.py, .id_token and .session_token will be created, allowing you to use the other scripts that require the tokens as environment variables.
 
 ## Running a script
