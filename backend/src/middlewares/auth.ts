@@ -104,7 +104,7 @@ export const verifyDishzeroToken = (req: Request, res: Response, next: NextFunct
  * @returns decoded firebase token in the request object
  */
 export const verifyFirebaseToken = (req: Request, res: Response, next: NextFunction) => {
-    const sessionCookies = req.header('session-token') || req.cookies.session
+    const sessionCookies = req.header('session-token') || req.cookies?.session
     if (!sessionCookies) {
         req.log.error({
             error: 'No session token or cookie provided',

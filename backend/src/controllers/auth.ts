@@ -6,7 +6,7 @@ import { getUserByEmail } from '../services/users'
 // handle login request
 export const login = async (req: Request, res: Response) => {
     // Get the ID token passed.
-    const idToken = req.body.idToken.toString()
+    const idToken = req.body.idToken?.toString()
     if (!idToken) {
         req.log.error({
             message: 'No id token provided',
