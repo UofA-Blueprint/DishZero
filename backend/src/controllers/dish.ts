@@ -12,7 +12,7 @@ export const getDishes = async (req: Request, res: Response) => {
     // Example of how to get user claims
 
     // let userClaims = (req as CustomRequest).firebase
-    // userClaims.dishrole
+    // userClaims.role
 
     // get dishes from firebase
     let rawDishData = <Array<Dish>>[]

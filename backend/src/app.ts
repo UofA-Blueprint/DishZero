@@ -6,12 +6,14 @@ import { dishRouter } from './routes/dish'
 import { transactionsRouter } from './routes/transactions'
 import { userRouter } from './routes/users'
 import { authRouter } from './routes/auth'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 dotenv.config()
 
 app.use(cors())
 app.use(express.json())
+app.use(cookieParser())
 if (process.env.NODE_ENV !== 'test') {
     app.use(
         pinoHttp({

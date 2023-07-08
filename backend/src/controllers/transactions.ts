@@ -15,7 +15,6 @@ export const getTransactions = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    
     // get transactions
     let transactions = <Array<Transaction>>[]
     try {
@@ -38,8 +37,6 @@ export const getTransactions = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
-
-
 
     req.log.info({ message: 'Sending transactions' })
     // send response
