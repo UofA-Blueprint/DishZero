@@ -10,7 +10,7 @@ export const getUsers = async (req: Request, res: Response) => {
     // only send users information if user is admin
 
     let userClaims = (req as CustomRequest).firebase
-    if (userClaims.dishrole !== 'admin') {
+    if (userClaims.role !== 'admin') {
         req.log.error({
             message: 'User is not admin',
         })

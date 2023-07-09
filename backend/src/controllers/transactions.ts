@@ -8,14 +8,13 @@ export const getTransactions = async (req: Request, res: Response) => {
     // TODO: send transactions information based on user role
 
     let userClaims = (req as CustomRequest).firebase
-    if (userClaims.dishrole !== 'admin') {
+    if (userClaims.role !== 'admin') {
         req.log.error({
             message: 'User is not admin',
         })
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    
     // get transactions
     let transactions = <Array<Transaction>>[]
     try {
@@ -38,8 +37,6 @@ export const getTransactions = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
-
-
 
     req.log.info({ message: 'Sending transactions' })
     // send response
