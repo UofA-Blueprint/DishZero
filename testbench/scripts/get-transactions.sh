@@ -11,5 +11,5 @@ fi
 
 curl -i -X GET \
     -H "x-api-key: $API_KEY" \
-    -H "session-token: $SESSION_TOKEN" \
+    --cookie "session=$SESSION_TOKEN" \
     http://localhost:8080/api/transactions
