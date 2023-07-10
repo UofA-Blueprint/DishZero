@@ -106,7 +106,6 @@ export default () => {
             <Scanner
                 mode="Scan Dishes"
                 onScan={onScan}
-                onClose={() => navigate("/home")}
             />
             <Notification
                 show={showNotif}

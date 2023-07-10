@@ -76,9 +76,8 @@ export default () => {
   return (
     <>
       <Scanner
-        mode="Scan Dishes"
+        mode="Borrow Dishes"
         onScan={onScan}
-        onClose={() => navigate("/home")}
       />
       <Confirm
         show={confirm}
