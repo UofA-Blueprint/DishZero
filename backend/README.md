@@ -71,14 +71,17 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
 
 ### Transaction
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:
-- #### GET `/api/transactions`
-    This route returns all the transactions in the database only if the user is admin.
-    TODO: return transactions based on a specific user and role
+- #### GET `/api/transactions?all=`
+    This route returns all the transactions in the database is user is admin and all is set to `true`. Otherwise returns all the transactions based on the user_id retrieved from the session cookie.
     
     headers:
     ```
     x-api-key: preset constant api key
     session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    all: if set to `true`, then all the transactions will be returned only if the user is admin
     ```
 
 ### User

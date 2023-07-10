@@ -44,6 +44,10 @@ export const getUserByEmail = async (email: string) => {
     }
 }
 
+export const verifyIfUserAdmin = (userClaims: DecodedIdToken) => {
+    return userClaims.role === 'admin'
+}
+
 export const verifyRole = (role: string) => {
     return role === 'admin' || role === 'volunteer' || role === 'customer'
 }
