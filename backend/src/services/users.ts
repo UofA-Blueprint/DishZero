@@ -55,7 +55,7 @@ export const verifyType = (type: string) => {
 export const validateUserRequestBody = (user: User) => {
     const schema = Joi.object({
         id: Joi.string().required(),
-        role: Joi.string().required(),
+        role: Joi.string(), // Role is not required
         email: Joi.string().email().required(),
     })
     return schema.validate(user)
@@ -71,10 +71,39 @@ export const modifyUserRole = async (user: User, userClaims: DecodedIdToken) => 
         throw new Error('Admin cannot modify their own role')
     }
 
-    if (!verifyRole(user.role)) {
-        throw new Error('Invalid role')
+    if (user.role) {
+        if (!verifyRole(user.role)) {
+            throw new Error('Invalid role')
+        }
+
+        await auth.setCustomUserClaims(user.id, { role: user.role })
+        await db.collection('users').doc(user.id).update({ role: user.role })
+    } else {
+        throw new Error('Role is not provided')
+    }
+}
+
+export const modifyUserData = async (user: User, userClaims: DecodedIdToken) => {
+    const { error } = validateUserRequestBody(user)
+    if (error) {
+        throw new Error(error.details[0].message)
     }
 
-    await auth.setCustomUserClaims(user.id, { role: user.role })
-    await db.collection('users').doc(user.id).update({ role: user.role })
+    // extract id from user object
+    let { id, ...userData } = user
+    if (Object.keys(userData).length === 0) {
+        throw new Error('No data to update')
+    }
+
+    if (userData.role) {
+        throw new Error('Cannot update role')
+    }
+
+    // Update all the given fields expect role
+    await db
+        .collection('users')
+        .doc(user.id)
+        .update({
+            ...userData,
+        })
 }

@@ -104,3 +104,21 @@ the user routes are defined in the `src/routes/user.ts` file. The routes are mou
     x-api-key: preset constant api key
     session-token: generated sessionCookie from firebase after login
     ```
+
+- #### POST `api/users/modify/:type`
+    This route is used to modify the user data. The type can be `role` or `user`. The body should contain the `uid` of the user and the new value of the type.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    body:
+    ```
+    user: {
+        id: string,     * required
+        role: string,
+        email: string,  * required
+    }
+    ```
+    notes: when type is set to role, role property is required and only admin can update the role.

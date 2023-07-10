@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import {
     getAllUsers,
     getUsersWithRole,
+    modifyUserData,
     modifyUserRole,
     verifyRole,
     verifyType,
@@ -121,18 +122,20 @@ export const updateUser = async (req: Request, res: Response) => {
                     return res.status(400).json({ error: 'no_user_provided' })
                 }
 
-                // TODO: update user information except role
+                await modifyUserData(user, userClaims)
 
                 req.log.info({
                     message: 'Successfully updated user information',
                 })
                 return res.status(200).json({ status: 'success' })
-            } catch (error) {
+            } catch (error: any) {
                 req.log.error({
-                    error,
+                    error: error.message,
                     message: 'Error updating user information',
                 })
-                return res.status(500).json({ error: 'internal_server_error' })
+                return res
+                    .status(500)
+                    .json({ error: 'internal_server_error', message: error.message })
             }
         }
     } else {
