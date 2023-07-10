@@ -1,5 +1,7 @@
+import Joi from 'joi'
 import { User } from '../models/user'
-import { db } from './firebase'
+import { auth, db } from './firebase'
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 
 export const getUsersWithRole = async (role: string) => {
     const snapshot = await db.collection('users').where('role', '==', role).get()
@@ -42,6 +44,70 @@ export const getUserByEmail = async (email: string) => {
     }
 }
 
+export const verifyIfUserAdmin = (userClaims: DecodedIdToken) => {
+    return userClaims.role === 'admin'
+}
+
 export const verifyRole = (role: string) => {
     return role === 'admin' || role === 'volunteer' || role === 'customer'
+}
+
+export const verifyType = (type: string) => {
+    return type === 'role' || type === 'user'
+}
+
+export const validateUserRequestBody = (user: User) => {
+    const schema = Joi.object({
+        id: Joi.string().required(),
+        role: Joi.string(), // Role is not required
+        email: Joi.string().email().required(),
+    })
+    return schema.validate(user)
+}
+
+export const modifyUserRole = async (user: User, userClaims: DecodedIdToken) => {
+    const { error } = validateUserRequestBody(user)
+    if (error) {
+        throw new Error(error.details[0].message)
+    }
+
+    if (user.id === userClaims.uid || user.email === userClaims.email) {
+        throw new Error('Admin cannot modify their own role')
+    }
+
+    if (user.role) {
+        if (!verifyRole(user.role)) {
+            throw new Error('Invalid role')
+        }
+
+        await auth.setCustomUserClaims(user.id, { role: user.role })
+        await db.collection('users').doc(user.id).update({ role: user.role })
+    } else {
+        throw new Error('Role is not provided')
+    }
+}
+
+export const modifyUserData = async (user: User, userClaims: DecodedIdToken) => {
+    const { error } = validateUserRequestBody(user)
+    if (error) {
+        throw new Error(error.details[0].message)
+    }
+
+    // extract id from user object
+    let { id, ...userData } = user
+    if (Object.keys(userData).length === 0) {
+        throw new Error('No data to update')
+    }
+
+    if (userData.role) {
+        throw new Error('Cannot update role')
+    }
+
+    // Update all the given fields expect role
+    await db
+        .collection('users')
+        .doc(user.id)
+        .update({
+            ...userData,
+        })
 }

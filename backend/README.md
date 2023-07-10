@@ -71,14 +71,17 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
 
 ### Transaction
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:
-- #### GET `/api/transactions`
-    This route returns all the transactions in the database only if the user is admin.
-    TODO: return transactions based on a specific user and role
+- #### GET `/api/transactions?all=`
+    This route returns all the transactions in the database is user is admin and all is set to `true`. Otherwise returns all the transactions based on the user_id retrieved from the session cookie.
     
     headers:
     ```
     x-api-key: preset constant api key
     session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    all: if set to `true`, then all the transactions will be returned only if the user is admin
     ```
 
 ### User
@@ -104,3 +107,21 @@ the user routes are defined in the `src/routes/user.ts` file. The routes are mou
     x-api-key: preset constant api key
     session-token: generated sessionCookie from firebase after login
     ```
+
+- #### POST `api/users/modify/:type`
+    This route is used to modify the user data. The type can be `role` or `user`. The body should contain the `uid` of the user and the new value of the type.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    body:
+    ```
+    user: {
+        id: string,     * required
+        role: string,
+        email: string,  * required
+    }
+    ```
+    notes: when type is set to role, role property is required and only admin can update the role.

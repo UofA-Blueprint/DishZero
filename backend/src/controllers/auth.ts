@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 import { auth, db } from '../services/firebase'
-import { CustomRequest } from '../middlewares/auth'
 import { getUserByEmail } from '../services/users'
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 
 // handle login request
 export const login = async (req: Request, res: Response) => {
     // Get the ID token passed.
-    const idToken = req.body.idToken.toString()
+    let decodedToken
+    const idToken = req.body.idToken?.toString()
     if (!idToken) {
         req.log.error({
             message: 'No id token provided',
@@ -14,12 +15,25 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).send({ error: 'unauthorized_request' })
     }
 
-    // TODO: add protection against csrf attacks
+    // verify the id token
+    try {
+        decodedToken = await verifyIdToken(idToken)
+        req.log.info({
+            message: 'Verified firebase id token',
+        })
+    } catch (error) {
+        req.log.error({
+            error,
+            message: 'Error when verifying firebase id token',
+        })
+        return res.status(401).send({ error: 'unauthorized_request' })
+    }
 
+    // TODO: add protection against csrf attacks
     const expiresIn = 60 * 60 * 24 * 5 * 1000 // 5 days
     try {
         let sessionCookie = await createSessionCookie(idToken, expiresIn)
-        let user = await getUser(req)
+        let user = await getUser(decodedToken)
         res.cookie('session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true })
         req.log.info({
             message: 'Created firebase session cookie',
@@ -66,9 +80,9 @@ const createSessionCookie = async (idToken: string, expiresIn: number) => {
 }
 
 // Get user from firebase collection or create new user if not exists
-const getUser = async (req: Request) => {
-    let { email } = (req as CustomRequest).firebase
-    let idToken = req.body.idToken.toString()
+const getUser = async (decodedIdToken: DecodedIdToken) => {
+    let email = decodedIdToken.email
+    // let idToken = req.body.idToken.toString()
     if (!email) {
         throw new Error('Email is not provided')
     }
@@ -82,10 +96,9 @@ const getUser = async (req: Request) => {
             email,
             role: 'customer',
         }
-        const claims = await auth.verifyIdToken(idToken)
-        await auth.setCustomUserClaims(claims.sub, { dishrole: 'customer' })
+        await auth.setCustomUserClaims(decodedIdToken.sub, { role: 'customer' })
         try {
-            db.collection('users').doc(claims.uid).set(User)
+            db.collection('users').doc(decodedIdToken.uid).set(User)
             let retrieveUser = await getUserByEmail(email)
             return retrieveUser
         } catch (error) {
@@ -94,4 +107,8 @@ const getUser = async (req: Request) => {
     }
 
     return userExists
+}
+
+const verifyIdToken = async (idToken: string) => {
+    return auth.verifyIdToken(idToken)
 }
