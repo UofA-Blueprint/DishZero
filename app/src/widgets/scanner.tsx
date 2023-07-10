@@ -2,7 +2,21 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { styled, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, Drawer, Toolbar, IconButton, Button, Typography, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { 
+    Avatar,
+    Box, 
+    Drawer, 
+    Toolbar, 
+    IconButton, 
+    Button, 
+    Typography, 
+    Divider, 
+    List, 
+    ListItem, 
+    ListItemButton, 
+    ListItemIcon, 
+    ListItemText } 
+from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import HomeIcon from '@mui/icons-material/Home';
@@ -11,6 +25,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar from '@mui/material/AppBar';
+import DrawerLogo from "../assets/DishZeroDrawerLogo.png";
 import {
     faCameraRotate,
     faVideoCamera,
@@ -112,10 +127,15 @@ const Header = ({ title }) => {
                 anchor="left"
                 open={open}
             >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{ color: 'white' }}/> : <ChevronRightIcon sx={{ color: 'white' }}/>}
-                    </IconButton>
+                <DrawerHeader sx={{ paddingTop: '15px', paddingBottom: '20px' }}>
+                    <Box sx={{ width: '80%', paddingLeft: '5px' }}>
+                        <Avatar alt="DishZero Logo" src={DrawerLogo} sx={{ width: 43, height: 43 }} />
+                    </Box>
+                    <Box sx={{ width: '20%' }}>
+                        <IconButton onClick={handleDrawerClose}>
+                            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{ color: 'white' }}/> : <ChevronRightIcon sx={{ color: 'white' }}/>}
+                        </IconButton>
+                    </Box>
                 </DrawerHeader>
                 <Divider sx={{ backgroundColor: '#C2C2C2' }} />
                 <List>
