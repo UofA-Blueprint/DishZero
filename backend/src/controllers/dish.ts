@@ -24,25 +24,27 @@ export const getDishes = async (req: Request, res: Response) => {
     let allDishes = <Array<Dish>>[]
     try {
         allDishes = await getAllDishes()
-        req.log.info({
-            message: 'retrieved all transactions',
+        Logger.info({
+            message: 'retrieved all dishes',
         })
     } catch (err: any) {
-        req.log.error({
+        Logger.error({
             error: err.message,
+            statusCode: 500
         })
         return res.status(500).json({ error: 'internal_server_error', message: err.message })
     }
 
     if (withTransactions !== 'true' && all == 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
-            req.log.error({
+            Logger.error({
                 message: 'User is not admin',
+                statusCode: 403
             })
             return res.status(403).json({ error: 'forbidden' })
         }
 
-        req.log.info('sending all dishes to admin')
+        Logger.info('sending all dishes to admin')
         return res.status(200).json({ allDishes})
     }
 
@@ -58,7 +60,7 @@ export const getDishes = async (req: Request, res: Response) => {
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
-    req.log.info({ message: 'retrieved transactions from firebase' })
+    Logger.info({ message: 'retrieved transactions from firebase' })
 
     let dishTransMap = new Map<string, { transaction: Transaction; count: number }>()
     try {
@@ -84,10 +86,12 @@ export const getDishes = async (req: Request, res: Response) => {
                 userDishes = getAllUserDishes(userClaims, allDishes, dishTransMap)
             }
         } catch (e) {
-            req.log.error({
+            Logger.error({
                 error: e,
-                message: 'error when getting user dishes'
+                message: 'error when getting user dishes',
+                statusCode: 500
             })
+            return res.status(500).json({ error: 'internal_server_error' })
         }
         return res.status(200).json({ userDishes })
     }
@@ -95,7 +99,7 @@ export const getDishes = async (req: Request, res: Response) => {
     let allDishesVM = <Array<any>>[]
     try {
         allDishesVM = mapToDishVM(allDishes, dishTransMap)
-        req.log.info({ message: 'Mapped transactions to view model' })
+        Logger.info({ message: 'Mapped transactions to view model' })
     } catch (e) {
         Logger.error({
             error: e,
@@ -104,12 +108,13 @@ export const getDishes = async (req: Request, res: Response) => {
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
-    req.log.info({ message: 'Sending dish data with transactions' })
+    Logger.info({ message: 'Sending dish data with transactions' })
 
     if (all == 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
-            req.log.error({
+            Logger.error({
                 message: 'User is not admin',
+                statusCode: 403
             })
             return res.status(403).json({ error: 'forbidden' })
         }
@@ -126,10 +131,12 @@ export const getDishes = async (req: Request, res: Response) => {
             userDishesVM = getAllUserDishesInUse(userClaims, allDishesVM, dishTransMap)
         }
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
-            message: 'error when getting user dishes view model'
+            message: 'error when getting user dishes view model',
+            statusCode: 500
         })
+        return res.status(500).json({ error: 'internal_server_error' })
     }
 
     return res.status(200).json({ userDishesVM })
