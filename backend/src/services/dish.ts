@@ -41,7 +41,7 @@ export function getAllUserDishesVM(
     let userDishesVM = <Array<DishTableVM>>[]
     allDishesVM.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if (obj?.transaction.userID == userClaims.userid) {
+        if (obj?.transaction.userID == userClaims.uid) {
             userDishesVM.push(dish)
         }
     })
@@ -56,7 +56,7 @@ export function getAllUserDishesVMInUse(
     let userDishesVM = <Array<DishTableVM>>[]
     allDishesVM.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.userid) && (dish.status == DishStatus.inUse)) {
+        if ((obj?.transaction.userID == userClaims.uid) && (dish.status == DishStatus.inUse)) {
             userDishesVM.push(dish)
         }
     })
@@ -132,10 +132,10 @@ export function mapToDishVM(
 
 // this whole returned thing needs more explanation, why is it an object
 function findDishStatus(transaction: Transaction | undefined): DishStatus {
-    if (!transaction) {
+    if (!transaction || !transaction.returned) {
         return DishStatus.returned
     }
-    if (Object.keys(transaction).length == 0) {
+    if (Object.keys(transaction.returned).length !== 0) {
         return DishStatus.inUse
     }
 
