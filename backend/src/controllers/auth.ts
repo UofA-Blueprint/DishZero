@@ -87,6 +87,9 @@ const getUser = async (decodedIdToken: DecodedIdToken) => {
     let email = decodedIdToken.email
     // let idToken = req.body.idToken.toString()
     if (!email) {
+        Logger.error({
+            message: 'Email is not provided',
+        })
         throw new Error('Email is not provided')
     }
     let userExists = await getUserByEmail(email)
@@ -99,16 +102,26 @@ const getUser = async (decodedIdToken: DecodedIdToken) => {
             email,
             role: 'customer',
         }
+        Logger.info({
+            message: 'Creating new user in firebase collection',
+        })
         await auth.setCustomUserClaims(decodedIdToken.sub, { role: 'customer' })
         try {
             db.collection('users').doc(decodedIdToken.uid).set(User)
             let retrieveUser = await getUserByEmail(email)
             return retrieveUser
         } catch (error) {
+            Logger.error({
+                error,
+                message: 'Error when creating user in firebase collection',
+            })
             throw new Error('Error when creating user in firebase collection')
         }
     }
 
+    Logger.info({
+        message: 'User exists in firebase collection',
+    })
     return userExists
 }
 
