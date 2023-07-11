@@ -91,7 +91,7 @@ function Login() {
   //As auth state is being read, display loader spinner
   if (isLoading){
     return(
-      <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
+      <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
       <BallTriangle
           height={100}
           width={100}
@@ -142,6 +142,18 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+
+  rootMobileLoader:{
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundImage: `url(${MobileBackground})`,
+    backgroundSize: 'cover'
+
   },
 
   rootMobile: {
