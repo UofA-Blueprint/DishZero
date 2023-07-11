@@ -10,6 +10,6 @@ if [ "#$ID_TOKEN" == "#" ] || [ "#$SESSION_TOKEN" == "#" ] ; then
 fi
 
 curl -i -X GET \
-    -H "x-api-key: test" \
+    -H "x-api-key: $API_KEY" \
     --cookie "session=$SESSION_TOKEN" \
-    http://localhost:8080/api/transactions
+    http://localhost:8080/api/transactions?all=$ALL_TRANSACTIONS
