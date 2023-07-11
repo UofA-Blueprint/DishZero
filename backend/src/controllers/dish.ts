@@ -5,6 +5,7 @@ import { Dish } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { mapDishesToLatestTransaction, mapToDishVM } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
+import Logger from '../utils/logger'
 
 export const getDishes = async (req: Request, res: Response) => {
     // TODO: send dish information based on user role
@@ -28,18 +29,23 @@ export const getDishes = async (req: Request, res: Response) => {
             })
         })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when fetching dishes from firebase',
+            statusCode: 500,
         })
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
 
-    req.log.info({ message: 'Retrieved dish data from firebase' })
+    Logger.info({
+        message: 'Retrieved dish data from firebase',
+    })
 
     if (req.query['transaction']?.toString() !== 'yes') {
-        req.log.info({ message: 'Sending dish data without transactions' })
+        Logger.info({
+            message: 'Sending dish data without transactions',
+        })
         res.status(200).json({ dishes: rawDishData })
         return
     }
@@ -60,15 +66,18 @@ export const getDishes = async (req: Request, res: Response) => {
             })
         })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when fetching dishes transactions from firebase',
+            statusCode: 500,
         })
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
 
-    req.log.info({ message: 'Retrieved transactions from firebase' })
+    Logger.info({
+        message: 'Retrieved transactions from firebase',
+    })
 
     let dishTransMap = new Map<
         string,
@@ -82,11 +91,14 @@ export const getDishes = async (req: Request, res: Response) => {
 
     try {
         dishTransMap = mapDishesToLatestTransaction(transactions)
-        req.log.info({ message: 'Mapped dishes to transactions' })
+        Logger.info({
+            message: 'Mapped dishes to transactions',
+        })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when mapping dishes to transactions',
+            statusCode: 500,
         })
         res.status(500).json({ error: 'internal_server_error' })
         return
@@ -94,17 +106,22 @@ export const getDishes = async (req: Request, res: Response) => {
 
     try {
         allDishesVM = mapToDishVM(rawDishData, dishTransMap)
-        req.log.info({ message: 'Mapped transactions to view model' })
+        Logger.info({
+            message: 'Mapped transactions to view model',
+        })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when mapping transactions to view model',
+            statusCode: 500,
         })
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
 
-    req.log.info({ message: 'Sending dish data with transactions' })
+    Logger.info({
+        message: 'Sending dish data with transactions',
+    })
     // send response
     res.status(200).json({ dishes: allDishesVM })
     return

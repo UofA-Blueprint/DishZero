@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { auth, db } from '../services/firebase'
 import { getUserByEmail } from '../services/users'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
+import Logger from '../utils/logger'
 
 // handle login request
 export const login = async (req: Request, res: Response) => {
@@ -9,8 +10,9 @@ export const login = async (req: Request, res: Response) => {
     let decodedToken
     const idToken = req.body.idToken?.toString()
     if (!idToken) {
-        req.log.error({
+        Logger.error({
             message: 'No id token provided',
+            statusCode: 401,
         })
         return res.status(401).send({ error: 'unauthorized_request' })
     }
@@ -18,13 +20,14 @@ export const login = async (req: Request, res: Response) => {
     // verify the id token
     try {
         decodedToken = await verifyIdToken(idToken)
-        req.log.info({
+        Logger.info({
             message: 'Verified firebase id token',
         })
     } catch (error) {
-        req.log.error({
+        Logger.error({
             error,
             message: 'Error when verifying firebase id token',
+            statusCode: 401,
         })
         return res.status(401).send({ error: 'unauthorized_request' })
     }
@@ -35,7 +38,7 @@ export const login = async (req: Request, res: Response) => {
         let sessionCookie = await createSessionCookie(idToken, expiresIn)
         let user = await getUser(decodedToken)
         res.cookie('session', sessionCookie, { maxAge: expiresIn, httpOnly: true, secure: true })
-        req.log.info({
+        Logger.info({
             message: 'Created firebase session cookie',
         })
         return res.status(200).json({
@@ -43,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
             user,
         })
     } catch (error) {
-        req.log.error({
+        Logger.error({
             error,
             message: 'Error when creating firebase session cookie',
         })
@@ -60,13 +63,13 @@ export const logout = async (req: Request, res: Response) => {
             return auth.revokeRefreshTokens(decodedClaims.sub)
         })
         .then(() => {
-            req.log.info({
+            Logger.info({
                 message: 'Revoked firebase session cookie',
             })
             res.status(200).send({ status: 'success' })
         })
         .catch((error) => {
-            req.log.error({
+            Logger.error({
                 error,
                 message: 'Error when revoking firebase session cookie',
             })
