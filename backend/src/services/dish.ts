@@ -1,5 +1,82 @@
+import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import { Dish, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
+import { db } from './firebase'
+
+export function getAllUserDishes(
+    userClaims: DecodedIdToken,
+    allDishes: Array<Dish>,
+    dishTransMap: Map<string, { transaction: Transaction; count: number }>
+) {
+    let dishData = <Array<Dish>>[]
+    allDishes.forEach((dish) => {
+        let obj = dishTransMap.get(dish.id)
+        if (obj?.transaction.userID == userClaims.uid) {
+            dishData.push(dish)
+        }
+    })
+    return dishData
+}
+
+export function getAllUserDishesInUse(
+    userClaims: DecodedIdToken,
+    allDishes: Array<Dish>,
+    dishTransMap: Map<string, { transaction: Transaction; count: number }>
+) {
+    let dishData = <Array<Dish>>[]
+    allDishes.forEach((dish) => {
+        let obj = dishTransMap.get(dish.id)
+        if ((obj?.transaction.userID == userClaims.uid) && (findDishStatus(obj.transaction) == DishStatus.inUse)) {
+            dishData.push(dish)
+        }
+    })
+    return dishData
+}
+
+export function getAllUserDishesVM(
+    userClaims: DecodedIdToken,
+    allDishesVM: Array<DishTableVM>,
+    dishTransMap: Map<string, { transaction: Transaction; count: number }>
+) {
+    let userDishesVM = <Array<DishTableVM>>[]
+    allDishesVM.forEach((dish) => {
+        let obj = dishTransMap.get(dish.id)
+        if (obj?.transaction.userID == userClaims.userid) {
+            userDishesVM.push(dish)
+        }
+    })
+    return userDishesVM
+}
+
+export function getAllUserDishesVMInUse(
+    userClaims: DecodedIdToken,
+    allDishesVM: Array<DishTableVM>,
+    dishTransMap: Map<string, { transaction: Transaction; count: number }>
+) {
+    let userDishesVM = <Array<DishTableVM>>[]
+    allDishesVM.forEach((dish) => {
+        let obj = dishTransMap.get(dish.id)
+        if ((obj?.transaction.userID == userClaims.userid) && (dish.status == DishStatus.inUse)) {
+            userDishesVM.push(dish)
+        }
+    })
+    return userDishesVM
+}
+
+export async function getAllDishes(): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: data.registered.toDate(),
+            type: data.type ? data.type : '',
+        })
+    })
+    return dishData
+}
 
 export function mapDishesToLatestTransaction(
     transactions: Array<Transaction>
