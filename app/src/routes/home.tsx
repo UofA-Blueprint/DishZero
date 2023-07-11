@@ -10,7 +10,7 @@ import leaf_green from "../assets/leaf-green.svg";
 import external_link from "../assets/external_link.svg"
 import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
-import { Box, AppBar, Typography } from "@mui/material";
+import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 
 
 const DishLog = ({dishes}) => {
@@ -29,16 +29,20 @@ const NewUser = (user) => {
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
         How It Works
-        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'328px', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
-          <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
-          <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
-        </div>
+          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+            <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
+            <LinkMUI href="https://www.dishzero.ca/how-it-works-1">
+              <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
+            </LinkMUI>
+          </div>
       </div>
       <div className="sub-header-3" style={{marginTop: '24px'}}>
         Our Impact
-        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'328px', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
           <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> Learn more about the impact we are leaving on the environment.</p>
-          <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
+          <LinkMUI href="https://www.dishzero.ca/impact">
+            <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
+          </LinkMUI>
         </div>
       </div>
       {content}
@@ -48,8 +52,20 @@ const NewUser = (user) => {
 };
 
 const getDishes = (user) =>{
+  // const userAction = async () => {
+  //   const response = await fetch('http://localhost:8080/api/transactions',{
+  //     method:"GET",
+  //     headers:{
+  //       "x-api-key":"test",
+  //       "session-token":
+
+  //     }
+  //   });
+    // const myJson = await response.json(); //extract JSON from the http response
+    // do something with myJson
+  // }
   let dishes = DishAPI.getUserActiveDishes(user.uid);
-  return (
+  return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
@@ -125,10 +141,16 @@ const Footer = () => {
 export default () => {
   const fbContext = useContext(FirebaseContext);
   var content;
-  if (!fbContext?.user){ // user is not null
-    content = ExistingUser(fbContext?.user)
-  } else {
-    content = NewUser(fbContext?.user)
+  let user = fbContext?.user
+  if (user !== undefined){ // User is defined
+    let dishes = DishAPI.getUserActiveDishes(user.uid);
+    console.log(user.uid)
+    console.log(dishes)
+    if (dishes?.length == 0){ // New user (change this back to ==)
+      content = NewUser(user)
+    } else { 
+      content = ExistingUser(user)
+    }
   }
   return (
     <div>

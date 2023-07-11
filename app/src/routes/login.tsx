@@ -5,11 +5,11 @@ import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
-
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-
+import { getIdToken, onAuthStateChanged } from "firebase/auth";
+import axios from "axios";
 import DishAPI from "../features/api";
 
 const useQuery = () => new URLSearchParams(useLocation().search);
@@ -21,6 +21,12 @@ function Login() {
   // const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
+
+  //Working on this
+  useEffect(()=>{
+
+  })
+
   useEffect(() => {
       if (fbContext?.user) {
           console.log(transaction_id)
@@ -51,6 +57,7 @@ function Login() {
   // fired on button click while the user is not signed in.
   // the userEmail state is set (or "dispatched") after getting it from "credentials".
   const handleSignIn = () => {
+
     signInWithPopup(FirebaseAuth, GoogleAuth)
       .then((credentials) => {
         if (!credentials.user.email?.match("@ualberta.ca")) {
@@ -61,7 +68,78 @@ function Login() {
       .catch((err) => {
         alert(err.message);
       });
-  };
+
+      onAuthStateChanged(FirebaseAuth, async (currentUser) => {
+        console.log(currentUser)
+        if (currentUser) {
+          const token = await getIdToken(currentUser);
+          console.log("token:",token)
+          
+          const instance = axios.create({
+            baseURL: 'https://localhost:8080/api/auth',
+            headers: {'x-api-key': 'test'},
+            data:{"idToken":token}
+          });
+          const response = await instance.post('/login',{data:{"idToken":token}})
+          console.log(response)
+          // axios.post('http://localhost:8080/api/auth/login',{
+          //   headers:{
+          //     "Content-Type":"application/json",
+          //     "x-api-key":"test"
+          //   },
+          //   data:JSON.stringify({
+          //     "idToken":token
+          //   })
+          // }).then(function (response) {
+          //   console.log(response);
+          // })
+          // .catch(function (error) {
+          //   console.log(error);
+          // });
+
+          // const loginBackend = async () => {
+          //   const response = await fetch('http://localhost:8080/api/auth/login',{
+          //     method:"POST",
+          //     headers:{
+          //       "Content-Type":"json",
+          //       "x-api-key":"test",
+          //     },
+          //     body:JSON.stringify({
+          //       "idToken": token
+          //     })
+          //   });
+          //   if (!response.ok){
+          //     console.log(response)
+          //   }
+          //   const sessionCookie = await response.json(); //extract JSON from the http response
+          //   console.log("cookie:",sessionCookie)
+          // }
+          // loginBackend()
+        }
+      });
+
+      //Send idtoken to backend
+      fbContext?.user.getIdToken(true).then(function(idToken) {
+        console.log("yo im here")
+          const loginBackend = async () => {
+            const response = await fetch('http://localhost:8080/api/auth/login',{
+              method:"POST",
+              headers:{
+                "x-api-key":"test",
+                "session-token":idToken
+              }
+            });
+            if (!response.ok){
+              alert(response.status)
+            }
+            const sessionCookie = await response.json(); //extract JSON from the http response
+            console.log("cookie:",sessionCookie)
+        }
+      }).catch(function(error) {
+        alert(error.message)
+      });
+
+    }
 
   return (
     <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
