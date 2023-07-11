@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { CustomRequest } from '../middlewares/auth'
 import { verifyIfUserAdmin } from '../services/users'
 import { getAllTransactions, getUserTransactions } from '../services/transactions'
+import Logger from '../utils/logger'
 
 export const getTransactions = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -13,19 +14,21 @@ export const getTransactions = async (req: Request, res: Response) => {
             // return all transactions
             try {
                 transactions = await getAllTransactions()
-                req.log.info({
+                Logger.info({
                     message: 'retrieved all transactions',
                 })
                 return res.status(200).json({ transactions })
             } catch (err: any) {
-                req.log.error({
+                Logger.error({
                     error: err.message,
+                    statusCode: 500,
                 })
                 res.status(500).json({ error: 'internal_server_error', message: err.message })
             }
         } else {
-            req.log.error({
+            Logger.error({
                 message: 'User is not admin',
+                statusCode: 403,
             })
             return res.status(403).json({ error: 'forbidden' })
         }
@@ -35,15 +38,16 @@ export const getTransactions = async (req: Request, res: Response) => {
     try {
         transactions = await getUserTransactions(userClaims)
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when fetching transactions from firebase',
+            statusCode: 500,
         })
         res.status(500).json({ error: 'internal_server_error' })
         return
     }
 
-    req.log.info({ message: 'Sending transactions' })
+    Logger.info({ message: 'sending all transactions' })
     // send response
     res.status(200).json({ transactions })
     return

@@ -13,6 +13,7 @@ import {
 import { CustomRequest } from '../middlewares/auth'
 import { verifyIfUserAdmin } from '../services/users'
 import { getAllTransactions } from '../services/transactions'
+import Logger from '../utils/logger'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -50,9 +51,10 @@ export const getDishes = async (req: Request, res: Response) => {
     try {
         transactions = await getAllTransactions()
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when fetching dishes transactions from firebase',
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
@@ -61,11 +63,14 @@ export const getDishes = async (req: Request, res: Response) => {
     let dishTransMap = new Map<string, { transaction: Transaction; count: number }>()
     try {
         dishTransMap = mapDishesToLatestTransaction(transactions)
-        req.log.info({ message: 'Mapped dishes to transactions' })
+        Logger.info({
+            message: 'Mapped dishes to transactions',
+        })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when mapping dishes to transactions',
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
@@ -92,9 +97,10 @@ export const getDishes = async (req: Request, res: Response) => {
         allDishesVM = mapToDishVM(allDishes, dishTransMap)
         req.log.info({ message: 'Mapped transactions to view model' })
     } catch (e) {
-        req.log.error({
+        Logger.error({
             error: e,
             message: 'Error when mapping transactions to view model',
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
