@@ -1,6 +1,6 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { FirebaseContext, Role } from "../firebase";
-import { Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import DishAPI from "../features/api";
 import { faAngleDoubleLeft, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +10,7 @@ import leaf_green from "../assets/leaf-green.svg";
 import external_link from "../assets/external_link.svg"
 import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
+import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 
 
@@ -24,7 +25,7 @@ const DishLog = ({dishes}) => {
 };
 
 const NewUser = (user) => {
-  const content = getDishes(user)
+  const content = GetDishes(user)
   return(
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
@@ -51,25 +52,25 @@ const NewUser = (user) => {
 
 };
 
-const getDishes = (user) =>{
-  // const userAction = async () => {
-  //   const response = await fetch('http://localhost:8080/api/transactions',{
-  //     method:"GET",
-  //     headers:{
-  //       "x-api-key":"test",
-  //       "session-token":
+const GetDishes = (user) =>{
+  const [dishesUsed, setDishesUsed] = useState('');
 
-  //     }
-  //   });
-    // const myJson = await response.json(); //extract JSON from the http response
-    // do something with myJson
-  // }
+  const location = useLocation();
+  let sessionToken = location.state
+  axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
+  .then(function (response) {
+    setDishesUsed(response.data.transactions.length)
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
   let dishes = DishAPI.getUserActiveDishes(user.uid);
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
-          <p className="details-2 mt-1">{dishes?.length} in use</p>
+          {/* <p> {data.transactions.length} </p> */}
+          <p className="details-2 mt-1">{dishesUsed} in use</p>
         </div>
         { dishes?.length ? <DishLog dishes={dishes} /> :
           <div className="d-flex flex-column">
@@ -93,7 +94,7 @@ const getDishes = (user) =>{
 }
 
 const ExistingUser = (user) => {
-  const content = getDishes(user)
+  const content = GetDishes(user)
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -144,8 +145,6 @@ export default () => {
   let user = fbContext?.user
   if (user !== undefined){ // User is defined
     let dishes = DishAPI.getUserActiveDishes(user.uid);
-    console.log(user.uid)
-    console.log(dishes)
     if (dishes?.length == 0){ // New user (change this back to ==)
       content = NewUser(user)
     } else { 

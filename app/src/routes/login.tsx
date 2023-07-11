@@ -18,25 +18,17 @@ function Login() {
   const fbContext = useContext(FirebaseContext);
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
 
-  //Working on this
-  useEffect(()=>{
-
-  })
-
   useEffect(() => {
-      if (fbContext?.user) {
-          console.log(transaction_id)
-          if(transaction_id){
-              DishAPI.updateDocWithUserID(transaction_id, fbContext?.user?.uid);  
-              //send a firebase request to add the user to the document with the handle
-              
-          }
-          navigate("/home");
-      }
+    if (fbContext?.user) {
+        if(transaction_id){
+            DishAPI.updateDocWithUserID(transaction_id, fbContext?.user?.uid);  
+            //send a firebase request to add the user to the document with the handle
+        }
+        // navigate("/home");
+    }
   }, [fbContext?.user]);
 
   useEffect(() => {
@@ -57,7 +49,7 @@ function Login() {
   // fired on button click while the user is not signed in.
   // the userEmail state is set (or "dispatched") after getting it from "credentials".
   const handleSignIn = () => {
-
+    let res = '';
     signInWithPopup(FirebaseAuth, GoogleAuth)
       .then((credentials) => {
         if (!credentials.user.email?.match("@ualberta.ca")) {
@@ -70,76 +62,23 @@ function Login() {
       });
 
       onAuthStateChanged(FirebaseAuth, async (currentUser) => {
-        console.log(currentUser)
         if (currentUser) {
           const token = await getIdToken(currentUser);
-          console.log("token:",token)
-          
-          const instance = axios.create({
-            baseURL: 'https://localhost:8080/api/auth',
-            headers: {'x-api-key': 'test'},
-            data:{"idToken":token}
+          // Send id token to backend
+          axios.post('http://localhost:8080/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
+          .then(function (response) {
+            navigate("/home",{state:response.data.session});
+          })
+          .catch(function (error) {
+            console.log(error);
           });
-          const response = await instance.post('/login',{data:{"idToken":token}})
-          console.log(response)
-          // axios.post('http://localhost:8080/api/auth/login',{
-          //   headers:{
-          //     "Content-Type":"application/json",
-          //     "x-api-key":"test"
-          //   },
-          //   data:JSON.stringify({
-          //     "idToken":token
-          //   })
-          // }).then(function (response) {
-          //   console.log(response);
-          // })
-          // .catch(function (error) {
-          //   console.log(error);
-          // });
-
-          // const loginBackend = async () => {
-          //   const response = await fetch('http://localhost:8080/api/auth/login',{
-          //     method:"POST",
-          //     headers:{
-          //       "Content-Type":"json",
-          //       "x-api-key":"test",
-          //     },
-          //     body:JSON.stringify({
-          //       "idToken": token
-          //     })
-          //   });
-          //   if (!response.ok){
-          //     console.log(response)
-          //   }
-          //   const sessionCookie = await response.json(); //extract JSON from the http response
-          //   console.log("cookie:",sessionCookie)
-          // }
-          // loginBackend()
         }
       });
-
-      //Send idtoken to backend
-      fbContext?.user.getIdToken(true).then(function(idToken) {
-        console.log("yo im here")
-          const loginBackend = async () => {
-            const response = await fetch('http://localhost:8080/api/auth/login',{
-              method:"POST",
-              headers:{
-                "x-api-key":"test",
-                "session-token":idToken
-              }
-            });
-            if (!response.ok){
-              alert(response.status)
-            }
-            const sessionCookie = await response.json(); //extract JSON from the http response
-            console.log("cookie:",sessionCookie)
-        }
-      }).catch(function(error) {
-        alert(error.message)
-      });
-
     }
+
+
+
+
 
   return (
     <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
