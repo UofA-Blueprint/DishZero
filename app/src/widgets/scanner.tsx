@@ -50,6 +50,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
       duration: theme.transitions.duration.leavingScreen,
     }),
     marginLeft: `-${drawerWidth}px`,
+    backgroundColor: '#464646',
     ...(open && {
       transition: theme.transitions.create('margin', {
         easing: theme.transitions.easing.easeOut,
@@ -259,18 +260,29 @@ const CameraInput = ({ onSubmit, frontCamera }) => {
 
 const BottomTextInput = ({ onSubmit }) => {
     const [ inputDishId, setInputDishId ] = React.useState('');
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(inputDishId)
         return false;
-    }
+    };
+
+    const handleInputFocus = () => {
+        setIsFocused(true);
+    };
+    
+    const handleInputBlur = () => {
+        setIsFocused(false);
+    };
 
     return (
-        <Box sx={styles.bottomInputFrame}>
+        <Box sx={ isFocused ? styles.bottomInputFrameFocussed : styles.bottomInputFrameUnfocussed}>
             <Paper
                 component="form"
                 sx={styles.outerInputField}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
             >
                 <SearchIcon sx={styles.searchIcon}/>
                 <InputBase
@@ -404,13 +416,26 @@ const styles = {
         fontFamily: 'Poppins, sans-serif'
     },
 
-    bottomInputFrame: {
+    bottomInputFrameUnfocussed: {
         width: '100%',
         height: '100px',
         backgroundColor: '#464646',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        position: 'relative',
+        zIndex: 'auto'
+    },
+
+    bottomInputFrameFocussed: {
+        width: '100%',
+        height: '100px',
+        backgroundColor: '#464646',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        zIndex: 1
     },
 
     outerInputField: {
@@ -419,7 +444,8 @@ const styles = {
         alignItems: 'center',
         width: '75%', 
         height: '50%',
-        borderRadius: '25px'
+        borderRadius: '25px',
+        marginBottom: 'env(safe-area-inset-bottom)'
     },
 
     searchIcon: {
