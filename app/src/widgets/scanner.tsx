@@ -1,14 +1,15 @@
+/////////////////////////////// Import Dependencies ///////////////////////////////
 import React, { useState } from "react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { styled, useTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { 
+    InputBase,
+    Paper,
     Avatar,
     Box, 
     Drawer, 
     Toolbar, 
     IconButton, 
-    Button, 
     Typography, 
     Divider, 
     List, 
@@ -24,46 +25,54 @@ import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstruct
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
 import MenuIcon from '@mui/icons-material/Menu';
-import MuiAppBar from '@mui/material/AppBar';
+import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import DrawerLogo from "../assets/DishZeroDrawerLogo.png";
-import {
-    faCameraRotate,
-    faVideoCamera,
-    faSearch
-} from "@fortawesome/free-solid-svg-icons";
+import SendIcon from '@mui/icons-material/Send';
 import QrReader from "react-qr-scanner";
+import 'typeface-poppins';
+import { useNavigate } from "react-router-dom";
+import { FirebaseAuth } from "../firebase";
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////// Global Declarations ////////////////////////////////////////
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-      flexGrow: 1,
-      padding: theme.spacing(3),
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      marginLeft: `-${drawerWidth}px`,
-      ...(open && {
-        transition: theme.transitions.create('margin', {
-          easing: theme.transitions.easing.easeOut,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-        marginLeft: 0,
-      }),
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+    open?: boolean;
+  }>(({ theme, open }) => ({
+    flexGrow: 1,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
     }),
-);
+    marginLeft: `-${drawerWidth}px`,
+    ...(open && {
+      transition: theme.transitions.create('margin', {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: 0,
+    }),
+}));
+  
+interface AppBarProps extends MuiAppBarProps {
+    open?: boolean;
+}
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-  })(({ theme, open }) => ({
-        transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
+  })<AppBarProps>(({ theme, open }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
     }),
-        backgroundColor: "#68B49A",
-        paddingTop: '10px',
-        paddingBottom: '10px',
+    backgroundColor: "#68B49A",
+    height: '80px',
+    justifyContent: 'center',
     ...(open && {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: `${drawerWidth}px`,
@@ -81,11 +90,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
-  }));  
+}));
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const Header = ({ title }) => {
+/////////////////////////////////////// Sub-components /////////////////////////////////////// 
+const Header = ({ open, setOpen, title, frontCamera, setFrontCamera }) => {
     const theme = useTheme();
-    const [open, setOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -95,22 +105,31 @@ const Header = ({ title }) => {
         setOpen(false);
     };
 
+    const navigate = useNavigate();
+
     return (
         <>
             <AppBar position="fixed" open={open}>
                 <Toolbar>
-                <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={handleDrawerOpen}
-                    edge="start"
-                    sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" noWrap component="div">
-                    {title}
-                </Typography>
+                    <Box sx={styles.appBarLeftFrame}>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography variant="h6" noWrap component="div">
+                            {title}
+                        </Typography>
+                    </Box>
+                    <Box sx={styles.appBarRightFrame}>
+                        <IconButton onClick={() => setFrontCamera(!frontCamera)} sx={{ color: 'white' }}>
+                            <FlipCameraIosIcon sx={styles.rotateCameraIcon}/>
+                        </IconButton>
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -140,7 +159,7 @@ const Header = ({ title }) => {
                 <Divider sx={{ backgroundColor: '#C2C2C2' }} />
                 <List>
                     <ListItem key={'Home'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => navigate('/home')}>
                             <ListItemIcon>
                                 <HomeIcon sx={{ color: 'white' }}/>
                             </ListItemIcon>
@@ -148,7 +167,7 @@ const Header = ({ title }) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={'How it works'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => navigate('/how_it_works')}>
                             <ListItemIcon>
                                 <IntegrationInstructionsIcon sx={{ color: 'white' }} />
                             </ListItemIcon>
@@ -156,7 +175,7 @@ const Header = ({ title }) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem key={'Our impact'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => navigate('/our_impact')}>
                             <ListItemIcon>
                                 <TrendingUpIcon sx={{ color: 'white' }} />
                             </ListItemIcon>
@@ -167,7 +186,7 @@ const Header = ({ title }) => {
                 <Divider sx={{ backgroundColor: '#C2C2C2' }} />
                 <List>
                     <ListItem key={'Logout'} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => FirebaseAuth.signOut()}>
                             <ListItemIcon>
                                 <SubdirectoryArrowLeftIcon sx={{ color: 'white' }} />
                             </ListItemIcon>
@@ -180,47 +199,18 @@ const Header = ({ title }) => {
     )
 }
 
-const BottomTextInput = ({ onSubmit }) => {
-    let [input, setInput] = useState("");
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(input)
-        return false;
-    }
-    return (
-        <div className="start-0 position-fixed bottom-0 w-100 px-5" >
-            <div>
-                <Form onSubmit={handleSubmit}>
-                    <InputGroup className="mb-3">
-                        <InputGroup.Text className="search-bar">
-                            <FontAwesomeIcon icon={faSearch} />
-                        </InputGroup.Text>
-                        <Form.Text className="text-muted">
-                        </Form.Text>
-                        <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
-                        <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button">
-                            Enter
-                        </Button>
-                    </InputGroup >
-                </Form>
-            </div>
-        </div>
-    )
-}
-
-const CameraInput = ({ onSubmit }) => {
+const CameraInput = ({ onSubmit, frontCamera }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [showQr, setShowQr] = useState(false);
-    const [frontCamera, setFrontCamera] = useState(false);
 
-    const style = { height: "100%" };
     const handleError = (err: any) => {
-        console.error(err.message)
+        console.error(err.message);
         if (err.message === "Permission denied") {
-            setErrorMessage("Camera Permission Denied")
+            setErrorMessage("Camera Permission Denied");
         }
-        setShowQr(false)
+        setShowQr(false);
     };
+
     const handleScan = (data: any) => {
         if (data == null) {
             return;
@@ -228,75 +218,215 @@ const CameraInput = ({ onSubmit }) => {
         onSubmit(data.text);
         console.log(data);
     };
+
     return (
-        <div className="qr-scanner-wrapper">
-            <br />
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                }}
-            >
-                {/* TODO: Disable setFacingMode when only one camera is available */}
-            </div>
-            <div
-                className="qr-scanner-placeholder"
-                style={style}
-            >
-                <div className="position-absolute">
-                    <Button
-                        variant="secondary"
-                        onClick={() => setFrontCamera(!frontCamera)}
-                    >
-                        <FontAwesomeIcon icon={faCameraRotate} />
-                    </Button>
-                </div>
-
-                <div className="qr-scanner-tag" onClick={() => setShowQr(!showQr)}>
-                    {/* <div className="crosshair"/> */}
-
-                    {showQr ? (
+        <Box sx={styles.qrScannerWrapper}>
+            <Box sx={styles.qrScanner} onClick={() => setShowQr(!showQr)}>
+                {
+                    showQr ? (
                         <QrReader
                             delay={100}
-                            style={style}
+                            style={styles.qr}
                             onError={handleError}
                             onScan={handleScan}
-                            // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
                             facingMode={frontCamera ? "user" : "environment"}
                         />
                     ) : (
-                        <div>
-                            {" "}
-                            {errorMessage ? (errorMessage) : (<><FontAwesomeIcon icon={faVideoCamera} /> Camera Disabled <br />{" "}
-                                <p style={{ fontSize: "0.8em" }}>Tap to Enable</p>{errorMessage}</>)}
-
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+                        <Box sx={styles.instructionsFrame}>
+                            {
+                                errorMessage ? (
+                                    <Box sx={styles.errorFrame}>
+                                        <ReportGmailerrorredIcon sx={styles.errorIcon}/>
+                                        <Typography variant="h6" noWrap component="div" sx={styles.errorMessage}>
+                                            {errorMessage}
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <Box sx={styles.enableCameraFrame}>
+                                        <CameraAltIcon sx={styles.cameraIcon}/>
+                                        <Typography variant="h6" noWrap component="div" sx={styles.enableMessage}>
+                                            Tap to enable
+                                        </Typography>
+                                    </Box>
+                                )}
+                        </Box>
+                    )
+                }
+            </Box>
+        </Box>
     );
 };
 
-export default ({ mode, onScan }) => {
-    const onSubmit = (id: string) => onScan(id)
+const BottomTextInput = ({ onSubmit }) => {
+    const [ inputDishId, setInputDishId ] = React.useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(inputDishId)
+        return false;
+    }
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <Header title='Borrow Dishes'>
-                <Main open={open}>
-                    <div className="scanner-wrapper">
-                        {/* ScanQRCode */}
-                        <div style={{ height: "100vh", width: "80%", display: "block" }}>
-                            <Header title={mode} style={{ top: 0, left: 0, position: "fixed", width: "100%" }} />
-                            <CameraInput onSubmit={onSubmit} />
-                            <BottomTextInput onSubmit={onSubmit} />
-                        </div>
-                    </div>
-                </Main>
-            </Header>
+        <Box sx={styles.bottomInputFrame}>
+            <Paper
+                component="form"
+                sx={styles.outerInputField}
+            >
+                <SearchIcon sx={styles.searchIcon}/>
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    onChange={(e) => setInputDishId(e.target.value)}
+                    placeholder="Enter dish #..."
+                    inputProps={{ 'aria-label': 'Enter dish #...' }}
+                />
+                <IconButton color="primary" sx={{ p: '10px' }} aria-label="search-dish" onClick={handleSubmit}>
+                    <SendIcon sx={{ color: '#68B49A' }} />
+                </IconButton>
+            </Paper>
         </Box>
     )
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////// Main Component ////////////////////////////////////////
+export default ({ mode, onScan }) => {
+    const onSubmit = (id: string) => onScan(id);
+    const [frontCamera, setFrontCamera] = useState(false);
+    const [open, setOpen] = React.useState(false);
+
+    return (
+        <Box sx={{ display: 'flex', backgroundColor: '#464646' }}>
+            <CssBaseline />
+            <Header open={open} setOpen={setOpen} title='Borrow Dishes' frontCamera={frontCamera} setFrontCamera={setFrontCamera} />
+            <Main open={open}>
+                <>
+                    <DrawerHeader />
+                    <CameraInput onSubmit={onSubmit} frontCamera={frontCamera} />
+                    <BottomTextInput onSubmit={onSubmit} />
+                </>
+            </Main>
+        </Box>
+    );
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////// Styles ////////////////////////////////////
+const styles = {
+    appBarLeftFrame: {
+        width: '80%', 
+        display: 'flex', 
+        flexDirection: 'row', 
+        alignItems: 'center' 
+    },
+
+    appBarRightFrame: {
+        width: '20%', 
+        display: 'flex', 
+        justifyContent: 'flex-end'
+    },
+
+    rotateCameraIcon: {
+        width: '26px',
+        height: '26px'
+    },
+
+    qrScannerWrapper: {
+        width: '100%',
+        height: `${window.innerHeight - 156}px`,
+        backgroundColor: '#464646',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    qrScanner: {
+        width: '95%',
+        height: '90%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    qr: {
+        width: '100%',
+        height: '100%'
+    },
+
+    instructionsFrame: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    errorFrame: {
+        width: '100%',
+        height: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    errorIcon: {
+        color: 'white',
+        width: '45px',
+        height: '45px',
+        marginBottom: '12px'
+    },
+
+    errorMessage: {
+        fontSize: '1.225rem',
+        color: 'white',
+        fontFamily: 'Poppins, sans-serif'
+    },
+
+    enableCameraFrame: {
+        width: '100%',
+        height: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    cameraIcon: {
+        width: '50px',
+        height: '50px',
+        color: 'white',
+        marginBottom: '13px'
+    },
+
+    enableMessage: {
+        fontSize: '1.225rem',
+        color: 'white',
+        fontFamily: 'Poppins, sans-serif'
+    },
+
+    bottomInputFrame: {
+        width: '100%',
+        height: '100px',
+        backgroundColor: '#464646',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    outerInputField: {
+        p: '2px 4px', 
+        display: 'flex', 
+        alignItems: 'center',
+        width: '75%', 
+        height: '50%',
+        borderRadius: '25px'
+    },
+
+    searchIcon: {
+        width: '25px',
+        height: '25px',
+        marginLeft: '7px',
+        marginRight: '7px'
+    }
+};
+///////////////////////////////////////////////////////////////////////////////
