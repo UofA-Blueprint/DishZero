@@ -122,9 +122,13 @@ const Header = ({ open, setOpen, title, frontCamera, setFrontCamera }) => {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" noWrap component="div">
-                            {title}
-                        </Typography>
+                        {
+                            !open ?
+                                <Typography variant="h6" noWrap component="div">
+                                    {title}
+                                </Typography>
+                            : null
+                        }
                     </Box>
                     <Box sx={styles.appBarRightFrame}>
                         <IconButton onClick={() => setFrontCamera(!frontCamera)} sx={{ color: 'white' }}>
@@ -260,7 +264,6 @@ const CameraInput = ({ onSubmit, frontCamera }) => {
 
 const BottomTextInput = ({ onSubmit }) => {
     const [ inputDishId, setInputDishId ] = React.useState('');
-    const [isFocused, setIsFocused] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -268,21 +271,11 @@ const BottomTextInput = ({ onSubmit }) => {
         return false;
     };
 
-    const handleInputFocus = () => {
-        setIsFocused(true);
-    };
-    
-    const handleInputBlur = () => {
-        setIsFocused(false);
-    };
-
     return (
-        <Box sx={ isFocused ? styles.bottomInputFrameFocussed : styles.bottomInputFrameUnfocussed}>
+        <Box sx={styles.bottomInputFrame}>
             <Paper
                 component="form"
                 sx={styles.outerInputField}
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
             >
                 <SearchIcon sx={styles.searchIcon}/>
                 <InputBase
@@ -309,7 +302,7 @@ export default ({ mode, onScan }) => {
     return (
         <Box sx={{ display: 'flex', backgroundColor: '#464646' }}>
             <CssBaseline />
-            <Header open={open} setOpen={setOpen} title='Borrow Dishes' frontCamera={frontCamera} setFrontCamera={setFrontCamera} />
+            <Header open={open} setOpen={setOpen} title={mode} frontCamera={frontCamera} setFrontCamera={setFrontCamera} />
             <Main open={open}>
                 <>
                     <DrawerHeader />
@@ -416,43 +409,29 @@ const styles = {
         fontFamily: 'Poppins, sans-serif'
     },
 
-    bottomInputFrameUnfocussed: {
+    bottomInputFrame: {
         width: '100%',
         height: '100px',
         backgroundColor: '#464646',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        position: 'relative',
-        zIndex: 'auto'
-    },
-
-    bottomInputFrameFocussed: {
-        width: '100%',
-        height: '100px',
-        backgroundColor: '#464646',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'relative',
-        zIndex: 1
+        marginBottom: '0px'
     },
 
     outerInputField: {
         p: '2px 4px', 
         display: 'flex', 
         alignItems: 'center',
-        width: '75%', 
+        width: '80%', 
         height: '50%',
-        borderRadius: '25px',
-        marginBottom: 'env(safe-area-inset-bottom)'
+        borderRadius: '25px'
     },
 
     searchIcon: {
         width: '25px',
         height: '25px',
-        marginLeft: '7px',
-        marginRight: '7px'
+        marginLeft: '12px'
     }
 };
 ///////////////////////////////////////////////////////////////////////////////
