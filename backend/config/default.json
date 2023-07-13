@@ -1,0 +1,22 @@
+{
+    "server": {
+        "port": 8080,
+        "host": "localhost"
+    },
+    "token": {
+        "expire": {
+            "access": "1h",
+            "refresh": "7d"
+        }
+    },
+    "featureFlags": {
+        "routes": {
+            "dish": {
+                "enabled": true
+            },
+            "transactions": {
+                "enabled": true
+            }
+        }
+    }
+}

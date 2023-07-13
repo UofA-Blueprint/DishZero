@@ -26,6 +26,7 @@ export const Sidebar = () => {
         className="memu-title"
         style={{
           textAlign: "left",
+          position:"absolute"
         }}
       >
         <img style={{ paddingRight: 16, height: 32 }} src={logo} alt="" />
