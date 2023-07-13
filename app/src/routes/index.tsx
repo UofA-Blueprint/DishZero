@@ -45,7 +45,7 @@ const PermissionsRoute = (props: any) => {
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <BorrowRoute />,
+    element: <UserRoute />,
     errorElement: <Error404 />,
     children: [
       {
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/borrow",
-        element: <UserRoute />,
+        element: <BorrowRoute />,
         loader: async ({ request }) => {
           const url = new URL(request.url);
           const qid = url.searchParams.get("q");
