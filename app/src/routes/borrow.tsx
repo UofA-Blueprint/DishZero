@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -78,7 +78,7 @@ export default () => {
       <Scanner
         mode="Scan Dishes"
         onScan={onScan}
-        onClose={() => navigate("/home")}
+        onClose={() => navigate("/home" )}
       />
       <Confirm
         show={confirm}

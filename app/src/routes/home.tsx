@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FirebaseContext, Role } from "../firebase";
 import { useLocation, Link } from "react-router-dom";
 import DishAPI from "../features/api";
@@ -12,6 +12,7 @@ import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
 import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
+import { dishes } from "../admin/constants";
 
 
 const DishLog = ({dishes}) => {
@@ -95,6 +96,20 @@ const GetDishes = (user) =>{
 
 const ExistingUser = (user) => {
   const content = GetDishes(user)
+
+  const [dishesUsed, setDishesUsed] = useState('');
+
+  const location = useLocation();
+  let sessionToken = location.state
+  axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
+  .then(function (response) {
+    setDishesUsed(response.data.transactions.length)
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+  
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -102,7 +117,7 @@ const ExistingUser = (user) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{0}</p>
+            <p className="header mb-0">{dishesUsed}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
