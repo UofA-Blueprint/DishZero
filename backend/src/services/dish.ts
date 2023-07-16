@@ -81,16 +81,38 @@ export const validateDishRequestBody = (dish: Dish) => {
     return schema.validate(dish)
 }
 
+export const getDish = async (qid: number) => {
+    const snapshot = await db.collection('dishes').where('qid', '==', qid).get()
+    if (snapshot.empty) {
+        return null
+    }
+    let data = snapshot.docs[0].data()
+    return {
+        id: snapshot.docs[0].id,
+        qid: data.qid,
+        registered: data.registered,
+        type: data.type,
+    }
+}
+
 export const createDishInDatabase = async (dish: Dish) => {
-    console.log(dish)
     let validation = validateDishRequestBody(dish)
     if (validation.error) {
         Logger.error({
             module: 'dish.services',
             message: 'Invalid dish request body',
-            statusCode: 400,
         })
         throw new Error(validation.error.message)
+    }
+
+    // check if dish with qid already exists
+    let existingDish = await getDish(dish.qid)
+    if (existingDish) {
+        Logger.error({
+            module: 'dish.services',
+            message: 'Dish with qid already exists',
+        })
+        throw new Error('Dish with qid already exists')
     }
 
     // set registered date to current date if not provided

@@ -142,14 +142,13 @@ export const createDish = async (req: Request, res: Response) => {
     try {
         let dish = await createDishInDatabase(req.body.dish)
         return res.status(200).json({ dish })
-    } catch (error) {
-        console.log(error)
+    } catch (error: any) {
         Logger.error({
             module: 'dish.controller',
             error,
             message: 'Error when creating dish in database',
             statusCode: 500,
         })
-        return res.status(500).json({ error: 'internal_server_error' })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
 }
