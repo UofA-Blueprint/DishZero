@@ -143,9 +143,7 @@ export const updateUser = async (req: Request, res: Response) => {
                     message: 'Error updating user information',
                     statusCode: 500,
                 })
-                return res
-                    .status(500)
-                    .json({ error: 'internal_server_error', message: error.message })
+                return res.status(500).json({ error: 'internal_server_error', message: error.message })
             }
         }
     } else {
