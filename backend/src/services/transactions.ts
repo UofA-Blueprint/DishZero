@@ -9,7 +9,7 @@ export const getUserTransactions = async (userClaims: DecodedIdToken) => {
         let data = doc.data()
         transactions.push({
             id: doc.id,
-            dishID: data.dish ? data.dish.id : null,
+            dish: data.dish ? data.dish.id : null,
             userID: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp.toDate() : null,
@@ -25,11 +25,19 @@ export const getAllTransactions = async () => {
         let data = doc.data()
         transactions.push({
             id: doc.id,
-            dishID: data.dish ? data.dish.id : null,
+            dish: data.dish ? data.dish.id : null,
             userID: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp.toDate() : null,
         })
     })
     return transactions
+}
+
+export const registerTransaction = async (transaction: Transaction) => {
+    let docRef = await db.collection('transactions').add(transaction)
+    return {
+        ...transaction,
+        id: docRef.id,
+    }
 }

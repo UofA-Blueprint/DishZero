@@ -3,10 +3,17 @@ import { Request, Response } from 'express'
 import { db } from '../services/firebase'
 import { Dish } from '../models/dish'
 import { Transaction } from '../models/transaction'
-import { createDishInDatabase, mapDishesToLatestTransaction, mapToDishVM } from '../services/dish'
+import {
+    createDishInDatabase,
+    getDish,
+    mapDishesToLatestTransaction,
+    mapToDishVM,
+    updateBorrowedStatus,
+} from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
+import { registerTransaction } from '../services/transactions'
 
 export const getDishes = async (req: Request, res: Response) => {
     // TODO: send dish information based on user role
@@ -27,6 +34,7 @@ export const getDishes = async (req: Request, res: Response) => {
                 qid: parseInt(data.qid, 10),
                 registered: data.registered.toDate(),
                 type: data.type ? data.type : '',
+                borrowed: data.borrowed ? data.borrowed : false,
             })
         })
     } catch (e) {
@@ -60,7 +68,7 @@ export const getDishes = async (req: Request, res: Response) => {
             let data = doc.data()
             transactions.push({
                 id: doc.id,
-                dishID: data.dish ? data.dish.id : null,
+                dish: data.dish ? data.dish.id : null,
                 userID: data.user,
                 returned: data.returned ? data.returned : {},
                 timestamp: data.timestamp ? data.timestamp.toDate() : null,
@@ -152,3 +160,73 @@ export const createDish = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
 }
+
+export const borrowDish = async (req: Request, res: Response) => {
+    let qr_code = req.query['qr_code']?.toString()
+    if (!qr_code) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'No qr_code provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    let userClaims = (req as CustomRequest).firebase
+
+    // check if the associated dish with the qr_code exists
+    // if yes, check if it is borrowed
+    // if not, create a new transaction and update the borrowed status of the dish
+
+    try {
+        let associatedDish = await getDish(parseInt(qr_code, 10))
+        if (!associatedDish) {
+            Logger.error({
+                module: 'dish.controller',
+                message: 'Dish not found',
+            })
+            return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+        }
+
+        if (associatedDish.borrowed) {
+            Logger.error({
+                module: 'dish.controller',
+                message: 'Dish already borrowed',
+            })
+            return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish already borrowed' })
+        }
+
+        let transaction: Transaction = {
+            dish: {
+                qid: associatedDish.qid,
+                id: associatedDish.id,
+                type: associatedDish.type,
+            },
+            userID: userClaims.uid,
+            returned: {
+                broken: false,
+                lost: false,
+            },
+            timestamp: new Date().toISOString(),
+        }
+
+        let newTransaction = await registerTransaction(transaction)
+        await updateBorrowedStatus(associatedDish.id, true)
+
+        Logger.info({
+            module: 'dish.controller',
+            message: 'Successfully borrowed dish',
+        })
+        return res.status(200).json({ transaction: newTransaction })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when borrowing dish',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
+export const returnDish = async (req: Request, res: Response) => {}

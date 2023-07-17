@@ -45,6 +45,7 @@ The auth routes are defined in the `src/routes/auth.ts` file. The routes are mou
     ```
     idToken: firebase idToken generated after successful login using frontend firebase client
     ```
+
 - #### POST `/api/auth/logout`
     This will logout the user and clear the session cookie.
     
@@ -68,6 +69,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     ```
     transaction: if set to yes, then dishes will be returned with transaction details
     ```
+
 - #### POST `/api/dish/create`
     This route will create a new dish in the database only if user is an admin.
 
@@ -85,7 +87,20 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     }
     ```
 
-### Transaction
+- #### POST `/api/dish/borrow?qr_code=`
+    This route will borrow a dish if the user is logged in and the dish is available. The route will also create a transaction in the database.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qr_code: qr_code of the dish to be borrowed
+    ```
+
+### Transactions
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:
 - #### GET `/api/transactions?all=`
     This route returns all the transactions in the database is user is admin and all is set to `true`. Otherwise returns all the transactions based on the user_id retrieved from the session cookie.

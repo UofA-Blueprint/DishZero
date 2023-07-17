@@ -9,8 +9,8 @@ export function mapDishesToLatestTransaction(
 ): Map<string, { transaction: Transaction; count: number }> {
     const map = new Map()
     transactions.forEach((transaction) => {
-        if (transaction.dishID) {
-            let dishID = transaction.dishID
+        if (transaction.dish.id) {
+            let dishID = transaction.dish.id
             if (map.has(dishID)) {
                 let curObj = map.get(dishID)
                 let latestTransaction =
@@ -92,6 +92,7 @@ export const getDish = async (qid: number) => {
         qid: data.qid,
         registered: data.registered,
         type: data.type,
+        borrowed: data.borrowed,
     }
 }
 
@@ -120,6 +121,9 @@ export const createDishInDatabase = async (dish: Dish) => {
         dish.registered = new Date().toISOString()
     }
 
+    // new dishes are not borrowed and always set to false
+    dish.borrowed = false
+
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
         module: 'dish.services',
@@ -130,4 +134,12 @@ export const createDishInDatabase = async (dish: Dish) => {
         ...dish,
         id: createdDish.id,
     }
+}
+
+export const updateBorrowedStatus = async (id: string, borrowed: boolean) => {
+    await db.collection('dishes').doc(id).update({ borrowed })
+    Logger.info({
+        module: 'dish.services',
+        message: 'Updated borrowed status',
+    })
 }
