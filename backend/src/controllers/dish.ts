@@ -36,7 +36,7 @@ export const getDishes = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'internal_server_error', message: err.message })
     }
 
-    if (withTransactions !== 'true' && all == 'true') {
+    if (withTransactions !== 'true' && all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 message: 'User is not admin',
@@ -46,7 +46,7 @@ export const getDishes = async (req: Request, res: Response) => {
         }
 
         Logger.info('sending all dishes to admin')
-        return res.status(200).json({ allDishes})
+        return res.status(200).json({ dishes: allDishes})
     }
 
     // get transactions
@@ -81,7 +81,7 @@ export const getDishes = async (req: Request, res: Response) => {
     let userDishes
     if (withTransactions !== 'true') {
         try {
-            if (borrowed == 'true') {
+            if (borrowed === 'true') {
                 userDishes = getAllUserDishesInUse(userClaims, allDishes, dishTransMap)
             } else {
                 userDishes = getAllUserDishes(userClaims, allDishes, dishTransMap)
@@ -94,7 +94,7 @@ export const getDishes = async (req: Request, res: Response) => {
             })
             return res.status(500).json({ error: 'internal_server_error' })
         }
-        return res.status(200).json({ userDishes })
+        return res.status(200).json({ dishes: userDishes })
     }
 
     let allDishesVM = <Array<any>>[]
@@ -121,7 +121,7 @@ export const getDishes = async (req: Request, res: Response) => {
         }
 
         req.log.info('sending all dishes to admin')
-        return res.status(200).json({ allDishesVM })
+        return res.status(200).json({ dishes: allDishesVM })
     }
 
     let userDishesVM
@@ -140,7 +140,7 @@ export const getDishes = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'internal_server_error' })
     }
 
-    return res.status(200).json({ userDishesVM })
+    return res.status(200).json({ dishes: userDishesVM })
 }
 
 export const createDish = async (req: Request, res: Response) => {
