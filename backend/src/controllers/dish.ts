@@ -111,7 +111,7 @@ export const getDishes = async (req: Request, res: Response) => {
     }
     Logger.info({ message: 'Sending dish data with transactions' })
 
-    if (all == 'true') {
+    if (all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 message: 'User is not admin',

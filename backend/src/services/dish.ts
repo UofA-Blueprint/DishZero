@@ -17,6 +17,7 @@ export function getAllUserDishes(
             dishData.push(dish)
         }
     })
+    Logger.info({message: `got all dishes from firebase for user ${userClaims.uid}`})
     return dishData
 }
 
@@ -32,6 +33,7 @@ export function getAllUserDishesInUse(
             dishData.push(dish)
         }
     })
+    Logger.info({message: `got all dishes in use from firebase for user ${userClaims.uid}`})
     return dishData
 }
 
@@ -47,6 +49,7 @@ export function getAllUserDishesVM(
             userDishesVM.push(dish)
         }
     })
+    Logger.info({message: `returning dishes view model for user ${userClaims.uid}`})
     return userDishesVM
 }
 
@@ -62,6 +65,7 @@ export function getAllUserDishesVMInUse(
             userDishesVM.push(dish)
         }
     })
+    Logger.info({message: `returning dishes (those in use) view model for user ${userClaims.uid}`})
     return userDishesVM
 }
 
@@ -77,6 +81,7 @@ export async function getAllDishes(): Promise<Array<Dish>> {
             type: data.type ? data.type : '',
         })
     })
+    Logger.info({message: "got all dishes from firebase"})
     return dishData
 }
 
@@ -84,6 +89,7 @@ export function mapDishesToLatestTransaction(
     transactions: Array<Transaction>
 ): Map<string, { transaction: Transaction; count: number }> {
     const map = new Map()
+    // goes through all transactions, and maps each dishID to the latest transaction
     transactions.forEach((transaction) => {
         if (transaction.dishID) {
             let dishID = transaction.dishID
@@ -103,7 +109,6 @@ export function mapDishesToLatestTransaction(
             }
         }
     })
-
     return map
 }
 
@@ -112,7 +117,7 @@ export function mapToDishVM(
     dishTransMap: Map<string, { transaction: Transaction; count: number }>
 ): Array<DishTableVM> {
     let allDishesVM = <Array<DishTableVM>>[]
-
+    // maps each dish id to it's view model
     dishes.forEach((dish) => {
         const obj = dishTransMap.get(dish.id)
         const status = findDishStatus(obj?.transaction)
