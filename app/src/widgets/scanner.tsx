@@ -271,6 +271,13 @@ const BottomTextInput = ({ onSubmit }) => {
         return false;
     };
 
+    const handleEnterKey = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    };
+
     return (
         <Box sx={styles.bottomInputFrame}>
             <Paper
@@ -281,6 +288,7 @@ const BottomTextInput = ({ onSubmit }) => {
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
                     onChange={(e) => setInputDishId(e.target.value)}
+                    onKeyDown={handleEnterKey}
                     placeholder="Enter dish #..."
                     inputProps={{ 'aria-label': 'Enter dish #...' }}
                 />
