@@ -10,6 +10,6 @@ if [ "#$ID_TOKEN" == "#" ] || [ "#$SESSION_TOKEN" == "#" ] ; then
 fi
 
 curl -i -X GET \
-    -H "x-api-key: $API_KEY" \
+    -H "x-api-key: test" \
     -H "session-token: $SESSION_TOKEN" \
-    "http://localhost:8080/api/dish/?all=$ALL_DISHES&borrowed=$BORROWED&transaction=$WITH_TRANSACTIONS"
+    "http://localhost:8080/api/dish?all=$ALL_DISHES&borrowed=$BORROWED&transaction=$WITH_TRANSACTIONS"
