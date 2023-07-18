@@ -4,10 +4,7 @@ import { db } from './firebase'
 
 export const getUserTransactions = async (userClaims: DecodedIdToken) => {
     let transactions = <Array<Transaction>>[]
-    let transactionsQuerySnapshot = await db
-        .collection('transactions')
-        .where('user', '==', userClaims.uid)
-        .get()
+    let transactionsQuerySnapshot = await db.collection('transactions').where('user', '==', userClaims.uid).get()
     transactionsQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
         transactions.push({

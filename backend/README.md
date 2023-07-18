@@ -70,6 +70,22 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     borrowed: if set to true, only the dishes currently being used by the logged in user will be returned
     transaction: if set to true, then dishes will be returned with transaction details
     ```
+- #### POST `/api/dish/create`
+    This route will create a new dish in the database only if user is an admin.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    body:
+    ```
+    dish: {
+        qid: number,    * required
+        registered: string,
+        type: string,   * required
+    }
+    ```
 
 ### Transaction
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:

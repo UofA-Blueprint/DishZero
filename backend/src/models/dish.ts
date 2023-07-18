@@ -1,7 +1,7 @@
 export type Dish = {
     id: string
     qid: number
-    registered: Date
+    registered: string
     type: string
 }
 
@@ -19,5 +19,5 @@ export type DishTableVM = {
     status: DishStatus
     overdue: number
     timesBorrowed: number
-    dateAdded: Date
+    dateAdded: string
 }

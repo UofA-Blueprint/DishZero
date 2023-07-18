@@ -1,7 +1,9 @@
+import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import { Dish, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { db } from './firebase'
+import Logger from '../utils/logger'
 
 export function getAllUserDishes(
     userClaims: DecodedIdToken,
@@ -88,9 +90,7 @@ export function mapDishesToLatestTransaction(
             if (map.has(dishID)) {
                 let curObj = map.get(dishID)
                 let latestTransaction =
-                    curObj.transaction.timestamp < transaction.timestamp
-                        ? curObj.transaction
-                        : transaction
+                    curObj.transaction.timestamp < transaction.timestamp ? curObj.transaction : transaction
                 map.set(dishID, {
                     transaction: latestTransaction,
                     count: curObj.count + 1,
@@ -143,7 +143,67 @@ function findDishStatus(transaction: Transaction | undefined): DishStatus {
         return DishStatus.broken
     }
 
-    // TO DO check for lost and overdue dishes
+    // TODO: check for lost and overdue dishes
 
     return DishStatus.returned
+}
+
+export const validateDishRequestBody = (dish: Dish) => {
+    const schema = Joi.object({
+        qid: Joi.number().required(),
+        registered: Joi.string(),
+        type: Joi.string().required(),
+    })
+    return schema.validate(dish)
+}
+
+export const getDish = async (qid: number) => {
+    const snapshot = await db.collection('dishes').where('qid', '==', qid).get()
+    if (snapshot.empty) {
+        return null
+    }
+    let data = snapshot.docs[0].data()
+    return {
+        id: snapshot.docs[0].id,
+        qid: data.qid,
+        registered: data.registered,
+        type: data.type,
+    }
+}
+
+export const createDishInDatabase = async (dish: Dish) => {
+    let validation = validateDishRequestBody(dish)
+    if (validation.error) {
+        Logger.error({
+            module: 'dish.services',
+            message: 'Invalid dish request body',
+        })
+        throw new Error(validation.error.message)
+    }
+
+    // check if dish with qid already exists
+    let existingDish = await getDish(dish.qid)
+    if (existingDish) {
+        Logger.error({
+            module: 'dish.services',
+            message: 'Dish with qid already exists',
+        })
+        throw new Error('Dish with qid already exists')
+    }
+
+    // set registered date to current date if not provided
+    if (!dish.registered) {
+        dish.registered = new Date().toISOString()
+    }
+
+    let createdDish = await db.collection('dishes').add(dish)
+    Logger.info({
+        module: 'dish.services',
+        message: 'Created dish in database',
+    })
+
+    return {
+        ...dish,
+        id: createdDish.id,
+    }
 }

@@ -9,11 +9,12 @@ import {
     getAllUserDishesVM,
     mapDishesToLatestTransaction,
     mapToDishVM,
+    createDishInDatabase
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
-import { verifyIfUserAdmin } from '../services/users'
 import { getAllTransactions } from '../services/transactions'
 import Logger from '../utils/logger'
+import { verifyIfUserAdmin } from '../services/users'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -140,4 +141,29 @@ export const getDishes = async (req: Request, res: Response) => {
     }
 
     return res.status(200).json({ userDishesVM })
+}
+
+export const createDish = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    try {
+        let dish = await createDishInDatabase(req.body.dish)
+        return res.status(200).json({ dish })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when creating dish in database',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
 }
