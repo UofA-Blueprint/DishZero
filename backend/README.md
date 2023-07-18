@@ -87,7 +87,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     }
     ```
 
-- #### POST `/api/dish/borrow?qr_code=`
+- #### POST `/api/dish/borrow?qid=`
     This route will borrow a dish if the user is logged in and the dish is available. The route will also create a transaction in the database.
 
     headers:
@@ -97,7 +97,20 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     ```
     query:
     ```
-    qr_code: qr_code of the dish to be borrowed
+    qid: qr_code of the dish to be borrowed
+    ```
+
+- #### POST `/api/dish/return?qid=`
+    This route will return a dish if the user is logged in and the dish is borrowed by the user. The route will also update the transaction in the database.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qid: qr_code of the dish to be returned
     ```
 
 ### Transactions
