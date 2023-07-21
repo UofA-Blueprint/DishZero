@@ -225,3 +225,7 @@ export const updateBorrowedStatus = async (id: string, borrowed: boolean) => {
         message: 'Updated borrowed status',
     })
 }
+
+export const updateCondition = async (id: string, condition: string) => {
+    await db.collection('dishes').doc(id).update({ condition })
+}
