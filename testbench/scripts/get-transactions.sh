@@ -12,4 +12,4 @@ fi
 curl -i -X GET \
     -H "x-api-key: test" \
     --cookie "session=$SESSION_TOKEN" \
-    http://localhost:8080/api/transactions
+    http://localhost:8080/api/transactions?all=$ALL_TRANSACTIONS
