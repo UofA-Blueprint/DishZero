@@ -71,7 +71,7 @@ const GetDishes = (user) =>{
     .catch(function (error) {
       console.log(error);
     });
-  },[dishesUsed])
+  },[])
 
   let dishes = DishAPI.getUserActiveDishes(user.uid);
   return (  
