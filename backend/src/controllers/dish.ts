@@ -153,7 +153,7 @@ export const getDishes = async (req: Request, res: Response) => {
             return res.status(403).json({ error: 'forbidden' })
         }
 
-        req.log.info('sending all dishes to admin')
+        Logger.info('sending all dishes to admin')
         return res.status(200).json({ dishes: allDishesVM })
     }
 
