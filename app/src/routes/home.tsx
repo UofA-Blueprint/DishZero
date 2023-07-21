@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FirebaseContext, Role } from "../firebase";
 import { useLocation, Link } from "react-router-dom";
 import DishAPI from "../features/api";
@@ -20,6 +20,11 @@ const DishLog = ({dishes}) => {
       { dishes.map(dish => {
         return <DishCard dish={dish} />
       }) }
+      <div>
+        <button id="prev">Prev</button>
+        <input type="number" id="page-number" />
+        <button id="next">Next</button>
+      </div>
     </div>
   )
 };
@@ -53,26 +58,30 @@ const NewUser = (user) => {
 };
 
 const GetDishes = (user) =>{
-  const [dishesUsed, setDishesUsed] = useState('');
+  const [dishesUsed, setDishesUsed] = useState([]);
 
   const location = useLocation();
   let sessionToken = location.state
-  axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
-  .then(function (response) {
-    setDishesUsed(response.data.transactions.length)
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  useEffect(()=>{
+    axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
+    .then(function (response) {
+      setDishesUsed(response.data.transactions)
+      console.log("data:",response.data.transactions)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  },[dishesUsed])
+
   let dishes = DishAPI.getUserActiveDishes(user.uid);
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
           {/* <p> {data.transactions.length} </p> */}
-          <p className="details-2 mt-1">{dishesUsed} in use</p>
+          <p className="details-2 mt-1">{dishesUsed.length} in use</p>
         </div>
-        { dishes?.length ? <DishLog dishes={dishes} /> :
+        { dishesUsed.length ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">
             <div className="mt-5 d-flex justify-content-center">
               <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
@@ -141,11 +150,22 @@ const Footer = () => {
 
 export default () => {
   const fbContext = useContext(FirebaseContext);
+  const [dishesUsed, setDishesUsed] = useState('');
   var content;
+  const location = useLocation();
+  let sessionToken = location.state
+  // axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
+  // .then(function (response) {
+  //   setDishesUsed(response.data.transactions.length)
+  // })
+  // .catch(function (error) {
+  //   console.log(error);
+  // });
+
   let user = fbContext?.user
   if (user !== undefined){ // User is defined
-    let dishes = DishAPI.getUserActiveDishes(user.uid);
-    if (dishes?.length == 0){ // New user (change this back to ==)
+    // let dishes = DishAPI.getUserActiveDishes(user.uid);
+    if (Number(dishesUsed) == 0){ 
       content = NewUser(user)
     } else { 
       content = ExistingUser(user)
