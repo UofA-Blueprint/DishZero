@@ -28,7 +28,7 @@ export const getAllTransactions = async () => {
             dishID: data.dish ? data.dish.id : null,
             userID: data.user,
             returned: data.returned ? data.returned : {},
-            timestamp: data.timestamp ? data.timestamp.toDate() : null,
+            timestamp: data.timestamp ? data.timestamp : null,
         })
     })
     return transactions

@@ -77,7 +77,7 @@ export async function getAllDishes(): Promise<Array<Dish>> {
         dishData.push({
             id: doc.id,
             qid: parseInt(data.qid, 10),
-            registered: data.registered.toDate(),
+            registered: data.registered ? data.registered : '',
             type: data.type ? data.type : '',
         })
     })
