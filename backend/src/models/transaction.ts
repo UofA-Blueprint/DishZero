@@ -1,8 +1,16 @@
 // need more info on returned type
 export type Transaction = {
-    id: string
-    dishID: string
+    id?: string
+    dish: {
+        qid: number
+        id: string
+        type: string
+    }
     userID: string
-    returned: any
-    timestamp: Date
+    returned: {
+        broken: boolean
+        lost: boolean
+        timestamp?: Date
+    }
+    timestamp: string
 }

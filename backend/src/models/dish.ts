@@ -3,6 +3,7 @@ export type Dish = {
     qid: number
     registered: string
     type: string
+    borrowed: boolean
 }
 
 export enum DishStatus {
