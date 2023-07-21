@@ -115,6 +115,21 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     qid: qr_code of the dish to be returned
     ```
 
+- #### POST `/api/dish/condition?qid=`
+    This route will update the condition for the dish.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    body:
+    ```
+    {
+        condition: string,    * required
+    }
+    ```
+
 ### Transactions
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:
 - #### GET `/api/transactions?all=`
