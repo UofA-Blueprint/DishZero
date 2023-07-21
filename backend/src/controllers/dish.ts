@@ -10,7 +10,8 @@ import {
     getAllUserDishesVM,
     mapDishesToLatestTransaction,
     mapToDishVM,
-    createDishInDatabase
+    createDishInDatabase,
+    updateCondition
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import { getAllTransactions } from '../services/transactions'
@@ -30,26 +31,37 @@ export const getDishes = async (req: Request, res: Response) => {
     try {
         allDishes = await getAllDishes()
         Logger.info({
+            module: 'dish.controller',
+            function: 'getDishes',
             message: 'retrieved all dishes',
         })
-    } catch (err: any) {
+    } catch (error: any) {
         Logger.error({
-            error: err.message,
+            module: 'dish.controller',
+            function: 'getDishes',
+            message: 'error when getting all dishes',
+            error,
             statusCode: 500
         })
-        return res.status(500).json({ error: 'internal_server_error', message: err.message })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
 
     if (withTransactions !== 'true' && all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
+                module: 'dish.controller',
+                function: 'getDishes',
                 message: 'User is not admin',
                 statusCode: 403
             })
             return res.status(403).json({ error: 'forbidden' })
         }
 
-        Logger.info('sending all dishes to admin')
+        Logger.info({
+            module: 'dish.controller',
+            function: 'getDishes',
+            message: 'sending all dishes to admin'
+        })
         return res.status(200).json({ dishes: allDishes})
     }
 
@@ -57,25 +69,35 @@ export const getDishes = async (req: Request, res: Response) => {
     let transactions = <Array<Transaction>>[]
     try {
         transactions = await getAllTransactions()
-    } catch (e) {
+    } catch (error: any) {
         Logger.error({
-            error: e,
+            module: 'dish.controller',
+            function: 'getDishes',
+            error,
             message: 'Error when fetching dishes transactions from firebase',
             statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
-    Logger.info({ message: 'retrieved transactions from firebase' })
+    Logger.info({ 
+        module: 'dish.controller',
+        function: 'getDishes',
+        message: 'retrieved transactions from firebase'
+    })
 
     let dishTransMap = new Map<string, { transaction: Transaction; count: number }>()
     try {
         dishTransMap = mapDishesToLatestTransaction(transactions)
         Logger.info({
+            module: 'dish.controller',
+            function: 'getDishes',
             message: 'Mapped dishes to transactions',
         })
-    } catch (e) {
+    } catch (error: any) {
         Logger.error({
-            error: e,
+            module: 'dish.controller',
+            function: 'getDishes',
+            error,
             message: 'Error when mapping dishes to transactions',
             statusCode: 500,
         })
@@ -90,9 +112,11 @@ export const getDishes = async (req: Request, res: Response) => {
             } else {
                 userDishes = getAllUserDishes(userClaims, allDishes, dishTransMap)
             }
-        } catch (e) {
+        } catch (error: any) {
             Logger.error({
-                error: e,
+                module: 'dish.controller',
+                function: 'getDishes',
+                error,
                 message: 'error when getting user dishes',
                 statusCode: 500
             })
@@ -104,27 +128,43 @@ export const getDishes = async (req: Request, res: Response) => {
     let allDishesVM = <Array<any>>[]
     try {
         allDishesVM = mapToDishVM(allDishes, dishTransMap)
-        Logger.info({ message: 'Mapped transactions to view model' })
-    } catch (e) {
+        Logger.info({ 
+            module: 'dish.controller',
+            function: 'getDishes',
+            message: 'Mapped transactions to view model' 
+        })
+    } catch (error: any) {
         Logger.error({
-            error: e,
+            module: 'dish.controller',
+            function: 'getDishes',
+            error,
             message: 'Error when mapping transactions to view model',
             statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
-    Logger.info({ message: 'Sending dish data with transactions' })
+    Logger.info({ 
+        module: 'dish.controller',
+        function: 'getDishes',
+        message: 'Sending dish data with transactions' 
+    })
 
     if (all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
+                module: 'dish.controller',
+                function: 'getDishes',
                 message: 'User is not admin',
                 statusCode: 403
             })
             return res.status(403).json({ error: 'forbidden' })
         }
 
-        req.log.info('sending all dishes to admin')
+        Logger.info({
+            module: 'dish.controller',
+            function: 'getDishes',
+            message: 'sending all dishes to admin'
+        })
         return res.status(200).json({ dishes: allDishesVM })
     }
 
@@ -135,9 +175,11 @@ export const getDishes = async (req: Request, res: Response) => {
         } else {
             userDishesVM = getAllUserDishesInUse(userClaims, allDishesVM, dishTransMap)
         }
-    } catch (e) {
+    } catch (error: any) {
         Logger.error({
-            error: e,
+            module: 'dish.controller',
+            function: 'getDishes',
+            error,
             message: 'error when getting user dishes view model',
             statusCode: 500
         })
@@ -245,7 +287,7 @@ export const borrowDish = async (req: Request, res: Response) => {
     } catch (error: any) {
         Logger.error({
             module: 'dish.controller',
-            function: 'getDish',
+            function: 'borrowDish',
             error,
             message: 'Error when borrowing dish',
             statusCode: 500,
@@ -330,9 +372,9 @@ export const returnDish = async (req: Request, res: Response) => {
     } catch(error: any) {
         Logger.error({
             module: 'dish.controller',
-            function: 'getDish',
+            function: 'returnDish',
             error,
-            message: 'Error when fetching dish',
+            message: 'Error when returning dish',
         })
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
@@ -350,7 +392,7 @@ export const updateDishCondition = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'bad_request' })
     }
 
-    let condition = req.query['condition']?.toString()
+    let condition = req.body.condition
     if (!condition) {
         Logger.error({
             module: 'dish.controller',
@@ -361,9 +403,43 @@ export const updateDishCondition = async (req: Request, res: Response) => {
     }
 
     // check if the dish exists
-    // if yes, check if it is borrowed
-    // if yes, get the transaction and update it with condition
+    // if yes, update it with condition
+    try {
+        // Check if the qr code exists
+        let qrCodeExits = await getQrCode(qid)
+        if (!qrCodeExits) {
+            Logger.error({
+                module: 'dish.controller',
+                message: 'qr code not found',
+            })
+            return res.status(400).json({ error: 'operation_not_allowed', message: 'qr code not found' })
+        }
 
-    // update the transaction
-    return res.status(200).json({message: "updated condition"})
+        let associatedDish = await getDish(parseInt(qid, 10))
+        if (!associatedDish) {
+            Logger.error({
+                module: 'dish.controller',
+                message: 'Dish not found',
+            })
+            return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+        }
+
+        await updateCondition(associatedDish.id, condition)
+
+        Logger.info({
+            module: 'dish.controller',
+            function: 'updateDishCondition',
+            message: 'successfully updated dish condition'
+        })
+
+        return res.status(200).json({message : "updated condition"})
+    } catch(error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            function: 'updateDishCondition',
+            error,
+            message: 'Error when updating dish condition',
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
 }
