@@ -4,6 +4,7 @@ export type Dish = {
     registered: string
     type: string
     borrowed: boolean
+    condition?: string
 }
 
 export enum DishStatus {
