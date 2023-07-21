@@ -6,18 +6,28 @@ import requests
 import datetime
 import sys
 
+def create_custom_token():
+    role = os.environ['CUR_ROLE']
+    if role == 'admin':
+        uid = os.environ['ADMIN_ID']
+        claims = {
+            'email' : os.environ['ADMIN_EMAIL'],
+            'role' : 'admin'
+        }
+        return auth.create_custom_token(uid, developer_claims=claims, app=default_app).decode('utf-8')
+    else:
+        uid = os.environ['USER_ID']
+        claims = {
+            'email' : os.environ['USER_EMAIL'],
+            'role' : os.environ['USER_ROLE']
+        }
+        return auth.create_custom_token(uid, developer_claims=claims, app=default_app).decode('utf-8')
 API_KEY = os.environ['API_KEY']
 
 cred = credentials.Certificate('credentials.json')
 default_app = firebase_admin.initialize_app(cred)
 
-# create a custom token
-uid = os.environ['ADMIN_ID']
-claims = {
-    'email' : 'admin@email.com',
-    'role' : 'admin'
-}
-custom_token = auth.create_custom_token(uid, developer_claims=claims, app=default_app).decode('utf-8')
+custom_token = create_custom_token()
 
 # get an id token using the custom token
 res = requests.post(
