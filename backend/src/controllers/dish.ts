@@ -167,3 +167,33 @@ export const createDish = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
 }
+
+export const updateDishCondition = async (req: Request, res: Response) => {
+    // get qid and condition
+    let qid = req.query['qid']?.toString()
+    if (!qid) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'No qid provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    let condition = req.query['condition']?.toString()
+    if (!condition) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'No condition provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    // check if the dish exists
+    // if yes, check if it is borrowed
+    // if yes, get the transaction and update it with condition
+
+    // update the transaction
+    return res.status(200).json({message: "updated condition"})
+}
