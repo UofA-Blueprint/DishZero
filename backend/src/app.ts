@@ -14,7 +14,10 @@ dotenv.config()
 app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
-if (process.env.NODE_ENV !== 'test') {
+
+let environment = process.env.NODE_ENV
+
+if (environment === 'prod') {
     app.use(
         pinoHttp({
             transport: {

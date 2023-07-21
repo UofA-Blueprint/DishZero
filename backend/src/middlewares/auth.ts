@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv'
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 import { auth } from '../services/firebase'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
+import Logger from '../utils/logger'
 dotenv.config()
 
 const API_KEY = process.env.API_KEY
@@ -31,19 +32,21 @@ export interface TokenPayload {
 export const verifyApiKey = (req: Request, res: Response, next: NextFunction) => {
     const apikey = req.header('x-api-key')
     if (!apikey) {
-        req.log.error({
+        Logger.error({
             error: 'No api key provided',
+            statusCode: 401,
         })
         return res.status(401).json({ error: 'no_api_key_provided' })
     }
     if (apikey !== API_KEY) {
-        req.log.error({
+        Logger.error({
             error: 'Invalid api key',
+            statusCode: 401,
         })
         return res.status(401).json({ error: 'invalid_api_key' })
     }
 
-    req.log.info({
+    Logger.info({
         message: 'API key is valid',
     })
 
@@ -60,8 +63,9 @@ export const verifyApiKey = (req: Request, res: Response, next: NextFunction) =>
 export const verifyDishzeroToken = (req: Request, res: Response, next: NextFunction) => {
     const token = req.header('x-dishzero-token')
     if (!token) {
-        req.log.error({
+        Logger.error({
             error: 'No token provided',
+            statusCode: 401,
         })
         return res.status(401).json({ error: 'no_token_provided' })
     }
@@ -69,27 +73,30 @@ export const verifyDishzeroToken = (req: Request, res: Response, next: NextFunct
     try {
         const decoded = jwt.verify(token, SECRET_KEY) as TokenPayload
         ;(req as CustomRequest).dishzero = decoded
-        req.log.info({
+        Logger.info({
             message: 'JWT token is valid',
         })
         next()
     } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
-            req.log.error({
+            Logger.error({
                 error: error,
                 message: 'JWT token is expired',
+                statusCode: 401,
             })
             return res.status(401).json({ error: 'token_expired' })
         } else if (error instanceof jwt.JsonWebTokenError) {
-            req.log.error({
+            Logger.error({
                 error: error,
                 message: 'JWT token is invalid',
+                statusCode: 401,
             })
             return res.status(401).json({ error: 'invalid_token' })
         } else {
-            req.log.error({
+            Logger.error({
                 error: error,
                 message: 'Unknown error when verifying JWT token',
+                statusCode: 500,
             })
             return res.status(500).json({ error: 'internal_server_error' })
         }
@@ -106,8 +113,9 @@ export const verifyDishzeroToken = (req: Request, res: Response, next: NextFunct
 export const verifyFirebaseToken = (req: Request, res: Response, next: NextFunction) => {
     const sessionCookies = req.header('session-token') || req.cookies?.session
     if (!sessionCookies) {
-        req.log.error({
+        Logger.error({
             error: 'No session token or cookie provided',
+            statusCode: 401,
         })
         return res.status(401).json({ error: 'no_session_token_provided' })
     }
@@ -117,9 +125,10 @@ export const verifyFirebaseToken = (req: Request, res: Response, next: NextFunct
             next()
         })
         .catch((error) => {
-            req.log.error({
+            Logger.error({
                 error,
                 message: 'Error when verifying firebase session token',
+                statusCode: 401,
             })
             return res.status(401).json({ error: 'invalid_session_token' })
         })
