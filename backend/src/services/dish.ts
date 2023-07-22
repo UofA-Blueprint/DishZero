@@ -25,6 +25,7 @@ export const getDish = async (qid: number) => {
 
 export const createDishInDatabase = async (dish: Dish) => {
     let validation = validateDishRequestBody(dish)
+    console.log(validation)
     if (validation.error) {
         Logger.error({
             module: 'dish.services',
@@ -189,9 +190,20 @@ export const validateDishRequestBody = (dish: Dish) => {
         qid: Joi.number().required(),
         registered: Joi.string(),
         type: Joi.string().required(),
-    })
+    }).required()
+
     return schema.validate(dish)
 }
+
+export const validateReturnDishRequestBody = (dish: Dish) => {
+    const schema = Joi.object({
+        broken: Joi.boolean().required(),
+        lost: Joi.boolean().required(),
+    }).required()
+
+    return schema.validate(dish)
+}
+
 
 export const updateBorrowedStatus = async (dish : Dish, userClaims : DecodedIdToken, borrowed: boolean) => {
     // when borrowing, set userID and increase timesBorrowed

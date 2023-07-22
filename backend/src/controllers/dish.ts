@@ -9,7 +9,8 @@ import {
     updateCondition,
     getAllDishes,
     getUserDishes,
-    getUserDishesSimple
+    getUserDishesSimple,
+    validateReturnDishRequestBody
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
@@ -192,8 +193,6 @@ export const borrowDish = async (req: Request, res: Response) => {
 
 export const returnDish = async (req: Request, res: Response) => {
     let qid = req.query['qid']?.toString()
-    // TODO: put a request body validation
-    let { broken, lost } = req.body.returned
     if (!qid) {
         Logger.error({
             module: 'dish.controller',
@@ -202,6 +201,18 @@ export const returnDish = async (req: Request, res: Response) => {
         })
         return res.status(400).json({ error: 'bad_request', message: "no dish_id provided" })
     }
+
+    let validation = validateReturnDishRequestBody(req.body.returned)
+    if (validation.error) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'No values for broken or lost provided',
+            statusCode: 400,         
+        })
+
+        return res.status(400).json({ error: 'bad_request', message: "no values for broken or lost provided" })
+    }
+    let { broken, lost } = req.body.returned
 
     let userClaims = (req as CustomRequest).firebase
     try {
