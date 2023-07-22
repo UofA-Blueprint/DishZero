@@ -4,10 +4,8 @@ import { Transaction } from '../models/transaction'
 import {
     getDish,
     updateBorrowedStatus,
-    getAllDishes,
+    getAllDishesSimple,
     getAllUserDishes,
-    getAllUserDishesInUse,
-    getAllUserDishesVM,
     mapDishesToLatestTransaction,
     mapToDishVM,
     createDishInDatabase,
@@ -24,169 +22,35 @@ import { db } from '../services/firebase'
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
     let all = req.query['all']?.toString()
-    let withTransactions = req.query['transaction']?.toString()
-    let borrowed = req.query['borrowed']?.toString()
+    let transaction = req.query['transaction']?.toString()
 
-    let allDishes = <Array<Dish>>[]
-    try {
-        allDishes = await getAllDishes()
-        Logger.info({
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'retrieved all dishes',
-        })
-    } catch (error: any) {
-        Logger.error({
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'error when getting all dishes',
-            error,
-            statusCode: 500
-        })
-        return res.status(500).json({ error: 'internal_server_error', message: error.message })
-    }
-
-    if (withTransactions !== 'true' && all === 'true') {
+    if (all == 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 module: 'dish.controller',
-                function: 'getDishes',
                 message: 'User is not admin',
-                statusCode: 403
+                statusCode: 403,
             })
             return res.status(403).json({ error: 'forbidden' })
         }
+        let allDishes
+        if (transaction == 'true') {
 
-        Logger.info({
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'sending all dishes to admin'
-        })
-        return res.status(200).json({ dishes: allDishes})
-    }
-
-    // get transactions
-    let transactions = <Array<Transaction>>[]
-    try {
-        transactions = await getAllTransactions()
-    } catch (error: any) {
-        Logger.error({
-            module: 'dish.controller',
-            function: 'getDishes',
-            error,
-            message: 'Error when fetching dishes transactions from firebase',
-            statusCode: 500,
-        })
-        return res.status(500).json({ error: 'internal_server_error' })
-    }
-    Logger.info({ 
-        module: 'dish.controller',
-        function: 'getDishes',
-        message: 'retrieved transactions from firebase'
-    })
-
-    let dishTransMap = new Map<string, { transaction: Transaction; count: number }>()
-    try {
-        dishTransMap = mapDishesToLatestTransaction(transactions)
-        Logger.info({
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'Mapped dishes to transactions',
-        })
-    } catch (error: any) {
-        Logger.error({
-            module: 'dish.controller',
-            function: 'getDishes',
-            error,
-            message: 'Error when mapping dishes to transactions',
-            statusCode: 500,
-        })
-        return res.status(500).json({ error: 'internal_server_error' })
-    }
-
-    let userDishes
-    if (withTransactions !== 'true') {
-        try {
-            if (borrowed === 'true') {
-                userDishes = getAllUserDishesInUse(userClaims, allDishes, dishTransMap)
-            } else {
-                userDishes = getAllUserDishes(userClaims, allDishes, dishTransMap)
-            }
-        } catch (error: any) {
-            Logger.error({
-                module: 'dish.controller',
-                function: 'getDishes',
-                error,
-                message: 'error when getting user dishes',
-                statusCode: 500
-            })
-            return res.status(500).json({ error: 'internal_server_error' })
-        }
-        return res.status(200).json({ dishes: userDishes })
-    }
-
-    let allDishesVM = <Array<any>>[]
-    try {
-        allDishesVM = mapToDishVM(allDishes, dishTransMap)
-        Logger.info({ 
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'Mapped transactions to view model' 
-        })
-    } catch (error: any) {
-        Logger.error({
-            module: 'dish.controller',
-            function: 'getDishes',
-            error,
-            message: 'Error when mapping transactions to view model',
-            statusCode: 500,
-        })
-        return res.status(500).json({ error: 'internal_server_error' })
-    }
-    Logger.info({ 
-        module: 'dish.controller',
-        function: 'getDishes',
-        message: 'Sending dish data with transactions' 
-    })
-
-    if (all === 'true') {
-        if (!verifyIfUserAdmin(userClaims)) {
-            Logger.error({
-                module: 'dish.controller',
-                function: 'getDishes',
-                message: 'User is not admin',
-                statusCode: 403
-            })
-            return res.status(403).json({ error: 'forbidden' })
-        }
-
-        Logger.info({
-            module: 'dish.controller',
-            function: 'getDishes',
-            message: 'sending all dishes to admin'
-        })
-        return res.status(200).json({ dishes: allDishesVM })
-    }
-
-    let userDishesVM
-    try {
-        if (borrowed !== 'true') {
-            userDishesVM = getAllUserDishesVM(userClaims, allDishesVM, dishTransMap)
         } else {
-            userDishesVM = getAllUserDishesInUse(userClaims, allDishesVM, dishTransMap)
+            allDishes = await getAllDishesSimple()
         }
-    } catch (error: any) {
-        Logger.error({
+        
+        Logger.info({
             module: 'dish.controller',
             function: 'getDishes',
-            error,
-            message: 'error when getting user dishes view model',
-            statusCode: 500
+            message: 'sending all dishes to admin'
         })
-        return res.status(500).json({ error: 'internal_server_error' })
-    }
 
-    return res.status(200).json({ dishes: userDishesVM })
+        return res.status(200).json({dishes: allDishes})
+        
+    }
+    return res.status(200).json({dishes: []})
+
 }
 
 export const createDish = async (req: Request, res: Response) => {

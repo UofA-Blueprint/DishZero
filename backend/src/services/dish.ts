@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
-import { Dish, DishStatus, DishTableVM } from '../models/dish'
+import { Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { db } from './firebase'
 import Logger from '../utils/logger'
@@ -21,68 +21,31 @@ export function getAllUserDishes(
     return dishData
 }
 
-export function getAllUserDishesInUse(
-    userClaims: DecodedIdToken,
-    allDishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let dishData = <Array<Dish>>[]
-    allDishes.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (findDishStatus(obj.transaction) == DishStatus.inUse)) {
-            dishData.push(dish)
-        }
-    })
-    Logger.info({message: `got all dishes in use from firebase for user ${userClaims.uid}`})
-    return dishData
-}
 
-export function getAllUserDishesVM(
-    userClaims: DecodedIdToken,
-    allDishesVM: Array<DishTableVM>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let userDishesVM = <Array<DishTableVM>>[]
-    allDishesVM.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if (obj?.transaction.userID == userClaims.uid) {
-            userDishesVM.push(dish)
-        }
-    })
-    Logger.info({message: `returning dishes view model for user ${userClaims.uid}`})
-    return userDishesVM
-}
-
-export function getAllUserDishesVMInUse(
-    userClaims: DecodedIdToken,
-    allDishesVM: Array<DishTableVM>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let userDishesVM = <Array<DishTableVM>>[]
-    allDishesVM.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (dish.status == DishStatus.inUse)) {
-            userDishesVM.push(dish)
-        }
-    })
-    Logger.info({message: `returning dishes (those in use) view model for user ${userClaims.uid}`})
-    return userDishesVM
-}
-
-export async function getAllDishes(): Promise<Array<Dish>> {
-    let dishData = <Array<Dish>>[]
+export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
+    let dishData = <Array<DishSimple>>[]
     let dishesQuerySnapshot = await db.collection('dishes').get()
     dishesQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
         dishData.push({
             id: doc.id,
             qid: parseInt(data.qid, 10),
-            registered: data.registered.toDate(),
-            type: data.type ? data.type : '',
-            borrowed: data.borrowed ? data.borrowed : false,
+            registered: time, // change from nanosecond
+            type: data.type,        // type is required
         })
     })
-    Logger.info({message: "got all dishes from firebase"})
+    Logger.info({
+        module: 'dish.services',
+        function: 'getAllDishesSimple',
+        message: "got all dishes from firebase"
+    })
     return dishData
 }
 
@@ -92,12 +55,17 @@ export function mapDishesToLatestTransaction(
     const map = new Map()
     // goes through all transactions, and maps each dishID to the latest transaction
     transactions.forEach((transaction) => {
+        try {
         if (transaction.dish.id) {
             let dishID = transaction.dish.id
             if (map.has(dishID)) {
                 let curObj = map.get(dishID)
-                let latestTransaction =
-                    curObj.transaction.timestamp < transaction.timestamp ? curObj.transaction : transaction
+                let latestTransaction
+                try {
+                    latestTransaction = curObj.transaction.timestamp < transaction.timestamp ? curObj.transaction : transaction
+                } catch (err) {
+                    latestTransaction = curObj.transaction
+                }
                 map.set(dishID, {
                     transaction: latestTransaction,
                     count: curObj.count + 1,
@@ -109,6 +77,14 @@ export function mapDishesToLatestTransaction(
                 })
             }
         }
+    } catch (error) {
+        Logger.error({
+            module: 'dish.controller',
+            function: 'mapDishToLatestTrans',
+            error,
+            message: 'error when mapping dish to trans'
+        })
+    }
     })
     return map
 }
@@ -205,6 +181,8 @@ export const createDishInDatabase = async (dish: Dish) => {
 
     // new dishes are not borrowed and always set to false
     dish.borrowed = false
+    dish.timesBorrowed = 0
+    dish.status = DishStatus.available
 
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
