@@ -57,7 +57,7 @@ The auth routes are defined in the `src/routes/auth.ts` file. The routes are mou
 
 ### Dish
 The dish routes are defined in the `src/routes/dish.ts` file. The routes are mounted on the `/dish` path. The routes are:
-- #### GET `/api/dish?all=&borrowed=&transaction=`
+- #### GET `/api/dish?all=&transaction=`
     This route returns all the dishes in the database.
     
     headers:
@@ -68,7 +68,6 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     query:
     ```
     all (admin only): if set to true, then all dishes will be returned.
-    borrowed: if set to true, only the dishes currently being used by the logged in user will be returned
     transaction: if set to true, then dishes will be returned with transaction details
     ```
 
@@ -113,6 +112,14 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     query:
     ```
     qid: qr_code of the dish to be returned
+    ```
+
+    body:
+    ```
+    returned: {
+        broken: boolean,    * required
+        lost: boolean,   * required
+    }
     ```
 
 - #### POST `/api/dish/condition?qid=`
