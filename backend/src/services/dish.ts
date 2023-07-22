@@ -5,23 +5,6 @@ import { Transaction } from '../models/transaction'
 import { db } from './firebase'
 import Logger from '../utils/logger'
 
-export function getAllUserDishes(
-    userClaims: DecodedIdToken,
-    allDishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let dishData = <Array<Dish>>[]
-    allDishes.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if (obj?.transaction.userID == userClaims.uid) {
-            dishData.push(dish)
-        }
-    })
-    Logger.info({message: `got all dishes from firebase for user ${userClaims.uid}`})
-    return dishData
-}
-
-
 export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
     let dishData = <Array<DishSimple>>[]
     let dishesQuerySnapshot = await db.collection('dishes').get()
@@ -49,68 +32,97 @@ export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
     return dishData
 }
 
-export function mapDishesToLatestTransaction(
-    transactions: Array<Transaction>
-): Map<string, { transaction: Transaction; count: number }> {
-    const map = new Map()
-    // goes through all transactions, and maps each dishID to the latest transaction
-    transactions.forEach((transaction) => {
-        try {
-        if (transaction.dish.id) {
-            let dishID = transaction.dish.id
-            if (map.has(dishID)) {
-                let curObj = map.get(dishID)
-                let latestTransaction
-                try {
-                    latestTransaction = curObj.transaction.timestamp < transaction.timestamp ? curObj.transaction : transaction
-                } catch (err) {
-                    latestTransaction = curObj.transaction
-                }
-                map.set(dishID, {
-                    transaction: latestTransaction,
-                    count: curObj.count + 1,
-                })
-            } else {
-                map.set(dishID, {
-                    transaction: transaction,
-                    count: 1,
-                })
-            }
+export async function getUserDishesSimple(userClaims : DecodedIdToken): Promise<Array<DishSimple>> {
+    let dishData = <Array<DishSimple>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').where('user', '==', userClaims.uid).get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
         }
-    } catch (error) {
-        Logger.error({
-            module: 'dish.controller',
-            function: 'mapDishToLatestTrans',
-            error,
-            message: 'error when mapping dish to trans'
-        })
-    }
-    })
-    return map
-}
 
-export function mapToDishVM(
-    dishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-): Array<DishTableVM> {
-    let allDishesVM = <Array<DishTableVM>>[]
-    // maps each dish id to it's view model
-    dishes.forEach((dish) => {
-        const obj = dishTransMap.get(dish.id)
-        const status = findDishStatus(obj?.transaction)
-        // TO DO find overdue value
-        allDishesVM.push({
-            id: dish.id,
-            type: dish.type,
-            status: status,
-            overdue: 0,
-            timesBorrowed: obj?.count ? obj.count : 0,
-            dateAdded: dish.registered,
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time, // change from nanosecond
+            type: data.type,        // type is required
         })
     })
-
-    return allDishesVM
+    Logger.info({
+        module: 'dish.services',
+        function: 'getUserDishesSimple',
+        message: `got all dishes from firebase for user ${userClaims.uid}`
+    })
+    return dishData
 }
+
+export async function getAllDishes() : Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time,
+            type: data.type,
+            borrowed: data.borrowed ? data.borrowed : false,
+            timesBorrowed : data.timesBorrowed ? data.timesBorrowed : 0,
+            status : data.status ? data.status : DishStatus.available,
+            condition : data.condition ? data.condition : '',
+            userID : data.userID ? data.userID : null
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getAllDishesSimple',
+        message: "got all dishes from firebase"
+    })
+    return dishData
+}
+
+export async function getUserDishes(userClaims : DecodedIdToken) : Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').where('user', '==', userClaims.uid).get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time,
+            type: data.type,
+            borrowed: data.borrowed ? data.borrowed : false,
+            timesBorrowed : data.timesBorrowed ? data.timesBorrowed : 0,
+            status : data.status ? data.status : DishStatus.available,
+            condition : data.condition ? data.condition : '',
+            userID : data.user ? data.user : null
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getUserDishes',
+        message: `got all dishes from firebase for user ${userClaims.uid}`
+    })
+    return dishData 
+}
+
 
 // this whole returned thing needs more explanation, why is it an object
 function findDishStatus(transaction: Transaction | undefined): DishStatus {

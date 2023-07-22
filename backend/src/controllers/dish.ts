@@ -5,14 +5,13 @@ import {
     getDish,
     updateBorrowedStatus,
     getAllDishesSimple,
-    getAllUserDishes,
-    mapDishesToLatestTransaction,
-    mapToDishVM,
     createDishInDatabase,
-    updateCondition
+    updateCondition,
+    getAllDishes,
+    getUserDishes,
+    getUserDishesSimple
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
-import { getAllTransactions } from '../services/transactions'
 import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
 import { getTransaction, registerTransaction } from '../services/transactions'
@@ -23,7 +22,9 @@ export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
     let all = req.query['all']?.toString()
     let transaction = req.query['transaction']?.toString()
-
+    let dishes
+    
+    // if all is true, check if user is admin, if yes return all dishes
     if (all == 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
@@ -33,11 +34,22 @@ export const getDishes = async (req: Request, res: Response) => {
             })
             return res.status(403).json({ error: 'forbidden' })
         }
-        let allDishes
-        if (transaction == 'true') {
 
-        } else {
-            allDishes = await getAllDishesSimple()
+        try {
+            if (transaction == 'true') {
+                dishes = await getAllDishes()
+            } else {
+                dishes = await getAllDishesSimple()
+            }
+        } catch (error: any) {
+            Logger.error({
+                module: 'dish.controller',
+                function: 'getDishes',
+                error,
+                message : 'error when getting dishes from firebase'
+            })
+
+            return res.status(500).json({ error: 'internal_server_error'})
         }
         
         Logger.info({
@@ -46,11 +58,29 @@ export const getDishes = async (req: Request, res: Response) => {
             message: 'sending all dishes to admin'
         })
 
-        return res.status(200).json({dishes: allDishes})
+        return res.status(200).json({ dishes })
         
     }
-    return res.status(200).json({dishes: []})
 
+    // return dishes that the user has currently borrowed
+    try {
+        if (transaction == 'true') {
+            dishes = await getUserDishes(userClaims)
+        } else {
+            dishes = await getUserDishesSimple(userClaims)
+        }
+
+        return res.status(200).json({ dishes })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            function: 'getDishes',
+            error,
+            message : 'error when getting user dishes from firebase'
+        })
+
+        return res.status(500).json({ error: 'internal_server_error'})
+    }
 }
 
 export const createDish = async (req: Request, res: Response) => {
