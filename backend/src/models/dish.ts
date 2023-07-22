@@ -7,7 +7,7 @@ export type Dish = {
     condition?: string
     timesBorrowed: number
     status: DishStatus
-    userID: string
+    userID: string | null
 }
 
 export type DishSimple = {

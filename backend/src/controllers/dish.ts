@@ -171,7 +171,7 @@ export const borrowDish = async (req: Request, res: Response) => {
         }
 
         let newTransaction = await registerTransaction(transaction)
-        await updateBorrowedStatus(associatedDish.id, true)
+        await updateBorrowedStatus(associatedDish, userClaims, true)
 
         Logger.info({
             module: 'dish.controller',
@@ -246,7 +246,7 @@ export const returnDish = async (req: Request, res: Response) => {
         }
         
         // update the borrowed property of the dish to false
-        await updateBorrowedStatus(associatedDish.id, false)
+        await updateBorrowedStatus(associatedDish, userClaims, false)
 
         await db.collection('transactions').doc(ongoingTransaction.id).update({
             returned: {

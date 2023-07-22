@@ -5,7 +5,7 @@ import Logger from '../utils/logger'
 
 export const getUserTransactions = async (userClaims: DecodedIdToken) => {
     let transactions = <Array<Transaction>>[]
-    let transactionsQuerySnapshot = await db.collection('transactions').where('user', '==', userClaims.uid).get()
+    let transactionsQuerySnapshot = await db.collection('transactions').where('userID', '==', userClaims.uid).get()
     transactionsQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
         transactions.push({
