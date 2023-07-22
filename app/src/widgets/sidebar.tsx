@@ -1,24 +1,36 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
-import { Link } from "react-router-dom"; // TODO: convert <a> tags to <Link> components
-import { FirebaseAuth, FirebaseContext, Role } from "../firebase";
+import { FirebaseAuth, FirebaseContext } from "../firebase";
+import {onAuthStateChanged, getAuth} from "firebase/auth";
 import "../styles/sidebar.css"
-import how_it_works_icon from "../assets/how_it_works.svg";
+import { Link } from "@mui/material";
+import how_it_works_icon from "../assets/how_it_works.png";
 import logout_icon from "../assets/logout.svg";
-import our_impact_icon from "../assets/our_impact.svg";
-import home_icon from "../assets/home.svg";
+import our_impact_icon from "../assets/our_impact.png";
+import home_icon from "../assets/home.png";
+import admin_panel_icon from "../assets/admin_panel_settings.png";
+import task_icon from '../assets/task_icon.png';
 import logo from "../assets/logo.svg";
 
 export const Sidebar = () => {
   const fbContext = useContext(FirebaseContext);
-  let showAdmin = false;
-  let showVolunteer = false;
-  if (fbContext?.role == Role.ADMIN) {
-      showAdmin = true;
-      showVolunteer = true;
-  } else if (fbContext?.role == Role.VOLUNTEER) {
-      showVolunteer = true
-  }
+  const [admin, setAdmin] = useState(false);
+  const [volunteer, setVolunteer] = useState(false);
+  
+  const auth = getAuth();
+  
+  //When we load the page or refresh, check the role of the user and setadmin or volunteer accordingly
+  useEffect(() => {onAuthStateChanged(auth, (user) => {
+    if (fbContext?.role == "admin") {
+      setAdmin(true);
+      setVolunteer(true);
+  } else if (fbContext?.role == "volunteer" ) {
+      setAdmin(false);
+      setVolunteer(true);
+  } 
+  });
+  });
+  
   
   return (
     <Menu>
@@ -31,33 +43,41 @@ export const Sidebar = () => {
         <img style={{ paddingRight: 16, height: 32 }} src={logo} alt="" />
         DishZero
       </p>
+      
+      <p>MENU</p>
       <a className="menu-item" href="/home">
-        <p>MENU</p>
         <img style={{ paddingRight: 16 }} src={home_icon} alt="" />
         Home
       </a>
-      <a className="menu-item" href="/dishes">
-        <img style={{ paddingRight: 16 }} src=" " alt="" />
-        My dishes
-      </a>
+      {(admin || volunteer)  &&
+      <div style={{flex: 1, flexDirection: 'column'}}>
+        <p>VOLUNTEERS</p>
+        <a className="menu-item" href="/admin">
+          <img style={{paddingRight: 16}} src = {admin_panel_icon} alt=""/>
+          Admin panel
+        </a>
+        <br></br>
+        <a className="menu-item" href="/volunteer/return" style={{paddingTop: 10}}>
+          <img style={{paddingRight: 16}} src = {task_icon} alt=""/>
+          Return Dishes
+        </a>
+      </div>}
       <div style={{ paddingTop: 280 }}></div>
-      <a className="menu-item" href="/dishes" style={{}}>
+      <Link className="menu-item" href="https://www.dishzero.ca/how-it-works-1" style={{}}>
         <img style={{ paddingRight: 16 }} src={how_it_works_icon} alt="" />
         How it works
-      </a>
-      <a className="menu-item" href="/dishes">
+      </Link>
+      <Link className="menu-item" href="https://www.dishzero.ca/impact">
         <img src={our_impact_icon} style={{ paddingRight: 16 }} alt="" />
         Our impact
-      </a>
-      <button
-        className="menu-item"
-        onClick={() => {
-          FirebaseAuth.signOut();
-        }}
-      >
+      </Link>
+      <hr></hr>
+       <a className="menu-item" onClick={() => FirebaseAuth.signOut()}>
         <img src={logout_icon} style={{ paddingRight: 16 }} alt="" />
         Logout
-      </button>
+      </a>
+      <br></br>
+     
     </Menu>
   );
 };

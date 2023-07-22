@@ -1,15 +1,15 @@
 /* Position and sizing of burger button */
 .bm-burger-button {
     position: fixed;
-    width: 36px;
-    height: 30px;
-    left: 36px;
-    top: 36px;
+    width: 25px;
+    height: 19.05px;
+    left: 26px;
+    top: 67px;
   }
   
   /* Color/shape of burger icon bars */
   .bm-burger-bars {
-    background: #72778d;
+    background: white;
   }
   
   /* Color/shape of burger icon bars on hover*/
@@ -39,7 +39,7 @@
   
   /* General sidebar styles */
   .bm-menu {
-    background: white;
+    background: rgb(58, 58, 58);
     padding: 2.5em 1.5em 0;
     font-size: 1.15em;
   }
@@ -65,7 +65,7 @@
   /* ============= additional ================ */
   .menu-item {
     font-size: 20px;
-    color: black;
+    color: white;
     margin-bottom: 30px;
     text-align: left;
     text-decoration: none;
@@ -77,7 +77,7 @@
   }
   
   .memu-title {
-    color: black;
+    color: white;
     font-size: 30px;
     font-weight: bold;
     margin: 10px 0 50px 0;
@@ -85,6 +85,8 @@
     /* text-decoration: underline;
     text-underline-offset: 0.5em; */
   }
+
+  
   
   .logout {
     margin-top: auto;
