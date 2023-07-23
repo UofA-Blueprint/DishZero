@@ -11,7 +11,7 @@ import {
     mapDishesToLatestTransaction,
     mapToDishVM,
     createDishInDatabase,
-    getDishById
+    getDishById,
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import { getAllTransactions, getTransactionByDishId } from '../services/transactions'
@@ -68,7 +68,7 @@ export const getDishes = async (req: Request, res: Response) => {
     } catch (err: any) {
         Logger.error({
             error: err.message,
-            statusCode: 500
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error', message: err.message })
     }
@@ -77,13 +77,13 @@ export const getDishes = async (req: Request, res: Response) => {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 message: 'User is not admin',
-                statusCode: 403
+                statusCode: 403,
             })
             return res.status(403).json({ error: 'forbidden' })
         }
 
         Logger.info('sending all dishes to admin')
-        return res.status(200).json({ dishes: allDishes})
+        return res.status(200).json({ dishes: allDishes })
     }
 
     // get transactions
@@ -127,7 +127,7 @@ export const getDishes = async (req: Request, res: Response) => {
             Logger.error({
                 error: e,
                 message: 'error when getting user dishes',
-                statusCode: 500
+                statusCode: 500,
             })
             return res.status(500).json({ error: 'internal_server_error' })
         }
@@ -152,7 +152,7 @@ export const getDishes = async (req: Request, res: Response) => {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 message: 'User is not admin',
-                statusCode: 403
+                statusCode: 403,
             })
             return res.status(403).json({ error: 'forbidden' })
         }
@@ -172,7 +172,7 @@ export const getDishes = async (req: Request, res: Response) => {
         Logger.error({
             error: e,
             message: 'error when getting user dishes view model',
-            statusCode: 500
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error' })
     }
@@ -298,15 +298,15 @@ export const returnDish = async (req: Request, res: Response) => {
             message: 'No qid provided',
             statusCode: 400,
         })
-        return res.status(400).json({ error: 'bad_request', message: "no dish_id provided" })
+        return res.status(400).json({ error: 'bad_request', message: 'no dish_id provided' })
     }
 
     let userClaims = (req as CustomRequest).firebase
     try {
-        let qrCodeExits;
-        let associatedDish;
+        let qrCodeExits
+        let associatedDish
         let ongoingTransaction
-        
+
         if (qid) {
             // Check if the qr code exists
             qrCodeExits = await getQrCode(qid)
@@ -349,13 +349,16 @@ export const returnDish = async (req: Request, res: Response) => {
 
             await updateBorrowedStatus(associatedDish.id, false)
 
-            await db.collection('transactions').doc(ongoingTransaction.id).update({
-                returned: {
-                    broken,
-                    lost,
-                    timestamp: new Date().toISOString(),
-                },
-            })
+            await db
+                .collection('transactions')
+                .doc(ongoingTransaction.id)
+                .update({
+                    returned: {
+                        broken,
+                        lost,
+                        timestamp: new Date().toISOString(),
+                    },
+                })
 
             Logger.info({
                 module: 'dish.controller',
@@ -363,7 +366,7 @@ export const returnDish = async (req: Request, res: Response) => {
                 function: 'returnDish',
             })
 
-            return res.status(200).json({ message: "dish returned" })
+            return res.status(200).json({ message: 'dish returned' })
         }
 
         associatedDish = await getDishById(id!)
@@ -394,17 +397,20 @@ export const returnDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Transaction not found' })
         }
-        
+
         // update the borrowed property of the dish to false
         await updateBorrowedStatus(associatedDish.id, false)
 
-        await db.collection('transactions').doc(ongoingTransaction.id).update({
-            returned: {
-                broken,
-                lost,
-                timestamp: new Date().toISOString(),
-            },
-        })
+        await db
+            .collection('transactions')
+            .doc(ongoingTransaction.id)
+            .update({
+                returned: {
+                    broken,
+                    lost,
+                    timestamp: new Date().toISOString(),
+                },
+            })
 
         Logger.info({
             module: 'dish.controller',
@@ -412,8 +418,8 @@ export const returnDish = async (req: Request, res: Response) => {
             function: 'returnDish',
         })
 
-        return res.status(200).json({ message: "dish returned" })
-    } catch(error: any) {
+        return res.status(200).json({ message: 'dish returned' })
+    } catch (error: any) {
         Logger.error({
             module: 'dish.controller',
             function: 'getDish',

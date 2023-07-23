@@ -17,7 +17,7 @@ export function getAllUserDishes(
             dishData.push(dish)
         }
     })
-    Logger.info({message: `got all dishes from firebase for user ${userClaims.uid}`})
+    Logger.info({ message: `got all dishes from firebase for user ${userClaims.uid}` })
     return dishData
 }
 
@@ -29,11 +29,11 @@ export function getAllUserDishesInUse(
     let dishData = <Array<Dish>>[]
     allDishes.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (findDishStatus(obj.transaction) == DishStatus.inUse)) {
+        if (obj?.transaction.userID == userClaims.uid && findDishStatus(obj.transaction) == DishStatus.inUse) {
             dishData.push(dish)
         }
     })
-    Logger.info({message: `got all dishes in use from firebase for user ${userClaims.uid}`})
+    Logger.info({ message: `got all dishes in use from firebase for user ${userClaims.uid}` })
     return dishData
 }
 
@@ -49,7 +49,7 @@ export function getAllUserDishesVM(
             userDishesVM.push(dish)
         }
     })
-    Logger.info({message: `returning dishes view model for user ${userClaims.uid}`})
+    Logger.info({ message: `returning dishes view model for user ${userClaims.uid}` })
     return userDishesVM
 }
 
@@ -61,11 +61,11 @@ export function getAllUserDishesVMInUse(
     let userDishesVM = <Array<DishTableVM>>[]
     allDishesVM.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (dish.status == DishStatus.inUse)) {
+        if (obj?.transaction.userID == userClaims.uid && dish.status == DishStatus.inUse) {
             userDishesVM.push(dish)
         }
     })
-    Logger.info({message: `returning dishes (those in use) view model for user ${userClaims.uid}`})
+    Logger.info({ message: `returning dishes (those in use) view model for user ${userClaims.uid}` })
     return userDishesVM
 }
 
@@ -82,7 +82,7 @@ export async function getAllDishes(): Promise<Array<Dish>> {
             borrowed: data.borrowed ? data.borrowed : false,
         })
     })
-    Logger.info({message: "got all dishes from firebase"})
+    Logger.info({ message: 'got all dishes from firebase' })
     return dishData
 }
 
