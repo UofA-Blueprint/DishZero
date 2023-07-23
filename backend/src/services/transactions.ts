@@ -64,4 +64,22 @@ export const getTransaction = async (userClaims: DecodedIdToken, qid: number) =>
         ...transactionQuery.docs[0].data(),
         id: transactionQuery.docs[0].id,
     }
-} 
+}
+
+export const getTransactionByDishId = async (userClaims: DecodedIdToken, dishId: string) => {
+    let snapshot = await db.collection('transactions').where('userID', '==', userClaims.uid).where('dish.id', '==', dishId).get()
+    if (snapshot.empty) {
+        return null
+    }
+
+    Logger.info({
+        message: 'Transaction found',
+        module: 'transaction.services',
+        function: 'getTransactionByDishId',
+    })
+
+    return {
+        ...snapshot.docs[0].data(),
+        id: snapshot.docs[0].id,
+    }
+}

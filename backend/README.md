@@ -103,7 +103,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     qid: qr_code of the dish to be borrowed
     ```
 
-- #### POST `/api/dish/return?qid=`
+- #### POST `/api/dish/return?qid=&id=`
     This route will return a dish if the user is logged in and the dish is borrowed by the user. The route will also update the transaction in the database.
 
     headers:
@@ -114,6 +114,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     query:
     ```
     qid: qr_code of the dish to be returned
+    id: id of the dish to be returned (required if qid is not provided)
     ```
 
 ### Transactions

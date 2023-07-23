@@ -10,10 +10,11 @@ import {
     getAllUserDishesVM,
     mapDishesToLatestTransaction,
     mapToDishVM,
-    createDishInDatabase
+    createDishInDatabase,
+    getDishById
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
-import { getAllTransactions } from '../services/transactions'
+import { getAllTransactions, getTransactionByDishId } from '../services/transactions'
 import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
 import { getTransaction, registerTransaction } from '../services/transactions'
@@ -288,9 +289,10 @@ export const borrowDish = async (req: Request, res: Response) => {
 
 export const returnDish = async (req: Request, res: Response) => {
     let qid = req.query['qid']?.toString()
+    let id = req.query['id']?.toString()
     // TODO: put a request body validation
     let { broken, lost } = req.body.returned
-    if (!qid) {
+    if (!qid && !id) {
         Logger.error({
             module: 'dish.controller',
             message: 'No qid provided',
@@ -301,18 +303,70 @@ export const returnDish = async (req: Request, res: Response) => {
 
     let userClaims = (req as CustomRequest).firebase
     try {
-        // Check if the qr code exists
-        let qrCodeExits = await getQrCode(qid)
-        if (!qrCodeExits) {
-            Logger.error({
-                module: 'dish.controller',
-                message: 'qr code not found',
+        let qrCodeExits;
+        let associatedDish;
+        let ongoingTransaction
+        
+        if (qid) {
+            // Check if the qr code exists
+            qrCodeExits = await getQrCode(qid)
+            if (!qrCodeExits) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'qr code not found',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'qr code not found' })
+            }
+            // check if the borrowed property of the dish is true
+            associatedDish = await getDish(parseInt(qid, 10))
+            if (!associatedDish) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish not found',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+            }
+
+            if (!associatedDish.borrowed) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish not borrowed',
+                    function: 'returnDish',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
+            }
+
+            // update the existing transaction with the returned property
+            ongoingTransaction = await getTransaction(userClaims, parseInt(qid, 10))
+            if (!ongoingTransaction) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Transaction not found',
+                    function: 'returnDish',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'Transaction not found' })
+            }
+
+            await updateBorrowedStatus(associatedDish.id, false)
+
+            await db.collection('transactions').doc(ongoingTransaction.id).update({
+                returned: {
+                    broken,
+                    lost,
+                    timestamp: new Date().toISOString(),
+                },
             })
-            return res.status(400).json({ error: 'operation_not_allowed', message: 'qr code not found' })
+
+            Logger.info({
+                module: 'dish.controller',
+                message: 'Successfully returned dish',
+                function: 'returnDish',
+            })
+
+            return res.status(200).json({ message: "dish returned" })
         }
 
-        // check if the borrowed property of the dish is true
-        let associatedDish = await getDish(parseInt(qid, 10))
+        associatedDish = await getDishById(id!)
         if (!associatedDish) {
             Logger.error({
                 module: 'dish.controller',
@@ -321,6 +375,7 @@ export const returnDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
         }
 
+        // Check if the borrowed property of the dish is true
         if (!associatedDish.borrowed) {
             Logger.error({
                 module: 'dish.controller',
@@ -330,8 +385,7 @@ export const returnDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
 
-        // update the existing transaction with the returned property
-        let ongoingTransaction = await getTransaction(userClaims, parseInt(qid, 10))
+        ongoingTransaction = await getTransactionByDishId(userClaims, id!)
         if (!ongoingTransaction) {
             Logger.error({
                 module: 'dish.controller',
