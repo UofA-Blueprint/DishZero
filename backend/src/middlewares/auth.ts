@@ -6,7 +6,7 @@ import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import Logger from '../utils/logger'
 dotenv.config()
 
-const API_KEY = process.env.API_SECRET
+const API_KEY = process.env.API_KEY
 export const SECRET_KEY: Secret = process.env.SECRET_KEY!
 
 // Define the custom request object
