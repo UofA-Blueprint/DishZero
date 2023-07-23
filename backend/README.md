@@ -45,6 +45,7 @@ The auth routes are defined in the `src/routes/auth.ts` file. The routes are mou
     ```
     idToken: firebase idToken generated after successful login using frontend firebase client
     ```
+
 - #### POST `/api/auth/logout`
     This will logout the user and clear the session cookie.
     
@@ -71,6 +72,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     transaction: if set to true, then dishes will be returned with transaction details
     id: if set, then only the dish with this id will be returned
     ```
+
 - #### POST `/api/dish/create`
     This route will create a new dish in the database only if user is an admin.
 
@@ -88,7 +90,34 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     }
     ```
 
-### Transaction
+- #### POST `/api/dish/borrow?qid=`
+    This route will borrow a dish if the user is logged in and the dish is available. The route will also create a transaction in the database.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qid: qr_code of the dish to be borrowed
+    ```
+
+- #### POST `/api/dish/return?qid=&id=`
+    This route will return a dish if the user is logged in and the dish is borrowed by the user. The route will also update the transaction in the database.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qid: qr_code of the dish to be returned
+    id: id of the dish to be returned (required if qid is not provided)
+    ```
+
+### Transactions
 The transaction routes are defined in the `src/routes/transaction.ts` file. The routes are mounted on the `/transactions` path. The routes are:
 - #### GET `/api/transactions?all=`
     This route returns all the transactions in the database is user is admin and all is set to `true`. Otherwise returns all the transactions based on the user_id retrieved from the session cookie.

@@ -17,7 +17,7 @@ export function getAllUserDishes(
             dishData.push(dish)
         }
     })
-    Logger.info({message: `got all dishes from firebase for user ${userClaims.uid}`})
+    Logger.info({ message: `got all dishes from firebase for user ${userClaims.uid}` })
     return dishData
 }
 
@@ -29,11 +29,11 @@ export function getAllUserDishesInUse(
     let dishData = <Array<Dish>>[]
     allDishes.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (findDishStatus(obj.transaction) == DishStatus.inUse)) {
+        if (obj?.transaction.userID == userClaims.uid && findDishStatus(obj.transaction) == DishStatus.inUse) {
             dishData.push(dish)
         }
     })
-    Logger.info({message: `got all dishes in use from firebase for user ${userClaims.uid}`})
+    Logger.info({ message: `got all dishes in use from firebase for user ${userClaims.uid}` })
     return dishData
 }
 
@@ -49,7 +49,7 @@ export function getAllUserDishesVM(
             userDishesVM.push(dish)
         }
     })
-    Logger.info({message: `returning dishes view model for user ${userClaims.uid}`})
+    Logger.info({ message: `returning dishes view model for user ${userClaims.uid}` })
     return userDishesVM
 }
 
@@ -61,11 +61,11 @@ export function getAllUserDishesVMInUse(
     let userDishesVM = <Array<DishTableVM>>[]
     allDishesVM.forEach((dish) => {
         let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (dish.status == DishStatus.inUse)) {
+        if (obj?.transaction.userID == userClaims.uid && dish.status == DishStatus.inUse) {
             userDishesVM.push(dish)
         }
     })
-    Logger.info({message: `returning dishes (those in use) view model for user ${userClaims.uid}`})
+    Logger.info({ message: `returning dishes (those in use) view model for user ${userClaims.uid}` })
     return userDishesVM
 }
 
@@ -79,9 +79,10 @@ export async function getAllDishes(): Promise<Array<Dish>> {
             qid: parseInt(data.qid, 10),
             registered: data.registered ? data.registered : '',
             type: data.type ? data.type : '',
+            borrowed: data.borrowed ? data.borrowed : false,
         })
     })
-    Logger.info({message: "got all dishes from firebase"})
+    Logger.info({ message: 'got all dishes from firebase' })
     return dishData
 }
 
@@ -91,8 +92,8 @@ export function mapDishesToLatestTransaction(
     const map = new Map()
     // goes through all transactions, and maps each dishID to the latest transaction
     transactions.forEach((transaction) => {
-        if (transaction.dishID) {
-            let dishID = transaction.dishID
+        if (transaction.dish.id) {
+            let dishID = transaction.dish.id
             if (map.has(dishID)) {
                 let curObj = map.get(dishID)
                 let latestTransaction =
@@ -173,6 +174,21 @@ export const getDish = async (qid: number) => {
         qid: data.qid,
         registered: data.registered,
         type: data.type,
+        borrowed: data.borrowed,
+    }
+}
+
+export const getDishById = async (id: string): Promise<Dish | null | undefined> => {
+    const snapshot = await db.collection('dishes').doc(id).get()
+    if (!snapshot.exists) {
+        return null
+    }
+    return {
+        id: snapshot.id,
+        qid: snapshot.data()?.qid,
+        registered: snapshot.data()?.registered,
+        type: snapshot.data()?.type,
+        borrowed: snapshot.data()?.borrowed,
     }
 }
 
@@ -201,6 +217,9 @@ export const createDishInDatabase = async (dish: Dish) => {
         dish.registered = new Date().toISOString()
     }
 
+    // new dishes are not borrowed and always set to false
+    dish.borrowed = false
+
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
         module: 'dish.services',
@@ -211,4 +230,12 @@ export const createDishInDatabase = async (dish: Dish) => {
         ...dish,
         id: createdDish.id,
     }
+}
+
+export const updateBorrowedStatus = async (id: string, borrowed: boolean) => {
+    await db.collection('dishes').doc(id).update({ borrowed })
+    Logger.info({
+        module: 'dish.services',
+        message: 'Updated borrowed status',
+    })
 }
