@@ -143,7 +143,7 @@ export default () => {
   }
 
   return (
-    <>
+    <Box sx={styles.root}>
       <Scanner
         mode="Borrow Dishes"
         onScan={onScan}
@@ -158,13 +158,20 @@ export default () => {
         onCancel={onCancel}
         isMobile={isMobile}
       />
-    </>
+    </Box>
   );
 };
 ////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////// Styles /////////////////////////////////
 const styles = {
+  root: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+
   confirmCup: {
     width: '110px',
     height: '110px',

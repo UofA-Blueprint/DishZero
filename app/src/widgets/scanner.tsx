@@ -1,209 +1,23 @@
 /////////////////////////////// Import Dependencies ///////////////////////////////
-import React, { useState } from "react";
-import { styled, useTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import React, { useState, useEffect } from "react";
 import { 
+    AppBar,
     InputBase,
     Paper,
-    Avatar,
     Box, 
-    Drawer, 
-    Toolbar, 
     IconButton, 
-    Typography, 
-    Divider, 
-    List, 
-    ListItem, 
-    ListItemButton, 
-    ListItemIcon, 
-    ListItemText } 
+    Typography } 
 from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import HomeIcon from '@mui/icons-material/Home';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import SubdirectoryArrowLeftIcon from '@mui/icons-material/SubdirectoryArrowLeft';
-import MenuIcon from '@mui/icons-material/Menu';
 import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import SearchIcon from '@mui/icons-material/Search';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import DrawerLogo from "../assets/DishZeroDrawerLogo.png";
 import SendIcon from '@mui/icons-material/Send';
 import QrReader from "react-qr-scanner";
 import 'typeface-poppins';
-import { useNavigate } from "react-router-dom";
-import { FirebaseAuth } from "../firebase";
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////// Global Declarations ////////////////////////////////////////
-const drawerWidth = 240;
-
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
-    open?: boolean;
-  }>(({ theme, open }) => ({
-    flexGrow: 1,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    marginLeft: `-${drawerWidth}px`,
-    backgroundColor: '#464646',
-    ...(open && {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      marginLeft: 0,
-    }),
-}));
-  
-interface AppBarProps extends MuiAppBarProps {
-    open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-  })<AppBarProps>(({ theme, open }) => ({
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    backgroundColor: "#68B49A",
-    height: '80px',
-    justifyContent: 'center',
-    ...(open && {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: `${drawerWidth}px`,
-      transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    }),
-}));
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-}));
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /////////////////////////////////////// Sub-components /////////////////////////////////////// 
-const Header = ({ open, setOpen, title, frontCamera, setFrontCamera }) => {
-    const theme = useTheme();
-
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
-
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
-
-    const navigate = useNavigate();
-
-    return (
-        <>
-            <AppBar position="fixed" open={open}>
-                <Toolbar>
-                    <Box sx={styles.appBarLeftFrame}>
-                        <IconButton
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={handleDrawerOpen}
-                            edge="start"
-                            sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        {
-                            !open ?
-                                <Typography variant="h6" noWrap component="div">
-                                    {title}
-                                </Typography>
-                            : null
-                        }
-                    </Box>
-                    <Box sx={styles.appBarRightFrame}>
-                        <IconButton onClick={() => setFrontCamera(!frontCamera)} sx={{ color: 'white' }}>
-                            <FlipCameraIosIcon sx={styles.rotateCameraIcon}/>
-                        </IconButton>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    backgroundColor: "#464646"
-                },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <DrawerHeader sx={{ paddingTop: '15px', paddingBottom: '20px' }}>
-                    <Box sx={{ width: '80%', paddingLeft: '5px' }}>
-                        <Avatar alt="DishZero Logo" src={DrawerLogo} sx={{ width: 43, height: 43 }} />
-                    </Box>
-                    <Box sx={{ width: '20%' }}>
-                        <IconButton onClick={handleDrawerClose}>
-                            {theme.direction === 'ltr' ? <ChevronLeftIcon sx={{ color: 'white' }}/> : <ChevronRightIcon sx={{ color: 'white' }}/>}
-                        </IconButton>
-                    </Box>
-                </DrawerHeader>
-                <Divider sx={{ backgroundColor: '#C2C2C2' }} />
-                <List>
-                    <ListItem key={'Home'} disablePadding>
-                        <ListItemButton onClick={() => navigate('/home')}>
-                            <ListItemIcon>
-                                <HomeIcon sx={{ color: 'white' }}/>
-                            </ListItemIcon>
-                            <ListItemText primary={'Home'} sx={{ color: 'white' }}/>
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={'How it works'} disablePadding>
-                        <ListItemButton onClick={() => navigate('/how_it_works')}>
-                            <ListItemIcon>
-                                <IntegrationInstructionsIcon sx={{ color: 'white' }} />
-                            </ListItemIcon>
-                            <ListItemText primary={'How it works'} sx={{ color: 'white' }} />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={'Our impact'} disablePadding>
-                        <ListItemButton onClick={() => navigate('/our_impact')}>
-                            <ListItemIcon>
-                                <TrendingUpIcon sx={{ color: 'white' }} />
-                            </ListItemIcon>
-                            <ListItemText primary={'Our impact'} sx={{ color: 'white' }} />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-                <Divider sx={{ backgroundColor: '#C2C2C2' }} />
-                <List>
-                    <ListItem key={'Logout'} disablePadding>
-                        <ListItemButton onClick={() => FirebaseAuth.signOut()}>
-                            <ListItemIcon>
-                                <SubdirectoryArrowLeftIcon sx={{ color: 'white' }} />
-                            </ListItemIcon>
-                            <ListItemText primary={'Logout'} sx={{ color: 'white' }} />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-            </Drawer>
-        </>
-    )
-}
-
 const CameraInput = ({ onSubmit, frontCamera }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [showQr, setShowQr] = useState(false);
@@ -299,25 +113,50 @@ const BottomTextInput = ({ onSubmit }) => {
         </Box>
     )
 }
+
+
+const Header = ({ mode, frontCamera, setFrontCamera }) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+        window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    return (
+      <Box sx={styles.header}>
+        <AppBar position="static" sx={styles.appBar}>
+          <Box sx={styles.headerBoxLeft}></Box>
+          <Box sx={styles.headerBoxLeft}>
+            <Typography sx={ isMobile ? styles.headerTitleMobile : styles.headerTitleDesktop }>{mode}</Typography>
+          </Box>
+          <Box sx={styles.headerBoxRight}>
+            <IconButton onClick={() => setFrontCamera(!frontCamera)} sx={{ color: 'white' }}>
+                <FlipCameraIosIcon sx={styles.rotateCameraIcon}/>
+            </IconButton>
+          </Box>
+        </AppBar>
+      </Box>
+    )
+  }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////// Main Component ////////////////////////////////////////
 export default ({ mode, onScan }) => {
     const onSubmit = (id: string) => onScan(id);
     const [frontCamera, setFrontCamera] = useState(false);
-    const [open, setOpen] = React.useState(false);
 
     return (
-        <Box sx={{ display: 'flex', backgroundColor: '#464646' }}>
-            <CssBaseline />
-            <Header open={open} setOpen={setOpen} title={mode} frontCamera={frontCamera} setFrontCamera={setFrontCamera} />
-            <Main open={open}>
-                <>
-                    <DrawerHeader />
-                    <CameraInput onSubmit={onSubmit} frontCamera={frontCamera} />
-                    <BottomTextInput onSubmit={onSubmit} />
-                </>
-            </Main>
+        <Box sx={styles.root}>
+            <Header mode={mode} frontCamera={frontCamera} setFrontCamera={setFrontCamera}/>
+            <CameraInput onSubmit={onSubmit} frontCamera={frontCamera} />
+            <BottomTextInput onSubmit={onSubmit} />
         </Box>
     );
 }
@@ -325,6 +164,59 @@ export default ({ mode, onScan }) => {
 
 //////////////////////////////////// Styles ////////////////////////////////////
 const styles = {
+    root: { 
+        width: '100%',
+        height: '100%',
+        display: 'flex', 
+        flexDirection: 'column',
+        backgroundColor: '#464646' 
+    },
+
+    header: {
+        width: '100%',
+        height: '120px',
+        position: 'fixed'
+      },
+    
+    appBar: {
+        backgroundColor:'#68B49A', 
+        width: '100%',
+        height:'100%', 
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:"center",
+        boxShadow: '0'
+    },
+
+    headerBoxLeft: {
+        width: '33.333333%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+
+    headerBoxRight: {
+        width: '33.333333%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        paddingTop: '30px',
+        paddingRight: '26px'
+    },
+
+    headerTitleMobile: {
+        fontFamily: 'Poppins, sans-serif',
+        fontSize: '1.125rem',
+        marginTop: '62px'
+    },
+
+    headerTitleDesktop: {
+        fontFamily: 'Poppins, sans-serif',
+        fontSize: '1.325rem',
+        marginTop: '62px'
+    },
+
     appBarLeftFrame: {
         width: '80%', 
         display: 'flex', 
@@ -345,7 +237,7 @@ const styles = {
 
     qrScannerWrapper: {
         width: '100%',
-        height: `${window.innerHeight - 156}px`,
+        height: `${window.innerHeight - 100}px`,
         backgroundColor: '#464646',
         display: 'flex',
         alignItems: 'center',
@@ -353,8 +245,8 @@ const styles = {
     },
 
     qrScanner: {
-        width: '95%',
-        height: '90%',
+        width: '100%',
+        height: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center'
