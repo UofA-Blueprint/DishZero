@@ -51,6 +51,8 @@ const DishAPI = {
   addDishBorrow: async function (qr: string, user: string | null) {
 
     console.log(FirebaseDatabase, QRCollectionName, qr)
+    try {
+
     const qrRef = doc(FirebaseDatabase, QRCollectionName, qr);
 
       const out = await runTransaction(FirebaseDatabase, async (transaction) => {
@@ -73,6 +75,10 @@ const DishAPI = {
         return docRef.id;
       });
       return out;
+    } catch (e) {
+      console.error('Error occurred:',e);
+      return null;
+    }
   },
 
   updateDishReturn: async function (qr: string) {
