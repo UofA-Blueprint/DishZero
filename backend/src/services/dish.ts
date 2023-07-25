@@ -23,6 +23,23 @@ export const getDish = async (qid: number) => {
     }
 }
 
+export const getDishById = async (id: string): Promise<Dish | null | undefined> => {
+    const snapshot = await db.collection('dishes').doc(id).get()
+    if (!snapshot.exists) {
+        return null
+    }
+    return {
+        id: snapshot.id,
+        qid: snapshot.data()?.qid,
+        registered: snapshot.data()?.registered,
+        type: snapshot.data()?.type,
+        borrowed: snapshot.data()?.borrowed,
+        timesBorrowed: snapshot.data()?.timesBorrowed,
+        status: snapshot.data()?.status,
+        userID: snapshot.data()?.userID
+    }
+}
+
 export const createDishInDatabase = async (dish: Dish) => {
     let validation = validateDishRequestBody(dish)
     console.log(validation)

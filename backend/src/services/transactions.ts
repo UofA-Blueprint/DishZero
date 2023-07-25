@@ -49,7 +49,11 @@ export const registerTransaction = async (transaction: Transaction) => {
 }
 
 export const getTransaction = async (userClaims: DecodedIdToken, qid: number) => {
-    let transactionQuery = await db.collection('transactions').where('userID', '==', userClaims.uid).where('dish.qid', '==', qid).get()
+    let transactionQuery = await db
+        .collection('transactions')
+        .where('userID', '==', userClaims.uid)
+        .where('dish.qid', '==', qid)
+        .get()
     if (transactionQuery.empty) {
         return null
     }
@@ -57,11 +61,33 @@ export const getTransaction = async (userClaims: DecodedIdToken, qid: number) =>
     Logger.info({
         message: 'Transaction found',
         module: 'transaction.services',
-        function: 'getTransaction',       
+        function: 'getTransaction',
     })
 
     return {
         ...transactionQuery.docs[0].data(),
         id: transactionQuery.docs[0].id,
     }
-} 
+}
+
+export const getTransactionByDishId = async (userClaims: DecodedIdToken, dishId: string) => {
+    let snapshot = await db
+        .collection('transactions')
+        .where('userID', '==', userClaims.uid)
+        .where('dish.id', '==', dishId)
+        .get()
+    if (snapshot.empty) {
+        return null
+    }
+
+    Logger.info({
+        message: 'Transaction found',
+        module: 'transaction.services',
+        function: 'getTransactionByDishId',
+    })
+
+    return {
+        ...snapshot.docs[0].data(),
+        id: snapshot.docs[0].id,
+    }
+}
