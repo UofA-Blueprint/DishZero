@@ -380,15 +380,15 @@ export const returnDish = async (req: Request, res: Response) => {
 }
 
 export const updateDishCondition = async (req: Request, res: Response) => {
-    // get qid and condition
-    let qid = req.query['qid']?.toString()
-    if (!qid) {
+    // get id and condition
+    let id = req.query['id']?.toString()
+    if (!id) {
         Logger.error({
             module: 'dish.controller',
             message: 'No qid provided',
             statusCode: 400,
         })
-        return res.status(400).json({ error: 'bad_request' })
+        return res.status(400).json({ error: 'bad_request', message: "dish_id not provided" })
     }
 
     let condition = req.body.condition
@@ -398,23 +398,13 @@ export const updateDishCondition = async (req: Request, res: Response) => {
             message: 'No condition provided',
             statusCode: 400,
         })
-        return res.status(400).json({ error: 'bad_request' })
+        return res.status(400).json({ error: 'bad_request', message: "condition not provided" })
     }
 
     // check if the dish exists
     // if yes, update it with condition
     try {
-        // Check if the qr code exists
-        let qrCodeExits = await getQrCode(qid)
-        if (!qrCodeExits) {
-            Logger.error({
-                module: 'dish.controller',
-                message: 'qr code not found',
-            })
-            return res.status(400).json({ error: 'operation_not_allowed', message: 'qr code not found' })
-        }
-
-        let associatedDish = await getDish(parseInt(qid, 10))
+        let associatedDish = await getDishById(id)
         if (!associatedDish) {
             Logger.error({
                 module: 'dish.controller',
@@ -440,6 +430,6 @@ export const updateDishCondition = async (req: Request, res: Response) => {
             message: 'Error when updating dish condition',
         })
         
-        return res.status(200).json({ message: 'dish returned' })
+        return res.status(200).json({ message: 'dish condition updated' })
     }
 }
