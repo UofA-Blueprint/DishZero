@@ -84,8 +84,8 @@ export const createDishInDatabase = async (dish: Dish) => {
     }
 }
 
-export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
-    let dishData = <Array<DishSimple>>[]
+export async function getAllDishesSimple(): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
     let dishesQuerySnapshot = await db.collection('dishes').get()
     dishesQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
@@ -101,6 +101,10 @@ export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
             qid: parseInt(data.qid, 10),
             registered: time, // change from nanosecond
             type: data.type, // type is required
+            borrowed: data.borrowed,
+            timesBorrowed: data.timesBorrowed,
+            status: data.status,
+            userId: data.userId,
         })
     })
     Logger.info({
@@ -111,8 +115,8 @@ export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
     return dishData
 }
 
-export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<Array<DishSimple>> {
-    let dishData = <Array<DishSimple>>[]
+export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
     let dishesQuerySnapshot = await db.collection('dishes').where('userId', '==', userClaims.uid).get()
     dishesQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
@@ -128,6 +132,10 @@ export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<A
             qid: parseInt(data.qid, 10),
             registered: time, // change from nanosecond
             type: data.type, // type is required
+            borrowed: data.borrowed,
+            timesBorrowed: data.timesBorrowed,
+            status: data.status,
+            userId: data.userId,
         })
     })
     Logger.info({
