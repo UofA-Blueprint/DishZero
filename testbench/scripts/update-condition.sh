@@ -9,7 +9,14 @@ if [ "#$ID_TOKEN" == "#" ] || [ "#$SESSION_TOKEN" == "#" ] ; then
     exit 1;
 fi
 
-curl -i -X GET \
+if [ "#$1" == "#" ] ||[ "#$2" == "#" ] ; then
+    echo "Usage: ./update-condition.sh <qid> <condition>"
+    exit 1
+fi
+
+curl -i -X POST \
     -H "x-api-key: test" \
     -H "session-token: $SESSION_TOKEN" \
-    "http://localhost:8080/api/dish?all=$ALL_DISHES&transaction=$WITH_TRANSACTIONS"
+    -H "Content-Type: application/json" \
+    -d "{\"condition\" : \"$2\"}" \
+    http://localhost:8080/api/dish/condition?qid=$1

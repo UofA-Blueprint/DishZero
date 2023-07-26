@@ -128,7 +128,7 @@ const DishAPI = {
       console.log("Transaction failed:", e);
     }
   },
-  updateDocWithUserID: async function (transaction_id: string, user_id: string) {
+  updateDocWithuserId: async function (transaction_id: string, user_id: string) {
     const transactionRef = doc(FirebaseDatabase, TransactionsCollectionName, transaction_id);
     console.log("Transaction run for", transaction_id)
 

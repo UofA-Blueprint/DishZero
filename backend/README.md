@@ -57,7 +57,7 @@ The auth routes are defined in the `src/routes/auth.ts` file. The routes are mou
 
 ### Dish
 The dish routes are defined in the `src/routes/dish.ts` file. The routes are mounted on the `/dish` path. The routes are:
-- #### GET `/api/dish?all=&borrowed=&transaction=&id=`
+- #### GET `/api/dish?all=&transaction=&id=`
     This route returns all the dishes in the database.
     
     headers:
@@ -68,7 +68,6 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     query:
     ```
     all (admin only): if set to true, then all dishes will be returned.
-    borrowed: if set to true, only the dishes currently being used by the logged in user will be returned
     transaction: if set to true, then dishes will be returned with transaction details
     id: if set, then only the dish with this id will be returned
     ```
@@ -115,6 +114,36 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     ```
     qid: qr_code of the dish to be returned
     id: id of the dish to be returned (required if qid is not provided)
+    ```
+
+    body:
+    ```
+    returned: {
+        broken: boolean,    * required
+        lost: boolean,   * required
+    }
+    ```
+
+- #### POST `/api/dish/condition?qid=`
+    This route will update the condition for the dish.
+
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    query:
+    ```
+    qid: qr_code of the dish to be returned
+    id: id of the dish to be returned (required if qid is not provided)
+    ```
+
+    body:
+    ```
+    {
+        condition: string,    * required
+    }
     ```
 
 ### Transactions
