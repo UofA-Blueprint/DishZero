@@ -34,7 +34,7 @@ function Login() {
       if (fbContext?.user) {
           console.log(transaction_id)
           if(transaction_id){
-              DishAPI.updateDocWithUserID(transaction_id, fbContext?.user?.uid);  
+              DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
               //send a firebase request to add the user to the document with the handle
               
           }

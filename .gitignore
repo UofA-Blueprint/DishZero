@@ -31,6 +31,7 @@ yarn-error.log*
 **/.env
 **/.id_token
 **/.session_token
+**/.dish
 **/.idea
 
 credentials.json

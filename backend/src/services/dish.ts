@@ -1,166 +1,9 @@
 import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
-import { Dish, DishStatus, DishTableVM } from '../models/dish'
+import { Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { db } from './firebase'
 import Logger from '../utils/logger'
-
-export function getAllUserDishes(
-    userClaims: DecodedIdToken,
-    allDishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let dishData = <Array<Dish>>[]
-    allDishes.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if (obj?.transaction.userID == userClaims.uid) {
-            dishData.push(dish)
-        }
-    })
-    Logger.info({message: `got all dishes from firebase for user ${userClaims.uid}`})
-    return dishData
-}
-
-export function getAllUserDishesInUse(
-    userClaims: DecodedIdToken,
-    allDishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let dishData = <Array<Dish>>[]
-    allDishes.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (findDishStatus(obj.transaction) == DishStatus.inUse)) {
-            dishData.push(dish)
-        }
-    })
-    Logger.info({message: `got all dishes in use from firebase for user ${userClaims.uid}`})
-    return dishData
-}
-
-export function getAllUserDishesVM(
-    userClaims: DecodedIdToken,
-    allDishesVM: Array<DishTableVM>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let userDishesVM = <Array<DishTableVM>>[]
-    allDishesVM.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if (obj?.transaction.userID == userClaims.uid) {
-            userDishesVM.push(dish)
-        }
-    })
-    Logger.info({message: `returning dishes view model for user ${userClaims.uid}`})
-    return userDishesVM
-}
-
-export function getAllUserDishesVMInUse(
-    userClaims: DecodedIdToken,
-    allDishesVM: Array<DishTableVM>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-) {
-    let userDishesVM = <Array<DishTableVM>>[]
-    allDishesVM.forEach((dish) => {
-        let obj = dishTransMap.get(dish.id)
-        if ((obj?.transaction.userID == userClaims.uid) && (dish.status == DishStatus.inUse)) {
-            userDishesVM.push(dish)
-        }
-    })
-    Logger.info({message: `returning dishes (those in use) view model for user ${userClaims.uid}`})
-    return userDishesVM
-}
-
-export async function getAllDishes(): Promise<Array<Dish>> {
-    let dishData = <Array<Dish>>[]
-    let dishesQuerySnapshot = await db.collection('dishes').get()
-    dishesQuerySnapshot.docs.forEach((doc) => {
-        let data = doc.data()
-        dishData.push({
-            id: doc.id,
-            qid: parseInt(data.qid, 10),
-            registered: data.registered.toDate(),
-            type: data.type ? data.type : '',
-        })
-    })
-    Logger.info({message: "got all dishes from firebase"})
-    return dishData
-}
-
-export function mapDishesToLatestTransaction(
-    transactions: Array<Transaction>
-): Map<string, { transaction: Transaction; count: number }> {
-    const map = new Map()
-    // goes through all transactions, and maps each dishID to the latest transaction
-    transactions.forEach((transaction) => {
-        if (transaction.dishID) {
-            let dishID = transaction.dishID
-            if (map.has(dishID)) {
-                let curObj = map.get(dishID)
-                let latestTransaction =
-                    curObj.transaction.timestamp < transaction.timestamp ? curObj.transaction : transaction
-                map.set(dishID, {
-                    transaction: latestTransaction,
-                    count: curObj.count + 1,
-                })
-            } else {
-                map.set(dishID, {
-                    transaction: transaction,
-                    count: 1,
-                })
-            }
-        }
-    })
-    return map
-}
-
-export function mapToDishVM(
-    dishes: Array<Dish>,
-    dishTransMap: Map<string, { transaction: Transaction; count: number }>
-): Array<DishTableVM> {
-    let allDishesVM = <Array<DishTableVM>>[]
-    // maps each dish id to it's view model
-    dishes.forEach((dish) => {
-        const obj = dishTransMap.get(dish.id)
-        const status = findDishStatus(obj?.transaction)
-        // TO DO find overdue value
-        allDishesVM.push({
-            id: dish.id,
-            type: dish.type,
-            status: status,
-            overdue: 0,
-            timesBorrowed: obj?.count ? obj.count : 0,
-            dateAdded: dish.registered,
-        })
-    })
-
-    return allDishesVM
-}
-
-// this whole returned thing needs more explanation, why is it an object
-function findDishStatus(transaction: Transaction | undefined): DishStatus {
-    if (!transaction || !transaction.returned) {
-        return DishStatus.returned
-    }
-    if (Object.keys(transaction.returned).length !== 0) {
-        return DishStatus.inUse
-    }
-
-    if (transaction.returned?.broken) {
-        return DishStatus.broken
-    }
-
-    // TODO: check for lost and overdue dishes
-
-    return DishStatus.returned
-}
-
-export const validateDishRequestBody = (dish: Dish) => {
-    const schema = Joi.object({
-        qid: Joi.number().required(),
-        registered: Joi.string(),
-        type: Joi.string().required(),
-    })
-    return schema.validate(dish)
-}
 
 export const getDish = async (qid: number) => {
     const snapshot = await db.collection('dishes').where('qid', '==', qid).get()
@@ -173,11 +16,33 @@ export const getDish = async (qid: number) => {
         qid: data.qid,
         registered: data.registered,
         type: data.type,
+        borrowed: data.borrowed,
+        timesBorrowed: data.timesBorrowed,
+        status: data.status,
+        userId: data.userId,
+    }
+}
+
+export const getDishById = async (id: string): Promise<Dish | null | undefined> => {
+    const snapshot = await db.collection('dishes').doc(id).get()
+    if (!snapshot.exists) {
+        return null
+    }
+    return {
+        id: snapshot.id,
+        qid: snapshot.data()?.qid,
+        registered: snapshot.data()?.registered,
+        type: snapshot.data()?.type,
+        borrowed: snapshot.data()?.borrowed,
+        timesBorrowed: snapshot.data()?.timesBorrowed,
+        status: snapshot.data()?.status,
+        userId: snapshot.data()?.userId,
     }
 }
 
 export const createDishInDatabase = async (dish: Dish) => {
     let validation = validateDishRequestBody(dish)
+    console.log(validation)
     if (validation.error) {
         Logger.error({
             module: 'dish.services',
@@ -201,6 +66,12 @@ export const createDishInDatabase = async (dish: Dish) => {
         dish.registered = new Date().toISOString()
     }
 
+    // new dishes are not borrowed and always set to false
+    dish.borrowed = false
+    dish.timesBorrowed = 0
+    dish.status = DishStatus.available
+    dish.userId = null
+
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
         module: 'dish.services',
@@ -211,4 +82,168 @@ export const createDishInDatabase = async (dish: Dish) => {
         ...dish,
         id: createdDish.id,
     }
+}
+
+export async function getAllDishesSimple(): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time, // change from nanosecond
+            type: data.type, // type is required
+            borrowed: data.borrowed,
+            timesBorrowed: data.timesBorrowed,
+            status: data.status,
+            userId: data.userId,
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getAllDishesSimple',
+        message: 'got all dishes from firebase',
+    })
+    return dishData
+}
+
+export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').where('userId', '==', userClaims.uid).get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time, // change from nanosecond
+            type: data.type, // type is required
+            borrowed: data.borrowed,
+            timesBorrowed: data.timesBorrowed,
+            status: data.status,
+            userId: data.userId,
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getUserDishesSimple',
+        message: `got all dishes from firebase for user ${userClaims.uid}`,
+    })
+    return dishData
+}
+
+export async function getAllDishes(): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time,
+            type: data.type,
+            borrowed: data.borrowed ? data.borrowed : false,
+            timesBorrowed: data.timesBorrowed ? data.timesBorrowed : 0,
+            status: data.status ? data.status : DishStatus.available,
+            condition: data.condition ? data.condition : '',
+            userId: data.userId ? data.userId : null,
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getAllDishesSimple',
+        message: 'got all dishes from firebase',
+    })
+    return dishData
+}
+
+export async function getUserDishes(userClaims: DecodedIdToken): Promise<Array<Dish>> {
+    let dishData = <Array<Dish>>[]
+    let dishesQuerySnapshot = await db.collection('dishes').where('userId', '==', userClaims.uid).get()
+    dishesQuerySnapshot.docs.forEach((doc) => {
+        let data = doc.data()
+        let time = data.registered
+
+        if (typeof time !== 'string') {
+            // assuming it's a firebase timestamp
+            time = time.toDate().toISOString()
+        }
+
+        dishData.push({
+            id: doc.id,
+            qid: parseInt(data.qid, 10),
+            registered: time,
+            type: data.type,
+            borrowed: data.borrowed ? data.borrowed : false,
+            timesBorrowed: data.timesBorrowed ? data.timesBorrowed : 0,
+            status: data.status ? data.status : DishStatus.available,
+            condition: data.condition ? data.condition : '',
+            userId: data.user ? data.user : null,
+        })
+    })
+    Logger.info({
+        module: 'dish.services',
+        function: 'getUserDishes',
+        message: `got all dishes from firebase for user ${userClaims.uid}`,
+    })
+    return dishData
+}
+
+export const validateDishRequestBody = (dish: Dish) => {
+    const schema = Joi.object({
+        qid: Joi.number().required(),
+        registered: Joi.string(),
+        type: Joi.string().required(),
+    }).required()
+
+    return schema.validate(dish)
+}
+
+export const validateReturnDishRequestBody = (dish: Dish) => {
+    const schema = Joi.object({
+        broken: Joi.boolean().required(),
+        lost: Joi.boolean().required(),
+    }).required()
+
+    return schema.validate(dish)
+}
+
+export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToken, borrowed: boolean) => {
+    // when borrowing, set userId and increase timesBorrowed
+    let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
+    let userId = borrowed ? userClaims.uid : null
+    await db.collection('dishes').doc(dish.id).update({
+        borrowed,
+        timesBorrowed,
+        userId,
+    })
+    Logger.info({
+        module: 'dish.services',
+        message: 'Updated borrowed status',
+    })
+}
+
+export const updateCondition = async (id: string, condition: string) => {
+    await db.collection('dishes').doc(id).update({ condition })
 }
