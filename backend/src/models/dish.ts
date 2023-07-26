@@ -7,13 +7,13 @@ export type Dish = {
     condition?: string
     timesBorrowed: number
     status: DishStatus
-    userID: string | null
+    userId: string | null
 }
 
 export type DishSimple = {
-    id: string,
-    qid: number,
-    registered: string,
+    id: string
+    qid: number
+    registered: string
     type: string
 }
 
@@ -23,7 +23,7 @@ export enum DishStatus {
     returned = 'returned',
     broken = 'broken',
     lost = 'lost',
-    available = 'available'
+    available = 'available',
 }
 
 export type DishTableVM = {

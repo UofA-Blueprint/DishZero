@@ -6,7 +6,7 @@ export type Transaction = {
         id: string
         type: string
     }
-    userID: string
+    userId: string
     returned: {
         broken: boolean
         lost: boolean

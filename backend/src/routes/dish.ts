@@ -1,5 +1,5 @@
 import express from 'express'
-import { borrowDish, createDish, getDishes, returnDish, updateDishCondition} from '../controllers/dish'
+import { borrowDish, createDish, getDishes, returnDish, updateDishCondition } from '../controllers/dish'
 import { verifyApiKey, verifyFirebaseToken } from '../middlewares/auth'
 
 const router = express.Router()

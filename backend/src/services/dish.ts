@@ -19,7 +19,7 @@ export const getDish = async (qid: number) => {
         borrowed: data.borrowed,
         timesBorrowed: data.timesBorrowed,
         status: data.status,
-        userID : data.userID
+        userId: data.userId,
     }
 }
 
@@ -36,7 +36,7 @@ export const getDishById = async (id: string): Promise<Dish | null | undefined> 
         borrowed: snapshot.data()?.borrowed,
         timesBorrowed: snapshot.data()?.timesBorrowed,
         status: snapshot.data()?.status,
-        userID: snapshot.data()?.userID
+        userId: snapshot.data()?.userId,
     }
 }
 
@@ -70,7 +70,7 @@ export const createDishInDatabase = async (dish: Dish) => {
     dish.borrowed = false
     dish.timesBorrowed = 0
     dish.status = DishStatus.available
-    dish.userID = null
+    dish.userId = null
 
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
@@ -100,20 +100,20 @@ export async function getAllDishesSimple(): Promise<Array<DishSimple>> {
             id: doc.id,
             qid: parseInt(data.qid, 10),
             registered: time, // change from nanosecond
-            type: data.type,        // type is required
+            type: data.type, // type is required
         })
     })
     Logger.info({
         module: 'dish.services',
         function: 'getAllDishesSimple',
-        message: "got all dishes from firebase"
+        message: 'got all dishes from firebase',
     })
     return dishData
 }
 
-export async function getUserDishesSimple(userClaims : DecodedIdToken): Promise<Array<DishSimple>> {
+export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<Array<DishSimple>> {
     let dishData = <Array<DishSimple>>[]
-    let dishesQuerySnapshot = await db.collection('dishes').where('userID', '==', userClaims.uid).get()
+    let dishesQuerySnapshot = await db.collection('dishes').where('userId', '==', userClaims.uid).get()
     dishesQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
         let time = data.registered
@@ -127,18 +127,18 @@ export async function getUserDishesSimple(userClaims : DecodedIdToken): Promise<
             id: doc.id,
             qid: parseInt(data.qid, 10),
             registered: time, // change from nanosecond
-            type: data.type,        // type is required
+            type: data.type, // type is required
         })
     })
     Logger.info({
         module: 'dish.services',
         function: 'getUserDishesSimple',
-        message: `got all dishes from firebase for user ${userClaims.uid}`
+        message: `got all dishes from firebase for user ${userClaims.uid}`,
     })
     return dishData
 }
 
-export async function getAllDishes() : Promise<Array<Dish>> {
+export async function getAllDishes(): Promise<Array<Dish>> {
     let dishData = <Array<Dish>>[]
     let dishesQuerySnapshot = await db.collection('dishes').get()
     dishesQuerySnapshot.docs.forEach((doc) => {
@@ -156,23 +156,23 @@ export async function getAllDishes() : Promise<Array<Dish>> {
             registered: time,
             type: data.type,
             borrowed: data.borrowed ? data.borrowed : false,
-            timesBorrowed : data.timesBorrowed ? data.timesBorrowed : 0,
-            status : data.status ? data.status : DishStatus.available,
-            condition : data.condition ? data.condition : '',
-            userID : data.userID ? data.userID : null
+            timesBorrowed: data.timesBorrowed ? data.timesBorrowed : 0,
+            status: data.status ? data.status : DishStatus.available,
+            condition: data.condition ? data.condition : '',
+            userId: data.userId ? data.userId : null,
         })
     })
     Logger.info({
         module: 'dish.services',
         function: 'getAllDishesSimple',
-        message: "got all dishes from firebase"
+        message: 'got all dishes from firebase',
     })
     return dishData
 }
 
-export async function getUserDishes(userClaims : DecodedIdToken) : Promise<Array<Dish>> {
+export async function getUserDishes(userClaims: DecodedIdToken): Promise<Array<Dish>> {
     let dishData = <Array<Dish>>[]
-    let dishesQuerySnapshot = await db.collection('dishes').where('userID', '==', userClaims.uid).get()
+    let dishesQuerySnapshot = await db.collection('dishes').where('userId', '==', userClaims.uid).get()
     dishesQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
         let time = data.registered
@@ -188,18 +188,18 @@ export async function getUserDishes(userClaims : DecodedIdToken) : Promise<Array
             registered: time,
             type: data.type,
             borrowed: data.borrowed ? data.borrowed : false,
-            timesBorrowed : data.timesBorrowed ? data.timesBorrowed : 0,
-            status : data.status ? data.status : DishStatus.available,
-            condition : data.condition ? data.condition : '',
-            userID : data.user ? data.user : null
+            timesBorrowed: data.timesBorrowed ? data.timesBorrowed : 0,
+            status: data.status ? data.status : DishStatus.available,
+            condition: data.condition ? data.condition : '',
+            userId: data.user ? data.user : null,
         })
     })
     Logger.info({
         module: 'dish.services',
         function: 'getUserDishes',
-        message: `got all dishes from firebase for user ${userClaims.uid}`
+        message: `got all dishes from firebase for user ${userClaims.uid}`,
     })
-    return dishData 
+    return dishData
 }
 
 export const validateDishRequestBody = (dish: Dish) => {
@@ -221,15 +221,14 @@ export const validateReturnDishRequestBody = (dish: Dish) => {
     return schema.validate(dish)
 }
 
-
-export const updateBorrowedStatus = async (dish : Dish, userClaims : DecodedIdToken, borrowed: boolean) => {
-    // when borrowing, set userID and increase timesBorrowed
-    let timesBorrowed = borrowed? dish.timesBorrowed + 1 : dish.timesBorrowed
-    let userID = borrowed ? userClaims.uid : null
-    await db.collection('dishes').doc(dish.id).update({ 
+export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToken, borrowed: boolean) => {
+    // when borrowing, set userId and increase timesBorrowed
+    let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
+    let userId = borrowed ? userClaims.uid : null
+    await db.collection('dishes').doc(dish.id).update({
         borrowed,
         timesBorrowed,
-        userID
+        userId,
     })
     Logger.info({
         module: 'dish.services',
