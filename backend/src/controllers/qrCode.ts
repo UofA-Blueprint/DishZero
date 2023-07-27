@@ -75,7 +75,43 @@ export const createQrCode = async (req: Request, res: Response) => {
     }
 
     try {
-        let qrCode = await createQrCodeInDatabase(req.body.qrCode)
+        let qrCode = await createQrCodeInDatabase(req.body.qrCode, false)
+        return res.status(201).json({ qrCode })
+    } catch (error: any) {
+        Logger.error({
+            module: 'qrCode.controller',
+            error,
+            message: 'Error when creating qr code in database',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
+export const updateQrCode = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'qrCode.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    // check if qrcode exists
+    let existingQrCode = await getQrCode(req.body.qrCode.qid.toString())
+    if (!existingQrCode) {
+        Logger.error({
+            module: 'qrCode.services',
+            message: 'qrCode does not exist',
+            status: 500
+        })
+        return res.status(500).json({error: 'internal_server_error', message: 'qr code does not exist'})
+    }
+
+    try {
+        let qrCode = await createQrCodeInDatabase(req.body.qrCode, true)
         return res.status(200).json({ qrCode })
     } catch (error: any) {
         Logger.error({
@@ -87,3 +123,4 @@ export const createQrCode = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }
 }
+
