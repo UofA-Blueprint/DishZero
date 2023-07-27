@@ -29,7 +29,7 @@ export const getAllQrCodes = async () => {
     return codes
 }
 
-export const createQrCodeInDatabase = async (qrcode: QrCode) => {
+export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) => {
     let validation = validateQrRequestBody(qrcode)
     if (validation.error) {
         Logger.error({
@@ -39,14 +39,16 @@ export const createQrCodeInDatabase = async (qrcode: QrCode) => {
         throw new Error(validation.error.message)
     }
 
-    // check if qr code already exists
-    let existingQrCode = await getQrCode(qrcode.qid.toString())
-    if (existingQrCode) {
-        Logger.error({
-            module: 'qrCode.services',
-            message: 'qrCode already exists',
-        })
-        throw new Error('qrCode already exists')
+    // check if qr code already exists if not updating
+    if (!update) {
+        let existingQrCode = await getQrCode(qrcode.qid.toString())
+        if (existingQrCode) {
+            Logger.error({
+                module: 'qrCode.services',
+                message: 'qrCode already exists',
+            })
+            throw new Error('qrCode already exists')
+        }
     }
 
     let qid = qrcode.qid
