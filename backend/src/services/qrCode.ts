@@ -54,7 +54,7 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
     let qid = qrcode.qid
     let dishID = qrcode.dishID
     // create qr code
-    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dish : dishID})
+    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dishID})
     Logger.info({
         module : 'qrcode.services',
         message : 'created qr code in database'
