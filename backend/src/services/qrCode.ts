@@ -33,8 +33,8 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
     let validation = validateQrRequestBody(qrcode)
     if (validation.error) {
         Logger.error({
-            module: 'dish.services',
-            message: 'Invalid dish request body',
+            module: 'qrcode.services',
+            message: 'Invalid request body',
         })
         throw new Error(validation.error.message)
     }
