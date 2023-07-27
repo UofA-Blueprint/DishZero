@@ -7,6 +7,7 @@ import { transactionsRouter } from './routes/transactions'
 import { userRouter } from './routes/users'
 import { authRouter } from './routes/auth'
 import cookieParser from 'cookie-parser'
+import { qrCodeRouter } from './routes/qrCode'
 
 const app = express()
 dotenv.config()
@@ -40,5 +41,6 @@ app.use('/api/auth', authRouter)
 app.use('/api/dish', dishRouter)
 app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)
+app.use('/api/qrcode', qrCodeRouter)
 
 export { app }
