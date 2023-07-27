@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { verifyIfUserAdmin } from '../services/users'
 import Logger from '../utils/logger'
 import { CustomRequest } from '../middlewares/auth'
-import { getAllQrCodes, getQrCode } from '../services/qrCode';
+import { createQrCodeInDatabase, getAllQrCodes, getQrCode } from '../services/qrCode';
 
 export const getQrCodes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -58,6 +58,31 @@ export const getQrCodes = async (req: Request, res: Response) => {
             statusCode: 500,
             module: 'qrCode.controller',
             function: 'getQRCodes',
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
+export const createQrCode = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'qrCode.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    try {
+        let qrCode = await createQrCodeInDatabase(req.body.qrCode)
+        return res.status(200).json({ qrCode })
+    } catch (error: any) {
+        Logger.error({
+            module: 'qrCode.controller',
+            error,
+            message: 'Error when creating qr code in database',
+            statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
     }

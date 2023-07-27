@@ -1,6 +1,8 @@
 import { QrCode } from '../models/qrCode';
 import { db } from './firebase'
 import nodeConfig from 'config';
+import Logger from '../utils/logger';
+import Joi from 'joi';
 
 export const getQrCode = async (qid: string) => {
     let doc = await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).get()
@@ -25,4 +27,48 @@ export const getAllQrCodes = async () => {
         })
     })
     return codes
+}
+
+export const createQrCodeInDatabase = async (qrcode: QrCode) => {
+    let validation = validateQrRequestBody(qrcode)
+    if (validation.error) {
+        Logger.error({
+            module: 'dish.services',
+            message: 'Invalid dish request body',
+        })
+        throw new Error(validation.error.message)
+    }
+
+    // check if qr code already exists
+    let existingQrCode = await getQrCode(qrcode.qid.toString())
+    if (existingQrCode) {
+        Logger.error({
+            module: 'qrCode.services',
+            message: 'qrCode already exists',
+        })
+        throw new Error('qrCode already exists')
+    }
+
+    let qid = qrcode.qid
+    let dishID = qrcode.dishID
+    // create qr code
+    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dish : dishID})
+    Logger.info({
+        module : 'qrcode.services',
+        message : 'created qr code in database'
+    })
+
+    return {
+        qid: qid,
+        dish: dishID
+    }
+}
+
+export const validateQrRequestBody = (qrcode: QrCode) => {
+    const schema = Joi.object({
+        qid: Joi.number().required(),
+        dishID: Joi.string().required(),
+    }).required()
+
+    return schema.validate(qrcode)
 }
