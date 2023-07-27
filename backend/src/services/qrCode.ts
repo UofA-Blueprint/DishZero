@@ -66,6 +66,26 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
     }
 }
 
+export const deleteQrCodeFromDatabase = async (qid: string) => {
+    // if doesn't exist just pretend delete
+    let existingQrCode = await getQrCode(qid)
+    if (!existingQrCode) {
+        Logger.error({
+            module: 'qrCode.services',
+            message: 'qrCode already exists',
+        })
+        return
+    }
+
+    // delete qr code
+    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).delete()
+    Logger.info({
+        module : 'qrcode.services',
+        message : 'qr code in deleted'
+    })
+    return 
+}
+
 export const validateQrRequestBody = (qrcode: QrCode) => {
     const schema = Joi.object({
         qid: Joi.number().required(),

@@ -3,7 +3,6 @@
 source .env
 source .id_token
 source .session_token
-source .qrcode
 
 if [ "#$1" == "#" ] || [ "#$2" == "#" ] ; then
     echo "Usage: ./create-qr-code <qid> <dishid>"

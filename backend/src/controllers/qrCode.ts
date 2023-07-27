@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { verifyIfUserAdmin } from '../services/users'
 import Logger from '../utils/logger'
 import { CustomRequest } from '../middlewares/auth'
-import { createQrCodeInDatabase, getAllQrCodes, getQrCode } from '../services/qrCode';
+import { createQrCodeInDatabase, deleteQrCodeFromDatabase, getAllQrCodes, getQrCode } from '../services/qrCode';
 
 export const getQrCodes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -124,3 +124,38 @@ export const updateQrCode = async (req: Request, res: Response) => {
     }
 }
 
+export const deleteQrCode = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'qrCode.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let qid = req.query['qid']?.toString()
+    if (!qid) {
+        Logger.error({
+            module: 'qrCOde.controller',
+            message: 'No qid provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+
+    try {
+        await deleteQrCodeFromDatabase(qid)
+        return res.status(200).json({ message : 'deleted qr code' })
+    } catch (error: any) {
+        Logger.error({
+            module: 'qrCode.controller',
+            error,
+            message: 'Error when creating qr code in database',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
