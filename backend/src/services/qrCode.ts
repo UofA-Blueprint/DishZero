@@ -12,7 +12,7 @@ export const getQrCode = async (qid: string) => {
     let data = doc.data()
     return {
         qid: parseInt(doc.id, 10),
-        dish: data?.dish
+        dishID: data?.dishID
     }
 }
 
@@ -23,7 +23,7 @@ export const getAllQrCodes = async () => {
         let data = doc.data()
         codes.push({
             qid : parseInt(doc.id, 10),
-            dishID : data.dish
+            dishID : data.dishID
         })
     })
     return codes
@@ -62,7 +62,7 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
 
     return {
         qid: qid,
-        dish: dishID
+        dishID: dishID
     }
 }
 
