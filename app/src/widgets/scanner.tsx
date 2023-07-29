@@ -1,86 +1,35 @@
-import { useState } from "react"
-import '../styles/QRScanner.css';
-import Form from 'react-bootstrap/Form';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import { Container, Button, InputGroup } from 'react-bootstrap'
-import Navbar from 'react-bootstrap/Navbar';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-import {
-    faCameraRotate,
-    faVideoCamera,
-    faClose,
-    faSearch
-} from "@fortawesome/free-solid-svg-icons";
+/////////////////////////////// Import Dependencies ///////////////////////////////
+import React, { useState, useEffect } from "react";
+import { 
+    AppBar,
+    InputBase,
+    Paper,
+    Box, 
+    IconButton, 
+    Typography } 
+from '@mui/material';
+import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import SendIcon from '@mui/icons-material/Send';
 import QrReader from "react-qr-scanner";
+import 'typeface-poppins';
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const Header = ({ handleClose, title, style }) => {
-    return (
-        <Navbar className="justify-content-space-between qr-scan-nav" style={style} bg="light" expand="lg" variant="light">
-            <Container>
-                <div />
-                <Navbar.Brand style={{ marginRight: "0px" }}> {title}
-                </Navbar.Brand>
-                <Navbar.Text style={{ cursor: "pointer" }} onClick={handleClose}>
-                    <FontAwesomeIcon icon={faClose} />
-                </Navbar.Text>
-            </Container>
-        </Navbar>
-    )
-}
-
-const BottomTextInput = ({ onSubmit }) => {
-    let [input, setInput] = useState("");
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(input)
-        return false;
-    }
-    return (
-
-        <div className="start-0 position-fixed bottom-0 w-100 px-5" >
-            <div>
-
-                <Form onSubmit={handleSubmit}>
-
-                    <InputGroup className="mb-3">
-
-                        <InputGroup.Text className="search-bar">
-                            <FontAwesomeIcon icon={faSearch} />
-                        </InputGroup.Text>
-                        <Form.Text className="text-muted">
-
-                        </Form.Text>
-
-                        <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
-
-                        <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button">
-                            Enter
-                        </Button>
-
-                    </InputGroup >
-                </Form>
-            </div>
-        </div>
-    )
-}
-
-const CameraInput = ({ onSubmit }) => {
+/////////////////////////////////////// Sub-components /////////////////////////////////////// 
+const CameraInput = ({ onSubmit, frontCamera }) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [showQr, setShowQr] = useState(false);
-    const [frontCamera, setFrontCamera] = useState(false)
 
-    const style = { height: "100%" };
     const handleError = (err: any) => {
-        console.error(err.message)
+        console.error(err.message);
         if (err.message === "Permission denied") {
-            setErrorMessage("Camera Permission Denied")
+            setErrorMessage("Camera Permission Denied");
         }
-        setShowQr(false)
+        setShowQr(false);
     };
+
     const handleScan = (data: any) => {
         if (data == null) {
             return;
@@ -88,70 +37,301 @@ const CameraInput = ({ onSubmit }) => {
         onSubmit(data.text);
         console.log(data);
     };
+
     return (
-        <div className="qr-scanner-wrapper">
-            <br />
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "space-between",
-                }}
-            >
-                {/* TODO: Disable setFacingMode when only one camera is available */}
-            </div>
-            <div
-                className="qr-scanner-placeholder"
-                style={style}
-            >
-                <div className="position-absolute">
-                    <Button
-                        variant="secondary"
-                        onClick={() => setFrontCamera(!frontCamera)}
-                    >
-                        <FontAwesomeIcon icon={faCameraRotate} />
-                    </Button>
-                </div>
-
-                <div className="qr-scanner-tag" onClick={() => setShowQr(!showQr)}>
-                    {/* <div className="crosshair"/> */}
-
-                    {showQr ? (
+        <Box sx={styles.qrScannerWrapper}>
+            <Box sx={styles.qrScanner} onClick={() => setShowQr(!showQr)}>
+                {
+                    showQr ? (
                         <QrReader
                             delay={100}
-                            style={style}
+                            style={styles.qr}
                             onError={handleError}
                             onScan={handleScan}
-                            // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
                             facingMode={frontCamera ? "user" : "environment"}
                         />
                     ) : (
-                        <div>
-                            {" "}
-                            {errorMessage ? (errorMessage) : (<><FontAwesomeIcon icon={faVideoCamera} /> Camera Disabled <br />{" "}
-                                <p style={{ fontSize: "0.8em" }}>Tap to Enable</p>{errorMessage}</>)}
-
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+                        <Box sx={styles.instructionsFrame}>
+                            {
+                                errorMessage ? (
+                                    <Box sx={styles.errorFrame}>
+                                        <ReportGmailerrorredIcon sx={styles.errorIcon}/>
+                                        <Typography variant="h6" noWrap component="div" sx={styles.errorMessage}>
+                                            {errorMessage}
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <Box sx={styles.enableCameraFrame}>
+                                        <CameraAltIcon sx={styles.cameraIcon}/>
+                                        <Typography variant="h6" noWrap component="div" sx={styles.enableMessage}>
+                                            Tap to enable
+                                        </Typography>
+                                    </Box>
+                                )}
+                        </Box>
+                    )
+                }
+            </Box>
+        </Box>
     );
 };
 
-export default ({ mode, onScan, onClose }) => {
-    const onSubmit = (id: string) => onScan(id)
+const BottomTextInput = ({ onSubmit }) => {
+    const [ inputDishId, setInputDishId ] = React.useState('');
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(inputDishId)
+        return false;
+    };
+
+    const handleEnterKey = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit(e);
+        }
+    };
 
     return (
-        <div className={`scanner-main`}>
-            <div className="scanner-wrapper">
-                {/* ScanQRCode */}
-                <div style={{ height: "100vh", width: "80%", display: "block" }}>
-                    <Header title={mode} style={{ top: 0, left: 0, position: "fixed", width: "100%" }} handleClose={onClose} />
-                    <CameraInput onSubmit={onSubmit} />
-                    <BottomTextInput onSubmit={onSubmit} />
-                </div>
-            </div>
-        </div>
+        <Box sx={styles.bottomInputFrame}>
+            <Paper
+                component="form"
+                sx={styles.outerInputField}
+            >
+                <SearchIcon sx={styles.searchIcon}/>
+                <InputBase
+                    sx={{ ml: 1, flex: 1 }}
+                    onChange={(e) => setInputDishId(e.target.value)}
+                    onKeyDown={handleEnterKey}
+                    placeholder="Enter dish #..."
+                    inputProps={{ 'aria-label': 'Enter dish #...' }}
+                />
+                <IconButton color="primary" sx={{ p: '10px' }} aria-label="search-dish" onClick={handleSubmit}>
+                    <SendIcon sx={{ color: '#68B49A' }} />
+                </IconButton>
+            </Paper>
+        </Box>
     )
 }
+
+
+const Header = ({ mode, frontCamera, setFrontCamera }) => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+        window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    return (
+      <Box sx={styles.header}>
+        <AppBar position="static" sx={styles.appBar}>
+          <Box sx={styles.headerBoxLeft}></Box>
+          <Box sx={styles.headerBoxLeft}>
+            <Typography sx={ isMobile ? styles.headerTitleMobile : styles.headerTitleDesktop }>{mode}</Typography>
+          </Box>
+          <Box sx={styles.headerBoxRight}>
+            <IconButton onClick={() => setFrontCamera(!frontCamera)} sx={{ color: 'white' }}>
+                <FlipCameraIosIcon sx={styles.rotateCameraIcon}/>
+            </IconButton>
+          </Box>
+        </AppBar>
+      </Box>
+    )
+  }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////// Main Component ////////////////////////////////////////
+export default ({ mode, onScan }) => {
+    const onSubmit = (id: string) => onScan(id);
+    const [frontCamera, setFrontCamera] = useState(false);
+
+    return (
+        <Box sx={styles.root}>
+            <Header mode={mode} frontCamera={frontCamera} setFrontCamera={setFrontCamera}/>
+            <CameraInput onSubmit={onSubmit} frontCamera={frontCamera} />
+            <BottomTextInput onSubmit={onSubmit} />
+        </Box>
+    );
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////// Styles ////////////////////////////////////
+const styles = {
+    root: { 
+        width: '100%',
+        height: '100%',
+        display: 'flex', 
+        flexDirection: 'column',
+        backgroundColor: '#464646' 
+    },
+
+    header: {
+        width: '100%',
+        height: '120px',
+        position: 'fixed'
+      },
+    
+    appBar: {
+        backgroundColor:'#68B49A', 
+        width: '100%',
+        height:'100%', 
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems:"center",
+        boxShadow: '0'
+    },
+
+    headerBoxLeft: {
+        width: '33.333333%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center'
+    },
+
+    headerBoxRight: {
+        width: '33.333333%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        paddingTop: '30px',
+        paddingRight: '26px'
+    },
+
+    headerTitleMobile: {
+        fontFamily: 'Poppins, sans-serif',
+        fontSize: '1.125rem',
+        marginTop: '62px'
+    },
+
+    headerTitleDesktop: {
+        fontFamily: 'Poppins, sans-serif',
+        fontSize: '1.325rem',
+        marginTop: '62px'
+    },
+
+    appBarLeftFrame: {
+        width: '80%', 
+        display: 'flex', 
+        flexDirection: 'row', 
+        alignItems: 'center' 
+    },
+
+    appBarRightFrame: {
+        width: '20%', 
+        display: 'flex', 
+        justifyContent: 'flex-end'
+    },
+
+    rotateCameraIcon: {
+        width: '26px',
+        height: '26px'
+    },
+
+    qrScannerWrapper: {
+        width: '100%',
+        height: `${window.innerHeight - 100}px`,
+        backgroundColor: '#464646',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+
+    qrScanner: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    qr: {
+        width: '100%',
+        height: '100%'
+    },
+
+    instructionsFrame: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    errorFrame: {
+        width: '100%',
+        height: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    errorIcon: {
+        color: 'white',
+        width: '45px',
+        height: '45px',
+        marginBottom: '12px'
+    },
+
+    errorMessage: {
+        fontSize: '1.225rem',
+        color: 'white',
+        fontFamily: 'Poppins, sans-serif'
+    },
+
+    enableCameraFrame: {
+        width: '100%',
+        height: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    cameraIcon: {
+        width: '50px',
+        height: '50px',
+        color: 'white',
+        marginBottom: '13px'
+    },
+
+    enableMessage: {
+        fontSize: '1.225rem',
+        color: 'white',
+        fontFamily: 'Poppins, sans-serif'
+    },
+
+    bottomInputFrame: {
+        width: '100%',
+        height: '100px',
+        backgroundColor: '#464646',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '0px'
+    },
+
+    outerInputField: {
+        p: '2px 4px', 
+        display: 'flex', 
+        alignItems: 'center',
+        width: '80%', 
+        height: '50%',
+        borderRadius: '25px'
+    },
+
+    searchIcon: {
+        width: '25px',
+        height: '25px',
+        marginLeft: '12px'
+    }
+};
+///////////////////////////////////////////////////////////////////////////////

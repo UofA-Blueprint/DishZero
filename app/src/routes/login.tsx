@@ -128,10 +128,10 @@ function Login() {
         sx={isMobile ? styles.logoMobile : styles.logoDesktop}
       />
       <Box sx={isMobile ? styles.rightFrameMobile : styles.rightFrameDesktop}>
-        <Typography variant="h1" sx={styles.dishZeroHeading}>
+        <Typography variant="h1" sx={isMobile ? styles.dishZeroHeadingMobile : styles.dishZeroHeadingDesktop}>
           DishZero
         </Typography>
-        <Typography variant="subtitle1" sx={styles.subheading}>
+        <Typography variant="subtitle1" sx={isMobile ? styles.subheadingMobile : styles.subheadingDesktop}>
           Helping the planet one dish at a time
         </Typography>
         <Button
@@ -216,19 +216,36 @@ const styles = {
     marginLeft: '50px',
   },
 
-  dishZeroHeading: {
+  dishZeroHeadingDesktop: {
     fontSize: '3.5rem',
     fontWeight: 'bold',
     fontFamily: 'Poppins, sans-serif',
     color: '#4c4242',
   },
 
-  subheading: {
+  dishZeroHeadingMobile: {
+    fontSize: '2.7rem',
+    fontWeight: 'bold',
+    fontFamily: 'Poppins, sans-serif',
+    color: '#4c4242',
+  },
+
+  subheadingDesktop: {
+    fontSize: '1.25rem',
+    fontFamily: 'Poppins, sans-serif',
+    color: '#4c4242',
+    marginTop: '7px'
+  },
+
+  subheadingMobile: {
     fontSize: '1.25rem',
     fontFamily: 'Poppins, sans-serif',
     color: '#4c4242',
     marginTop: '7px',
-  },
+    textAlign: 'center',
+    marginLeft: '20px',
+    marginRight: '20px'
+  }, 
 
   signInButtonMobile: {
     display: 'flex',
