@@ -1,6 +1,6 @@
 {
     "server": {
-        "port": 80,
+        "port": 8080,
         "host": "localhost"
     },
     "token": {
