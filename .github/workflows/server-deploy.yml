@@ -1,0 +1,41 @@
+name: Deploy code to EC2 instance
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install SSH
+        run: sudo apt-get install -y ssh
+        
+      - name: Copy code to EC2 instance
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_URL }}
+          username: 'ubuntu'
+          key: ${{ secrets.PILOT_EC2_KEY }}
+          source: './backend'
+          target: '/home/ubuntu/dishzero'
+      
+      - name: Rebuild backend on EC2 instance
+        uses: appleboy/ssh-action@master
+        with:
+            host: ${{ secrets.EC2_URL }}
+            username: 'ubuntu'
+            key: ${{ secrets.PILOT_EC2_KEY }}
+            script: |
+                cd /home/ubuntu/dishzero
+                export NVM_DIR=~/.nvm
+                source ~/.nvm/nvm.sh
+                npm install pm2
+                npm install yarn
+                pm2 stop dishzero
+                yarn install
+                yarn build
+                pm2 start npm --name "dishzero" -- start
