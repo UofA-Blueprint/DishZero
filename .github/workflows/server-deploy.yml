@@ -19,7 +19,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_URL }}
           username: 'ubuntu'
-          key: ${{ secrets.PILOT_EC2_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: './backend'
           target: '/home/ubuntu/dishzero'
       
@@ -28,7 +28,7 @@ jobs:
         with:
             host: ${{ secrets.EC2_URL }}
             username: 'ubuntu'
-            key: ${{ secrets.PILOT_EC2_KEY }}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
             script: |
                 cd /home/ubuntu/dishzero
                 export NVM_DIR=~/.nvm
