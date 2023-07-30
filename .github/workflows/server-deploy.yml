@@ -16,6 +16,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/ubuntu/dishzero/DishZero/backend
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             npm i -g pm2
             npm i -g yarn
             pm2 stop dishzero
