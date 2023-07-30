@@ -1,0 +1,23 @@
+name: Deploy code to EC2 instance
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild backend and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_URL }}
+          username: 'ubuntu'
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/dishzero/Dishzero/backend
+            pm2 stop dishzero
+            git pull
+            yarn install
+            yarn build
+            pm2 start yarn --name "dishzero" -- start
