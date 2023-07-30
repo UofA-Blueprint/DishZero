@@ -15,7 +15,7 @@ jobs:
           username: 'ubuntu'
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/dishzero/Dishzero/backend
+            cd /home/ubuntu/dishzero/DishZero/backend
             pm2 stop dishzero
             git pull
             yarn install
