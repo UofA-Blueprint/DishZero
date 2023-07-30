@@ -147,12 +147,10 @@ export default () => {
   const fbContext = useContext(FirebaseContext);
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
-  // const location = useLocation();
-  // let sessionToken = location.state
   let token = SessionToken()
   // Fetch dishes used for the user
   useEffect(()=>{
-    axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
+    axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
     .then(function (response) {
       console.log("response:", response.data)
       setDishesUsed(response.data.transactions)
