@@ -1,7 +1,21 @@
 import '../styles/index.css'
+import {useEffect } from "react";
+import axios from "axios";
 
-export default ({dish}) => {
+export default ({dish,token}) => {
     const dateFormat = { day: 'numeric', year: 'numeric', month: 'short'}
+    console.log("dishid:", dish.dishID)
+    
+    useEffect(()=>{
+        axios.get('http://localhost:8080/api/dish', {headers:{"x-api-key":"test","session-token":token}, params:{"id":dish.dishID}})
+        .then(function (response) {
+          console.log("resp:", response.data)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },[])
+
     return (
         <div className="dish-card mb-3">
             <div className="type-icon">

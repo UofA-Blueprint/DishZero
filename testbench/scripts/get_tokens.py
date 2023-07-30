@@ -22,7 +22,7 @@ def create_custom_token():
             'role' : os.environ['USER_ROLE']
         }
         return auth.create_custom_token(uid, developer_claims=claims, app=default_app).decode('utf-8')
-API_KEY = os.environ['API_KEY']
+API_KEY = os.environ['API_SECRET']
 
 cred = credentials.Certificate('credentials.json')
 default_app = firebase_admin.initialize_app(cred)

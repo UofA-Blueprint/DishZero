@@ -14,11 +14,14 @@ import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 
 
+
+
 const DishLog = ({dishes}) => {
+  let token = SessionToken()
   return (
     <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
-        return <DishCard dish={dish} />
+        return <DishCard dish={dish} token={token} />
       }) }
       <div>
         <button id="prev">Prev</button>
@@ -29,8 +32,8 @@ const DishLog = ({dishes}) => {
   )
 };
 
-const NewUser = (user) => {
-  const content = GetDishes(user)
+const NewUser = (dishesUsed) => {
+  const content = GetDishes(dishesUsed)
   return(
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
@@ -57,23 +60,7 @@ const NewUser = (user) => {
 
 };
 
-const GetDishes = (user) =>{
-  const [dishesUsed, setDishesUsed] = useState([]);
-
-  const location = useLocation();
-  let sessionToken = location.state
-  useEffect(()=>{
-    axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
-    .then(function (response) {
-      setDishesUsed(response.data.transactions)
-      console.log("data:",response.data.transactions)
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  },[])
-
-  let dishes = DishAPI.getUserActiveDishes(user.uid);
+const GetDishes = (dishesUsed) =>{
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
@@ -102,8 +89,8 @@ const GetDishes = (user) =>{
   )
 }
 
-const ExistingUser = (user) => {
-  const content = GetDishes(user)
+const ExistingUser = (dishesUsed) => {
+  const content = GetDishes(dishesUsed)
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -124,6 +111,12 @@ const ExistingUser = (user) => {
       {content}
     </div>
   )
+}
+
+const SessionToken = ()=>{
+  const location = useLocation();
+  let sessionToken = location.state
+  return (sessionToken)
 }
 
 const Header = () => {
@@ -148,27 +141,33 @@ const Footer = () => {
   )
 }
 
+
+
 export default () => {
   const fbContext = useContext(FirebaseContext);
-  const [dishesUsed, setDishesUsed] = useState('');
+  const [dishesUsed, setDishesUsed] = useState([]);
   var content;
-  const location = useLocation();
-  let sessionToken = location.state
-  // axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
-  // .then(function (response) {
-  //   setDishesUsed(response.data.transactions.length)
-  // })
-  // .catch(function (error) {
-  //   console.log(error);
-  // });
+  // const location = useLocation();
+  // let sessionToken = location.state
+  let token = SessionToken()
+  // Fetch dishes used for the user
+  useEffect(()=>{
+    axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
+    .then(function (response) {
+      console.log("response:", response.data)
+      setDishesUsed(response.data.transactions)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  },[])
 
   let user = fbContext?.user
   if (user !== undefined){ // User is defined
-    // let dishes = DishAPI.getUserActiveDishes(user.uid);
     if (Number(dishesUsed) == 0){ 
-      content = NewUser(user)
+      content = NewUser(dishesUsed)
     } else { 
-      content = ExistingUser(user)
+      content = ExistingUser(dishesUsed)
     }
   }
   return (

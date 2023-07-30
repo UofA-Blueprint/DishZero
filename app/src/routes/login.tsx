@@ -1,34 +1,46 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Typography, Box, Avatar } from '@mui/material';
+import {BallTriangle} from 'react-loader-spinner';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
 import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
 import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
-import { signInWithPopup } from 'firebase/auth';
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { getIdToken, onAuthStateChanged } from "firebase/auth";
+import { getIdToken, onAuthStateChanged, signInWithPopup, getAuth } from "firebase/auth";
 import axios from "axios";
 import DishAPI from "../features/api";
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
+
+
 function Login() {
   const fbContext = useContext(FirebaseContext);
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+  //Show spinner as soon as page is refreshed 
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const auth = getAuth();
+  
+  //const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
 
   useEffect(() => {
-    if (fbContext?.user) {
-        if(transaction_id){
-            DishAPI.updateDocWithUserID(transaction_id, fbContext?.user?.uid);  
-            //send a firebase request to add the user to the document with the handle
-        }
-        // navigate("/home");
-    }
+      if (fbContext?.user) {
+          console.log(transaction_id)
+          if(transaction_id){
+              DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
+              //send a firebase request to add the user to the document with the handle
+              
+          }
+          navigate("/home");
+
+      }
   }, [fbContext?.user]);
 
   useEffect(() => {
@@ -42,9 +54,7 @@ function Login() {
     };
   }, []);
 
-  if (fbContext?.user) {
-    return <div />;
-  }
+  
 
   // fired on button click while the user is not signed in.
   // the userEmail state is set (or "dispatched") after getting it from "credentials".
@@ -80,6 +90,38 @@ function Login() {
 
 
 
+  //Hide spinner as soon as Auth state has changed i.e. auth state has been read
+  useEffect(() => {onAuthStateChanged(auth, (user) => {
+    setIsLoading(false)
+    if (user) {
+      //if user is already signed in
+     
+    } else {
+      // User is not signed in.
+      // ...
+    }
+  });
+  }, []);
+
+  /*if (fbContext?.user) {
+    return <div></div>
+  }*/
+
+  //As auth state is being read, display loader spinner
+  if (isLoading){
+    return(
+      <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
+      <BallTriangle
+          height={100}
+          width={100}
+          radius={5}
+          color="#4fa94d"
+          ariaLabel="ball-triangle-loading"
+          visible={true}
+        />
+      </Box>
+    )
+  }
   return (
     <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
       <Box
@@ -107,8 +149,8 @@ function Login() {
           </Typography>
         </Button>
       </Box>
-    </Box>
-  );
+    </Box>)
+  
 }
 export default Login;
 
@@ -119,6 +161,18 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+
+  rootMobileLoader:{
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundImage: `url(${MobileBackground})`,
+    backgroundSize: 'cover'
+
   },
 
   rootMobile: {
