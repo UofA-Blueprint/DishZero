@@ -232,7 +232,7 @@ the qr code routes are defined in the `src/routes/qrCode.ts` file. The routes ar
     ```
     qrCode: {
         qid: number,     * required
-        dishID: string,  * required
+        dishId: string,  * required
     }
     ```
 
@@ -249,7 +249,7 @@ the qr code routes are defined in the `src/routes/qrCode.ts` file. The routes ar
     ```
     qrCode: {
         qid: number,     * required
-        dishID: string,  * required
+        dishId: string,  * required
     }
     ```
 

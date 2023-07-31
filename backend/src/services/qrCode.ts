@@ -12,7 +12,7 @@ export const getQrCode = async (qid: string) => {
     let data = doc.data()
     return {
         qid: parseInt(doc.id, 10),
-        dishID: data?.dishID
+        dishId: data?.dishId
     }
 }
 
@@ -23,13 +23,17 @@ export const getAllQrCodes = async () => {
         let data = doc.data()
         codes.push({
             qid : parseInt(doc.id, 10),
-            dishID : data.dishID
+            dishId : data.dishId
         })
+    })
+    Logger.info({
+        module : 'qrcode.services',
+        message : 'retrieved all qr codes'
     })
     return codes
 }
 
-export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) => {
+export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean): Promise<QrCode> => {
     let validation = validateQrRequestBody(qrcode)
     if (validation.error) {
         Logger.error({
@@ -52,9 +56,9 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
     }
 
     let qid = qrcode.qid
-    let dishID = qrcode.dishID
+    let dishId = qrcode.dishId
     // create qr code
-    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dishID})
+    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dishId})
     Logger.info({
         module : 'qrcode.services',
         message : 'created qr code in database'
@@ -62,7 +66,7 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean) =>
 
     return {
         qid: qid,
-        dishID: dishID
+        dishId: dishId
     }
 }
 
@@ -89,7 +93,7 @@ export const deleteQrCodeFromDatabase = async (qid: string) => {
 export const validateQrRequestBody = (qrcode: QrCode) => {
     const schema = Joi.object({
         qid: Joi.number().required(),
-        dishID: Joi.string().required(),
+        dishId: Joi.string().required(),
     }).required()
 
     return schema.validate(qrcode)

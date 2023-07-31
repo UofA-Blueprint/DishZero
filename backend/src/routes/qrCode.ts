@@ -7,6 +7,6 @@ const router = express.Router()
 router.get('/', verifyApiKey, verifyFirebaseToken, getQrCodes)
 router.post('/create', verifyApiKey, verifyFirebaseToken, createQrCode)
 router.post('/update', verifyApiKey, verifyFirebaseToken, updateQrCode)
-router.delete('/', verifyApiKey, verifyFirebaseToken, deleteQrCode)
+router.post('/delete', verifyApiKey, verifyFirebaseToken, deleteQrCode)
 
 export { router as qrCodeRouter }

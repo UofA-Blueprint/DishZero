@@ -16,7 +16,7 @@ import {
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
-import { getTransaction, registerTransaction, getTransactionByDishId } from '../services/transactions'
+import { getTransaction, registerTransaction, getTransactionBydishId } from '../services/transactions'
 import { getQrCode } from '../services/qrCode'
 import { db } from '../services/firebase'
 import nodeConfig from 'config'
@@ -335,7 +335,7 @@ export const returnDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
 
-        ongoingTransaction = await getTransactionByDishId(userClaims, id!)
+        ongoingTransaction = await getTransactionBydishId(userClaims, id!)
         if (!ongoingTransaction) {
             Logger.error({
                 module: 'dish.controller',
