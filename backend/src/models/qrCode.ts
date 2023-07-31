@@ -1,4 +1,4 @@
 export type QrCode = {
-    qid : number, 
-    dishId : string
+    qid: number
+    dishId: string
 }

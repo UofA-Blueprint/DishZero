@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { verifyIfUserAdmin } from '../services/users'
 import Logger from '../utils/logger'
 import { CustomRequest } from '../middlewares/auth'
-import { createQrCodeInDatabase, deleteQrCodeFromDatabase, getAllQrCodes, getQrCode } from '../services/qrCode';
+import { createQrCodeInDatabase, deleteQrCodeFromDatabase, getAllQrCodes, getQrCode } from '../services/qrCode'
 
 export const getQrCodes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -26,11 +26,11 @@ export const getQrCodes = async (req: Request, res: Response) => {
         Logger.info({
             module: 'qrCode.controller',
             function: 'getQrCodes',
-            message : 'retrieved all qr codes',
-            status: 200
+            message: 'retrieved all qr codes',
+            status: 200,
         })
 
-        return res.status(200).json({ qrCodes : codes })
+        return res.status(200).json({ qrCodes: codes })
     }
 
     // return qr code by qid
@@ -50,7 +50,7 @@ export const getQrCodes = async (req: Request, res: Response) => {
             module: 'qrCode.controller',
             function: 'getQRCodes',
         })
-        return res.status(200).json({ qrCode: qrCode})
+        return res.status(200).json({ qrCode: qrCode })
     } catch (error: any) {
         Logger.error({
             message: 'Error when retrieving qr code',
@@ -105,9 +105,9 @@ export const updateQrCode = async (req: Request, res: Response) => {
         Logger.error({
             module: 'qrCode.services',
             message: 'qrCode does not exist',
-            status: 500
+            status: 500,
         })
-        return res.status(500).json({error: 'internal_server_error', message: 'qr code does not exist'})
+        return res.status(500).json({ error: 'internal_server_error', message: 'qr code does not exist' })
     }
 
     try {
@@ -145,10 +145,9 @@ export const deleteQrCode = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'bad_request' })
     }
 
-
     try {
         await deleteQrCodeFromDatabase(qid)
-        return res.status(200).json({ message : 'deleted qr code' })
+        return res.status(200).json({ message: 'deleted qr code' })
     } catch (error: any) {
         Logger.error({
             module: 'qrCode.controller',

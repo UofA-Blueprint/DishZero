@@ -1,8 +1,8 @@
-import { QrCode } from '../models/qrCode';
+import { QrCode } from '../models/qrCode'
 import { db } from './firebase'
-import nodeConfig from 'config';
-import Logger from '../utils/logger';
-import Joi from 'joi';
+import nodeConfig from 'config'
+import Logger from '../utils/logger'
+import Joi from 'joi'
 
 export const getQrCode = async (qid: string) => {
     let doc = await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).get()
@@ -12,7 +12,7 @@ export const getQrCode = async (qid: string) => {
     let data = doc.data()
     return {
         qid: parseInt(doc.id, 10),
-        dishId: data?.dishId
+        dishId: data?.dishId,
     }
 }
 
@@ -22,13 +22,13 @@ export const getAllQrCodes = async () => {
     qs.forEach((doc) => {
         let data = doc.data()
         codes.push({
-            qid : parseInt(doc.id, 10),
-            dishId : data.dishId
+            qid: parseInt(doc.id, 10),
+            dishId: data.dishId,
         })
     })
     Logger.info({
-        module : 'qrcode.services',
-        message : 'retrieved all qr codes'
+        module: 'qrcode.services',
+        message: 'retrieved all qr codes',
     })
     return codes
 }
@@ -58,15 +58,15 @@ export const createQrCodeInDatabase = async (qrcode: QrCode, update: boolean): P
     let qid = qrcode.qid
     let dishId = qrcode.dishId
     // create qr code
-    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({dishId})
+    await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).set({ dishId })
     Logger.info({
-        module : 'qrcode.services',
-        message : 'created qr code in database'
+        module: 'qrcode.services',
+        message: 'created qr code in database',
     })
 
     return {
         qid: qid,
-        dishId: dishId
+        dishId: dishId,
     }
 }
 
@@ -84,10 +84,10 @@ export const deleteQrCodeFromDatabase = async (qid: string) => {
     // delete qr code
     await db.collection(nodeConfig.get('collections.qrcodes')).doc(qid.toString()).delete()
     Logger.info({
-        module : 'qrcode.services',
-        message : 'qr code in deleted'
+        module: 'qrcode.services',
+        message: 'qr code in deleted',
     })
-    return 
+    return
 }
 
 export const validateQrRequestBody = (qrcode: QrCode) => {
