@@ -74,7 +74,7 @@ export const getTransaction = async (userClaims: DecodedIdToken, qid: number) =>
     }
 }
 
-export const getTransactionByDishId = async (userClaims: DecodedIdToken, dishId: string) => {
+export const getTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
     let snapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
         .where('userId', '==', userClaims.uid)
@@ -87,7 +87,7 @@ export const getTransactionByDishId = async (userClaims: DecodedIdToken, dishId:
     Logger.info({
         message: 'Transaction found',
         module: 'transaction.services',
-        function: 'getTransactionByDishId',
+        function: 'getTransactionBydishId',
     })
 
     return {
