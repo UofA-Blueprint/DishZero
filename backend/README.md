@@ -124,7 +124,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     }
     ```
 
-- #### POST `/api/dish/condition?qid=`
+- #### POST `/api/dish/condition?id=`
     This route will update the condition for the dish.
 
     headers:
@@ -135,8 +135,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
 
     query:
     ```
-    qid: qr_code of the dish to be returned
-    id: id of the dish to be returned (required if qid is not provided)
+    id: id of the dish
     ```
 
     body:
