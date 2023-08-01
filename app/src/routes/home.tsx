@@ -21,13 +21,15 @@ const DishLog = ({dishes}) => {
   return (
     <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
-        return <DishCard dish={dish} token={token} />
+        if (dish.returned.timestamp != ''){
+          return <DishCard dish={dish} token={token} key={dish.id} />
+        }
       }) }
-      <div>
+      {/* <div style={{position:'fixed', left:'5px', bottom:'5px'}}>
         <button id="prev">Prev</button>
         <input type="number" id="page-number" />
         <button id="next">Next</button>
-      </div>
+      </div> */}
     </div>
   )
 };
@@ -60,13 +62,19 @@ const NewUser = (dishesUsed) => {
 
 };
 
+
 const GetDishes = (dishesUsed) =>{
+  let dishesInUse = 0;
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
-          {/* <p> {data.transactions.length} </p> */}
-          <p className="details-2 mt-1">{dishesUsed.length} in use</p>
+          {dishesUsed.map(dish => {
+            if (dish.returned.timestamp != ''){
+              dishesInUse = dishesInUse + 1
+            }
+          }) }
+          <p className="details-2 mt-1">{dishesInUse} in use</p>
         </div>
         { dishesUsed.length ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">

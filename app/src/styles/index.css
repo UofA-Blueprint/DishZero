@@ -81,7 +81,7 @@ code {
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
-  line-height: 16px;
+  /* line-height: 16px; */
 }
 
 .details-2 {
@@ -114,4 +114,8 @@ code {
   display: flex;
   flex-direction: row;
   padding: 16px;
+}
+
+p::first-letter {
+  text-transform:capitalize;
 }
