@@ -21,7 +21,7 @@ const DishLog = ({dishes}) => {
   return (
     <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
-        if (dish.returned.timestamp != ''){
+        if (dish.returned.timestamp == ''){
           return <DishCard dish={dish} token={token} key={dish.id} />
         }
       }) }
@@ -41,7 +41,7 @@ const NewUser = (dishesUsed) => {
       <div className="sub-header-3">
         How It Works
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
-            <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
+            <p className="details-1" style={{height:'60px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
             <LinkMUI href="https://www.dishzero.ca/how-it-works-1">
               <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
             </LinkMUI>
@@ -70,7 +70,7 @@ const GetDishes = (dishesUsed) =>{
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
           {dishesUsed.map(dish => {
-            if (dish.returned.timestamp != ''){
+            if (dish.returned.timestamp == ''){
               dishesInUse = dishesInUse + 1
             }
           }) }
@@ -99,6 +99,7 @@ const GetDishes = (dishesUsed) =>{
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
+  let dishReturned = 0;
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -106,12 +107,18 @@ const ExistingUser = (dishesUsed) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{0}</p>
+              {dishesUsed.map(dish => {
+                if (dish.returned.timestamp != ''){
+                  console.log("timestamp:", dish.returned.timestamp)
+                  dishReturned = dishReturned + 1
+                }
+              }) }
+            <p className="header mb-0">{dishReturned}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{0}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <div className="d-flex"><p className="header mb-0">{dishReturned * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
             <p className="sub-header-3 mb-1">Waste Diverted</p>
           </div>
         </div>
@@ -156,7 +163,7 @@ export default () => {
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   let token = SessionToken()
-  // Fetch dishes used for the user
+  // Fetch dishes transaction for the user
   useEffect(()=>{
     axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
     .then(function (response) {
