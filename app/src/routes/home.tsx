@@ -21,7 +21,7 @@ const DishLog = ({dishes}) => {
   return (
     <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
-        if (dish.returned.timestamp == ''){
+        if (dish.returned.timestamp == null){
           return <DishCard dish={dish} token={token} key={dish.id} />
         }
       }) }
@@ -70,7 +70,7 @@ const GetDishes = (dishesUsed) =>{
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
           {dishesUsed.map(dish => {
-            if (dish.returned.timestamp == ''){
+            if (dish.returned.timestamp == null){
               dishesInUse = dishesInUse + 1
             }
           }) }
@@ -109,7 +109,7 @@ const ExistingUser = (dishesUsed) => {
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
               {dishesUsed.map(dish => {
                 if (dish.returned.timestamp != ''){
-                  console.log("timestamp:", dish.returned.timestamp)
+                  // console.log("timestamp:", dish.returned.timestamp)
                   dishReturned = dishReturned + 1
                 }
               }) }
@@ -163,11 +163,12 @@ export default () => {
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   let token = SessionToken()
+  console.log(token)
   // Fetch dishes transaction for the user
   useEffect(()=>{
     axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
     .then(function (response) {
-      console.log("response:", response.data)
+      // console.log("response:", response.data)
       setDishesUsed(response.data.transactions)
     })
     .catch(function (error) {

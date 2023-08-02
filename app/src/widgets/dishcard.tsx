@@ -18,7 +18,7 @@ export default ({dish,token}) => {
         });
       },[])
 
-    console.log(dishAPI['type'])
+    // console.log(dishAPI['type'])
 
     if (dishAPI['type'] == 'mug'){
       var icon = mug
@@ -28,11 +28,11 @@ export default ({dish,token}) => {
 
     const dishCheckOut = new Date(dish.timestamp)
     // date.setDate(date.getDate() + 1);
-    console.log(dishCheckOut.getDate())
+    // console.log(dishCheckOut.getDate())
     const dishDue = new Date(dishCheckOut.getTime() + 86400000)
-    console.log(dishDue)
-    console.log("dishapi:", dishAPI)
-    console.log("dish:", dish.timestamp)
+    // console.log(dishDue)
+    // console.log("dishapi:", dishAPI)
+    // console.log("dish:", dish.timestamp)
     return (
         <div className="dish-card mb-3">
             <div className="type-icon">
