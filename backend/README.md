@@ -124,6 +124,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     }
     ```
 
+
 - #### POST `/api/dish/condition?id=`
     This route will update the condition for the dish.
 
