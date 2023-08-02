@@ -11,7 +11,6 @@ import ReturnRoute from "./return";
 import Admin from "./admin";
 import { useContext } from "react";
 import { FirebaseContext, Role } from "../firebase";
-import { Sidebar } from "../widgets/sidebar";
 import { Error404 } from "./misc";
 import DishAPI from "../features/api";
 import Dishes from "../admin/dishes";
@@ -24,9 +23,6 @@ const UserRoute = () => {
   if (fbContext?.user) {
     return (
       <>
-        {
-          //<Sidebar />
-        }
         <Outlet />
       </>
     );
