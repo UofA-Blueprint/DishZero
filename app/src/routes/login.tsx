@@ -107,19 +107,20 @@ function LoginOld() {
     //     alert(err.message);
     //   });
 
-    //   onAuthStateChanged(FirebaseAuth, async (currentUser) => {
-    //     if (currentUser) {
-    //       const token = await getIdToken(currentUser);
-    //       // Send id token to backend
-    //       axios.post('http://localhost:8080/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
-    //       .then(function (response) {
-    //         navigate("/home",{state:response.data.session});
-    //       })
-    //       .catch(function (error) {
-    //         console.log(error);
-    //       });
-    //     }
-    //   });
+      onAuthStateChanged(FirebaseAuth, async (currentUser) => {
+        if (currentUser) {
+          const token = await getIdToken(currentUser);
+          // Send id token to backend
+          axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
+          .then(function (response) {
+            Cookies.set('sessionToken', token)
+            navigate("/home",{state:response.data.session});
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+        }
+      });
     }
 
 

@@ -334,7 +334,6 @@ export const returnDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
-
         ongoingTransaction = await getTransactionBydishId(userClaims, id!)
         if (!ongoingTransaction) {
             Logger.error({

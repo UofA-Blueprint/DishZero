@@ -14,29 +14,34 @@ import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 
 
+
+
 const DishLog = ({dishes}) => {
+  let token = SessionToken()
   return (
     <div id="dish-log" className="mt-3">
       { dishes.map(dish => {
-        return <DishCard dish={dish} />
+        if (dish.returned.timestamp == null){
+          return <DishCard dish={dish} token={token} key={dish.id} />
+        }
       }) }
-      <div>
+      {/* <div style={{position:'fixed', left:'5px', bottom:'5px'}}>
         <button id="prev">Prev</button>
         <input type="number" id="page-number" />
         <button id="next">Next</button>
-      </div>
+      </div> */}
     </div>
   )
 };
 
-const NewUser = (user) => {
-  const content = GetDishes(user)
+const NewUser = (dishesUsed) => {
+  const content = GetDishes(dishesUsed)
   return(
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
         How It Works
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
-            <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
+            <p className="details-1" style={{height:'60px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
             <LinkMUI href="https://www.dishzero.ca/how-it-works-1">
               <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
             </LinkMUI>
@@ -57,29 +62,19 @@ const NewUser = (user) => {
 
 };
 
-const GetDishes = (user) =>{
-  const [dishesUsed, setDishesUsed] = useState([]);
 
-  const location = useLocation();
-  let sessionToken = location.state
-  useEffect(()=>{
-    axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
-    .then(function (response) {
-      setDishesUsed(response.data.transactions)
-      console.log("data:",response.data.transactions)
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  },[])
-
-  let dishes = DishAPI.getUserActiveDishes(user.uid);
+const GetDishes = (dishesUsed) =>{
+  let dishesInUse = 0;
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
-          {/* <p> {data.transactions.length} </p> */}
-          <p className="details-2 mt-1">{dishesUsed.length} in use</p>
+          {dishesUsed.map(dish => {
+            if (dish.returned.timestamp == null){
+              dishesInUse = dishesInUse + 1
+            }
+          }) }
+          <p className="details-2 mt-1">{dishesInUse} in use</p>
         </div>
         { dishesUsed.length ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">
@@ -102,8 +97,9 @@ const GetDishes = (user) =>{
   )
 }
 
-const ExistingUser = (user) => {
-  const content = GetDishes(user)
+const ExistingUser = (dishesUsed) => {
+  const content = GetDishes(dishesUsed)
+  let dishReturned = 0;
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -111,12 +107,18 @@ const ExistingUser = (user) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{0}</p>
+              {dishesUsed.map(dish => {
+                if (dish.returned.timestamp != ''){
+                  // console.log("timestamp:", dish.returned.timestamp)
+                  dishReturned = dishReturned + 1
+                }
+              }) }
+            <p className="header mb-0">{dishReturned}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{0}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <div className="d-flex"><p className="header mb-0">{dishReturned * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
             <p className="sub-header-3 mb-1">Waste Diverted</p>
           </div>
         </div>
@@ -124,6 +126,12 @@ const ExistingUser = (user) => {
       {content}
     </div>
   )
+}
+
+const SessionToken = ()=>{
+  const location = useLocation();
+  let sessionToken = location.state
+  return (sessionToken)
 }
 
 const Header = () => {
@@ -148,27 +156,32 @@ const Footer = () => {
   )
 }
 
+
+
 export default () => {
   const fbContext = useContext(FirebaseContext);
-  const [dishesUsed, setDishesUsed] = useState('');
+  const [dishesUsed, setDishesUsed] = useState([]);
   var content;
-  const location = useLocation();
-  let sessionToken = location.state
-  // axios.get('http://localhost:8080/api/transactions', {headers:{"x-api-key":"test","session-token":sessionToken}})
-  // .then(function (response) {
-  //   setDishesUsed(response.data.transactions.length)
-  // })
-  // .catch(function (error) {
-  //   console.log(error);
-  // });
+  let token = SessionToken()
+  console.log(token)
+  // Fetch dishes transaction for the user
+  useEffect(()=>{
+    axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
+    .then(function (response) {
+      // console.log("response:", response.data)
+      setDishesUsed(response.data.transactions)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  },[])
 
   let user = fbContext?.user
   if (user !== undefined){ // User is defined
-    // let dishes = DishAPI.getUserActiveDishes(user.uid);
     if (Number(dishesUsed) == 0){ 
-      content = NewUser(user)
+      content = NewUser(dishesUsed)
     } else { 
-      content = ExistingUser(user)
+      content = ExistingUser(dishesUsed)
     }
   }
   return (
