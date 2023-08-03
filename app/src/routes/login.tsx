@@ -6,18 +6,54 @@ import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
-import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { getIdToken, onAuthStateChanged, signInWithPopup, getAuth } from "firebase/auth";
 import axios from "axios";
-import DishAPI from "../features/api";
+import { useAuth } from "../contexts/AuthContext";
+
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
+export default function Login() {
+    const {currentUser, login} = useAuth()
+    const handleSignIn = async () => {
+      let user = await login()
+    }
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    return (
+      <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
+        <Box
+          sx={isMobile ? styles.logoMobile : styles.logoDesktop}
+        />
+        <Box sx={isMobile ? styles.rightFrameMobile : styles.rightFrameDesktop}>
+          <Typography variant="h1" sx={styles.dishZeroHeading}>
+            DishZero
+          </Typography>
+          <Typography variant="subtitle1" sx={styles.subheading}>
+            Helping the planet one dish at a time
+          </Typography>
+          <Button
+            variant="contained"
+            sx={isMobile ? styles.signInButtonMobile : styles.signInButtonDesktop}
+            onClick={handleSignIn}
+          >
+            <Avatar
+              src={signInButtonLogo}
+              sx={styles.signInButtonLogo}
+              alt="Sign In Button Logo"
+            />
+            <Typography sx={styles.signInButtonText}>
+              Sign in with CCID
+            </Typography>
+          </Button>
+        </Box>
+      </Box>
+  )
+}
 
 
-function Login() {
-  const fbContext = useContext(FirebaseContext);
+function LoginOld() {
+  // const fbContext = useContext(FirebaseContext);
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
@@ -30,18 +66,18 @@ function Login() {
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
 
-  useEffect(() => {
-      if (fbContext?.user) {
-          console.log(transaction_id)
-          if(transaction_id){
-              DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
-              //send a firebase request to add the user to the document with the handle
+  // useEffect(() => {
+  //     if (fbContext?.user) {
+  //         console.log(transaction_id)
+  //         if(transaction_id){
+  //             DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
+  //             //send a firebase request to add the user to the document with the handle
               
-          }
-          navigate("/home");
+  //         }
+  //         navigate("/home");
 
-      }
-  }, [fbContext?.user]);
+  //     }
+  // }, [fbContext?.user]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,30 +96,30 @@ function Login() {
   // the userEmail state is set (or "dispatched") after getting it from "credentials".
   const handleSignIn = () => {
     let res = '';
-    signInWithPopup(FirebaseAuth, GoogleAuth)
-      .then((credentials) => {
-        if (!credentials.user.email?.match("@ualberta.ca")) {
-          credentials.user?.delete();
-          alert("Please login with your University of Alberta CCID");
-        }
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+    // signInWithPopup(FirebaseAuth, GoogleAuth)
+    //   .then((credentials) => {
+    //     if (!credentials.user.email?.match("@ualberta.ca")) {
+    //       credentials.user?.delete();
+    //       alert("Please login with your University of Alberta CCID");
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     alert(err.message);
+    //   });
 
-      onAuthStateChanged(FirebaseAuth, async (currentUser) => {
-        if (currentUser) {
-          const token = await getIdToken(currentUser);
-          // Send id token to backend
-          axios.post('http://localhost:8080/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
-          .then(function (response) {
-            navigate("/home",{state:response.data.session});
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-        }
-      });
+    //   onAuthStateChanged(FirebaseAuth, async (currentUser) => {
+    //     if (currentUser) {
+    //       const token = await getIdToken(currentUser);
+    //       // Send id token to backend
+    //       axios.post('http://localhost:8080/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
+    //       .then(function (response) {
+    //         navigate("/home",{state:response.data.session});
+    //       })
+    //       .catch(function (error) {
+    //         console.log(error);
+    //       });
+    //     }
+    //   });
     }
 
 
@@ -152,7 +188,6 @@ function Login() {
     </Box>)
   
 }
-export default Login;
 
 const styles = {
   rootDesktop: {
