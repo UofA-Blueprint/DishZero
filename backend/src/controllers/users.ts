@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import {
     getAllUsers,
+    getUserById,
     getUsersWithRole,
     modifyUserData,
     modifyUserRole,
@@ -74,7 +75,9 @@ export const verifyUserSession = async (req: Request, res: Response) => {
     Logger.info({
         message: 'User session verified',
     })
-    return res.status(200).json({ user })
+
+    let userData = getUserById(userClaims.uid)
+    return res.status(200).json({ user : { ...user, ...userData}})
 }
 
 export const updateUser = async (req: Request, res: Response) => {
