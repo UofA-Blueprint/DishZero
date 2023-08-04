@@ -70,7 +70,6 @@ export function AuthProvider({ children }) {
           role: data.role,
           email: data.email,
         });
-        navigate("/home");
       } else {
         console.log("no token found or something");
         logout();
@@ -81,7 +80,6 @@ export function AuthProvider({ children }) {
       if (error.response.status === 401) {
         console.log("user unauthorised");
         logout();
-        navigate("/login");
       }
     }
   }
