@@ -18,7 +18,7 @@ const DishLog = ({ dishes }) => {
   return (
     <div id="dish-log" className="mt-3">
       {dishes.map((dish) => {
-        if (dish.returned.timestamp == null) {
+        if (dish.returned.timestamp === null) {
           return <DishCard dish={dish} token={sessionToken} key={dish.id} />;
         }
       })}
@@ -123,7 +123,7 @@ const GetDishes = (dishesUsed) => {
       <div className="d-flex justify-content-between">
         <p className="sub-header-3">My Dishes</p>
         {dishesUsed.map((dish) => {
-          if (dish.returned.timestamp == null) {
+          if (dish.returned.timestamp === null) {
             dishesInUse = dishesInUse + 1;
           }
         })}
@@ -288,7 +288,7 @@ export default () => {
 
   if (user) {
     // User is defined
-    if (Number(dishesUsed) == 0) {
+    if (Number(dishesUsed) === 0) {
       content = NewUser(dishesUsed);
     } else {
       content = ExistingUser(dishesUsed);

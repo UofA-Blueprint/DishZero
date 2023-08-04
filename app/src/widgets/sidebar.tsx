@@ -20,10 +20,10 @@ export const Sidebar = () => {
 
   //When we load the page or refresh, check the role of the user and setadmin or volunteer accordingly
   useEffect(() => {
-    if (currentUser?.role == "admin") {
+    if (currentUser?.role === "admin") {
       setAdmin(true);
       setVolunteer(true);
-    } else if (currentUser?.role == "volunteer") {
+    } else if (currentUser?.role === "volunteer") {
       setAdmin(false);
       setVolunteer(true);
     }

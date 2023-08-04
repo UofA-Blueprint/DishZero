@@ -25,7 +25,7 @@ export default ({ dish, token }) => {
 
   // console.log(dishAPI['type'])
 
-  if (dishAPI["type"] == "mug") {
+  if (dishAPI["type"] === "mug") {
     var icon = mug;
   } else {
     var icon = container;
