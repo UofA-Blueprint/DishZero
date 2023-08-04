@@ -2,22 +2,24 @@ import {
   createBrowserRouter,
   Outlet,
   RouterProvider,
-  useNavigate,
 } from "react-router-dom";
 import LoginRoute from "./login";
 import HomeRoute from "./home";
 import BorrowRoute from "./borrow";
 import ReturnRoute from "./return";
 import Admin from "./admin";
-import { useContext } from "react";
 import { Sidebar } from "../widgets/sidebar";
 import { Error404 } from "./misc";
 import Dishes from "../admin/dishes";
 import Email from "../admin/email";
 import Users from "../admin/users";
-import Login from "./login";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
+const enum Role {
+  admin = 'admin',
+  volunteer = 'volunteer',
+  basic = 'basic'
+}
 const AuthLayout = () => {
   return (
     <AuthProvider>
@@ -42,7 +44,7 @@ const UserRoute = () => {
 };
 
 const PermissionsRoute = (props: any) => {
-  let { currentUser } = useAuth();
+  const { currentUser } = useAuth();
   if (props?.validator && props.validator(currentUser?.role)) {
     return <Outlet />;
   }
@@ -91,7 +93,7 @@ const router = createBrowserRouter([
             path: "/volunteer",
             element: (
               <PermissionsRoute
-                validator={(r) => r == "Role.VOLUNTEER " || r == "Role.ADMIN"}
+                validator={(r) => r === Role.volunteer || r === Role.admin}
               />
             ),
             children: [
@@ -106,7 +108,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/admin",
-        element: <PermissionsRoute validator={(r) => r == "Role.ADMIN"} />,
+        element: <PermissionsRoute validator={(r) => r === Role.admin} />,
         errorElement: <Error404/>,
         children: [
           // TODO: put admin related children here
@@ -130,7 +132,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />,
+        element: <LoginRoute />,
       },
       {
         path: "/login/:transaction_id",

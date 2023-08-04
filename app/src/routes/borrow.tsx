@@ -5,15 +5,11 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DishAPI from "../features/api";
-import { FirebaseContext } from "../firebase";
 import Login from "./login";
-import { GoogleAuth, FirebaseAuth } from "../firebase";
-import { signInWithPopup } from "firebase/auth";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 import axios from "axios";
-
-
+import { useAuth } from "../contexts/AuthContext";
+import { config } from "../config";
 
 const Confirm = ({ show, onSubmit, onCancel, id }) => {
   return (
@@ -38,11 +34,11 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
 };
 
 export default () => {
-  const sessionToken = Cookies.get('sessionToken')
-  console.log(sessionToken)
+  let {currentUser, sessionToken} = useAuth()
+  console.log(sessionToken);
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const firebase = useContext(FirebaseContext);
+
   const navigate = useNavigate();
   const [Buffer, setBuffer] = useState(false);
   const onScan = confirm
@@ -57,29 +53,24 @@ export default () => {
       return false;
     }
     setConfirm(false);
-    const user = firebase?.user?.uid || null;
+    const user = currentUser?.id || null;
     console.log("USER: " + user);
-    console.log("scanid", scanId)
+    console.log("scanid", scanId);
 
-    axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/dish/borrow', {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
-    .then(function (response) {
-      console.log("response:", response.data)
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-    
-    // const docId = await DishAPI.addDishBorrow(scanId, user);
-    // setBuffer(true);
-
-    // console.log("doc ref" + docId);
-    // const transactionID = docId;
-
-    // if (!firebase?.user) {
-    //   console.log("USER IS NULL");
-    //   navigate(`/login/?transaction_id=${transactionID}`);
-    // }
-    // console.log("Logged out user" + user);
+    axios
+      .post(
+        `${config.serverUrl}/api/dish/borrow`,
+        {
+          headers: { "x-api-key": config.apiKey, "session-token": sessionToken },
+          params: { qid: scanId },
+        }
+      )
+      .then(function (response) {
+        console.log("response:", response.data);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const onCancel = confirm

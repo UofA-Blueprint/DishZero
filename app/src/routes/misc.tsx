@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { FirebaseContext } from "../firebase";
 import leaf_icon from "../assets/leaf.svg";
 import "../styles/error404.css";
+import { useAuth } from "../contexts/AuthContext";
 
 const Error404 = () => {
-  const fbContext = useContext(FirebaseContext);
+  const {currentUser} = useAuth()
 
   return (
     <div className="error404-wrapper d-flex flex-column align-items-center justify-content-center px-4">
@@ -15,7 +15,7 @@ const Error404 = () => {
         Page not found!
       </h2>
 
-      {fbContext?.user ? (
+      {currentUser ? (
         // logged in
         <>
           <p className="m-0 text-center text-404">
