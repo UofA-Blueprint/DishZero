@@ -76,7 +76,11 @@ export const verifyUserSession = async (req: Request, res: Response) => {
         message: 'User session verified',
     })
 
-    let userData = getUserById(userClaims.uid)
+    let userData = await getUserById(userClaims.uid)
+    Logger.info({
+        user: user,
+        userData: userData,
+    })
     return res.status(200).json({ user : { ...user, ...userData}})
 }
 

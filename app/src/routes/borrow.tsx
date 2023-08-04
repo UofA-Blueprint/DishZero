@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";

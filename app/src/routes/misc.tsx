@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { Link } from "react-router-dom";
 import leaf_icon from "../assets/leaf.svg";
 import "../styles/error404.css";

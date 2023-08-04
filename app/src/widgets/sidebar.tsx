@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import "../styles/sidebar.css";
@@ -11,6 +11,7 @@ import admin_panel_icon from "../assets/admin_panel_settings.png";
 import task_icon from "../assets/task_icon.png";
 import logo from "../assets/logo.svg";
 import { useAuth } from "../contexts/AuthContext";
+import { Link as ReactRouterLink } from 'react-router-dom';
 
 export const Sidebar = () => {
   const { currentUser, logout } = useAuth();
@@ -41,26 +42,26 @@ export const Sidebar = () => {
       </p>
 
       <p>MENU</p>
-      <a className="menu-item" href="/home">
+      <ReactRouterLink className="menu-item" to="/home">
         <img style={{ paddingRight: 16 }} src={home_icon} alt="" />
         Home
-      </a>
+      </ReactRouterLink>
       {(admin || volunteer) && (
         <div style={{ flex: 1, flexDirection: "column" }}>
           <p>VOLUNTEERS</p>
-          <a className="menu-item" href="/admin">
+          <ReactRouterLink className="menu-item" to="/admin">
             <img style={{ paddingRight: 16 }} src={admin_panel_icon} alt="" />
             Admin panel
-          </a>
+          </ReactRouterLink>
           <br></br>
-          <a
+          <ReactRouterLink
             className="menu-item"
-            href="/volunteer/return"
+            to="/volunteer/return"
             style={{ paddingTop: 10 }}
           >
             <img style={{ paddingRight: 16 }} src={task_icon} alt="" />
             Return Dishes
-          </a>
+          </ReactRouterLink>
         </div>
       )}
       <div style={{ paddingTop: 280 }}></div>
@@ -77,10 +78,10 @@ export const Sidebar = () => {
         Our impact
       </Link>
       <hr></hr>
-      <a className="menu-item" onClick={() => logout()}>
+      <ReactRouterLink className="menu-item" onClick={() => logout()} to={'/login'}>
         <img src={logout_icon} style={{ paddingRight: 16 }} alt="" />
         Logout
-      </a>
+      </ReactRouterLink>
       <br></br>
     </Menu>
   );

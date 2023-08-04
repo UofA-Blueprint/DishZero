@@ -51,7 +51,7 @@ export const getUserById = async (id: string) => {
         return null
     }
     return {
-        id: snapshot.id,
+        id: id,
         role: data.role,
         email: data.email,
     }

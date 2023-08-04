@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link as ReactRouterLink} from "react-router-dom";
 import { faAngleDoubleLeft, faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import scan_icon from "../assets/scan.svg";
@@ -147,13 +147,13 @@ const GetDishes = (dishesUsed) => {
               to make an impact!
             </p>
           </div>
-          <a
+          <ReactRouterLink
             className="btn-primary align-self-center mt-2"
-            href="/borrow"
+            to="/borrow"
             style={{ textDecoration: "none" }}
           >
             <p className="sub-header-3 text-center m-2">Borrow</p>
-          </a>
+          </ReactRouterLink>
         </div>
       )}
     </div>
@@ -257,9 +257,9 @@ const Footer = () => {
       className="position-absolute bottom-0 end-0"
       style={{ padding: "24px" }}
     >
-      <Link to={"/borrow"}>
+      <ReactRouterLink to={"/borrow"}>
         <img src={scan_icon} alt="scan icon" />
-      </Link>
+      </ReactRouterLink>
     </div>
   );
 };
@@ -268,7 +268,7 @@ export default () => {
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
-  console.log(sessionToken);
+  console.log(currentUser);
   // Fetch dishes transaction for the user
   useEffect(() => {
     axios

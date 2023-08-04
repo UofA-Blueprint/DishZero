@@ -48,6 +48,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function updateCookie() {
+    console.log('running update cookie')
     if (loading) {
       setLoading(false);
     }
