@@ -16,6 +16,7 @@ import DishAPI from "../features/api";
 import Dishes from "../admin/dishes";
 import Email from "../admin/email";
 import Users from "../admin/users";
+import { Sidebar } from "../widgets/sidebar";
 
 const UserRoute = () => {
   const fbContext = useContext(FirebaseContext);
@@ -23,6 +24,11 @@ const UserRoute = () => {
   if (fbContext?.user) {
     return (
       <>
+        {
+          fbContext?.role == Role.ADMIN ?
+            null
+          : <Sidebar />
+        }
         <Outlet />
       </>
     );

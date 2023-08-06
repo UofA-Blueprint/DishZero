@@ -1,9 +1,7 @@
 ////////////////////////// Import Dependencies //////////////////////////
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
-    Switch,
-    FormControlLabel,
     TableSortLabel,
     Button,
     Avatar,
@@ -22,6 +20,7 @@ import {
 import DishzeroSidebarLogo from '../assets/dishzero-sidebar-logo.png';
 import 'typeface-poppins';
 import { 
+    ArrowUpward as ArrowUpwardIcon,
     Home as HomeIcon,
     DinnerDiningOutlined as DinnerDiningOutlinedIcon,
     Person as PersonIcon,
@@ -218,13 +217,22 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               align={headCell.align}
               padding={'normal'}
               sortDirection={orderBy === headCell.id ? order : false}
-              style={{ backgroundColor: '#464646' }}
+              sx={{ backgroundColor: '#464646' }}
             >
               <TableSortLabel
                 active={orderBy === headCell.id}
                 direction={orderBy === headCell.id ? order : 'asc'}
                 onClick={createSortHandler(headCell.id)}
-                style={{ color: 'white' }}
+                sx={{ 
+                    color: 'white', 
+                    '& .MuiTableSortLabel-icon': { color: 'white' },
+                    '&:hover': {
+                        color: 'white',
+                        '& .MuiTableSortLabel-icon': {
+                          color: '#FFFEFC',
+                        },
+                    }
+                }}
               >
                 {headCell.label}
                 {orderBy === headCell.id ? (
@@ -244,11 +252,58 @@ const MainFrame = () => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('inUse');
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+    const location = useLocation();
+    let sessionToken = location.state;
+
+    const fetchUsers = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/users',
+                {headers:{"x-api-key":"test","session-token":sessionToken}}
+            );
+            const { data } = response;
+            let users : {}[] = [];
+            await Promise.all(
+                data.users.map((user) => {
+                    users.push(user);
+                })
+            );
+            return users;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    };
+
+    const fetchTransactions = async () => {
+        try {
+            const response = await axios.get(
+                'http://localhost:8080/api/transactions',
+                {headers:{"x-api-key":"test","session-token":sessionToken}}
+            );
+            const { data } = response;
+            let transactions : {}[] = [];
+            await Promise.all(
+                data.transactions.map((transaction) => {
+                    transactions.push(transaction);
+                })
+            );
+            return transactions;
+        } catch (err) {
+            console.log(err);
+            return [];
+        }
+    };
+
     useEffect(() => {
-        // call users api
+        // call users and transactions api
+        const setUpData =  async () => {
+            const users = await fetchUsers();
+            const transactions = await fetchTransactions();
+        };
+        setUpData();
     }, []);
 
     const handleRequestSort = (
@@ -267,10 +322,6 @@ const MainFrame = () => {
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
-    };
-
-    const handleChangeDense = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDense(event.target.checked);
     };
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
@@ -348,7 +399,7 @@ const MainFrame = () => {
                             }
                             {
                                 emptyRows > 0 && (
-                                    <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                                    <TableRow style={{ height: 53 * emptyRows }}>
                                         <TableCell colSpan={6} />
                                     </TableRow>
                             )}
@@ -363,10 +414,6 @@ const MainFrame = () => {
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-                <FormControlLabel
-                    control={<Switch checked={dense} onChange={handleChangeDense} />}
-                    label="Dense padding"
                 />
             </Paper>
         </Box>
