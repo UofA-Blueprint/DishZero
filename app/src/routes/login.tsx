@@ -73,13 +73,15 @@ function Login() {
       });
 
       onAuthStateChanged(FirebaseAuth, async (currentUser) => {
+        setIsLoading(false)
         if (currentUser) {
           const token = await getIdToken(currentUser);
           // Send id token to backend
           axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
           .then(function (response) {
-            Cookies.set('sessionToken', token)
-            navigate("/home",{state:response.data.session});
+            Cookies.set('sessionToken', response.data.session)
+            window.location.reload()
+            navigate("/home");
           })
           .catch(function (error) {
             console.log(error);

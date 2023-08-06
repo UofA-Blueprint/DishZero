@@ -11,13 +11,34 @@ import home_icon from "../assets/home.png";
 import admin_panel_icon from "../assets/admin_panel_settings.png";
 import task_icon from '../assets/task_icon.png';
 import logo from "../assets/logo.svg";
+import axios from "axios"
+import Cookies from "js-cookie"
+import {useNavigate } from "react-router-dom";
+
+
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
   const fbContext = useContext(FirebaseContext);
   const [admin, setAdmin] = useState(false);
   const [volunteer, setVolunteer] = useState(false);
   
   const auth = getAuth();
+
+  const Logout = ()=>{
+    const sessionToken = Cookies.get('sessionToken')
+    console.log("sessionToken:", sessionToken)
+    axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/logout', {}, {headers:{"x-api-key":"test","session-token":sessionToken}})
+    .then(function (response) {
+      console.log("response:", response)
+      window.location.reload()
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    navigate("/login")
+
+  }
   
   //When we load the page or refresh, check the role of the user and setadmin or volunteer accordingly
   useEffect(() => {onAuthStateChanged(auth, (user) => {
@@ -72,7 +93,7 @@ export const Sidebar = () => {
         Our impact
       </Link>
       <hr></hr>
-       <a className="menu-item" onClick={() => FirebaseAuth.signOut()}>
+       <a className="menu-item" onClick={Logout}>
         <img src={logout_icon} style={{ paddingRight: 16 }} alt="" />
         Logout
       </a>
@@ -81,3 +102,4 @@ export const Sidebar = () => {
     </Menu>
   );
 };
+

@@ -61,12 +61,14 @@ export default () => {
     console.log("USER: " + user);
     console.log("scanid", scanId)
 
-    axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/dish/borrow', {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
+    axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/dish/borrow', {}, {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
     .then(function (response) {
       console.log("response:", response.data)
+      navigate("/home")
     })
     .catch(function (error) {
-      console.log(error);
+      alert(error.response.data.message)
+      console.log(error.response.data.message);
     });
     
     // const docId = await DishAPI.addDishBorrow(scanId, user);

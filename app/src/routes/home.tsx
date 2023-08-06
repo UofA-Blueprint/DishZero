@@ -12,6 +12,7 @@ import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
 import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
+import Cookies from 'js-cookie';
 
 
 
@@ -40,7 +41,7 @@ const NewUser = (dishesUsed) => {
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
         How It Works
-          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
             <p className="details-1" style={{height:'60px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
             <LinkMUI href="https://www.dishzero.ca/how-it-works-1">
               <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
@@ -49,7 +50,7 @@ const NewUser = (dishesUsed) => {
       </div>
       <div className="sub-header-3" style={{marginTop: '24px'}}>
         Our Impact
-        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
           <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> Learn more about the impact we are leaving on the environment.</p>
           <LinkMUI href="https://www.dishzero.ca/impact">
             <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
@@ -76,7 +77,7 @@ const GetDishes = (dishesUsed) =>{
           }) }
           <p className="details-2 mt-1">{dishesInUse} in use</p>
         </div>
-        { dishesUsed.length ? <DishLog dishes={dishesUsed} /> :
+        { (dishesInUse != 0) ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">
             <div className="mt-5 d-flex justify-content-center">
               <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
@@ -108,8 +109,7 @@ const ExistingUser = (dishesUsed) => {
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
               {dishesUsed.map(dish => {
-                if (dish.returned.timestamp != ''){
-                  // console.log("timestamp:", dish.returned.timestamp)
+                if (dish.returned.timestamp != null){
                   dishReturned = dishReturned + 1
                 }
               }) }
@@ -129,8 +129,7 @@ const ExistingUser = (dishesUsed) => {
 }
 
 const SessionToken = ()=>{
-  const location = useLocation();
-  let sessionToken = location.state
+  const sessionToken = Cookies.get('sessionToken')
   return (sessionToken)
 }
 
@@ -168,7 +167,6 @@ export default () => {
   useEffect(()=>{
     axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
     .then(function (response) {
-      // console.log("response:", response.data)
       setDishesUsed(response.data.transactions)
     })
     .catch(function (error) {
