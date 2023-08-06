@@ -2,6 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
+    FormControl,
+    MenuItem,
+    InputLabel,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     TableSortLabel,
     Button,
     Avatar,
@@ -20,7 +27,7 @@ import {
 import DishzeroSidebarLogo from '../assets/dishzero-sidebar-logo.png';
 import 'typeface-poppins';
 import { 
-    ArrowUpward as ArrowUpwardIcon,
+    FilterList as FilterListIcon,
     Home as HomeIcon,
     DinnerDiningOutlined as DinnerDiningOutlinedIcon,
     Person as PersonIcon,
@@ -29,6 +36,8 @@ import {
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 import axios from "axios";
+import Dialog, { DialogProps } from '@mui/material/Dialog';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////
@@ -87,35 +96,6 @@ function createData(
     return { emailAddress, inUse, overdue, role };
 }
 
-const rows = [
-    createData('bhphan@ualberta.ca', 2, 1, 'Admin'),
-    createData('hoangtru@ualberta.ca', 4, 5, 'Volunteer'),
-    createData('dtho@ualberta.ca', 6, 7, 'Basic'),
-    createData('thiminhh@ualberta.ca', 3, 4, 'Basic'),
-    createData('one@ualberta.ca', 3, 4, 'Basic'),
-    createData('two@ualberta.ca', 5, 4, 'Basic'),
-    createData('three@ualberta.ca', 3, 4, 'Basic'),
-    createData('four@ualberta.ca', 3, 4, 'Basic'),
-    createData('five@ualberta.ca', 3, 4, 'Basic'),
-    createData('six@ualberta.ca', 3, 4, 'Basic'),
-    createData('seven@ualberta.ca', 3, 4, 'Basic'),
-    createData('eight@ualberta.ca', 3, 4, 'Basic'),
-    createData('nine@ualberta.ca', 3, 4, 'Basic'),
-    createData('ten@ualberta.ca', 3, 4, 'Basic'),
-    createData('eleven@ualberta.ca', 3, 4, 'Basic'),
-    createData('twelve@ualberta.ca', 3, 4, 'Basic'),
-    createData('thirteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('fourteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('fifteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('sixteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('seventeen@ualberta.ca', 3, 4, 'Basic'),
-    createData('eighteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('nineteen@ualberta.ca', 3, 4, 'Basic'),
-    createData('twenty@ualberta.ca', 3, 4, 'Basic'),
-    createData('twentyone@ualberta.ca', 3, 4, 'Basic'),
-    createData('twentytwo@ualberta.ca', 3, 4, 'Basic')
-];
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -156,6 +136,17 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
+}
+ 
+interface MainframeProps {
+    rows: Data[]
+}
+
+interface RoleFilterDialogProps {
+    open: boolean;
+    handleClose: () => void;
+    role: String;
+    handleRoleChange: () => void;
 }
 //////////////////////////////////////////////////////////////
 
@@ -217,30 +208,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               align={headCell.align}
               padding={'normal'}
               sortDirection={orderBy === headCell.id ? order : false}
-              sx={{ backgroundColor: '#464646' }}
+              sx={{ backgroundColor: '#68B49A', color: 'white' }}
             >
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}
-                sx={{ 
-                    color: 'white', 
-                    '& .MuiTableSortLabel-icon': { color: 'white' },
-                    '&:hover': {
-                        color: 'white',
-                        '& .MuiTableSortLabel-icon': {
-                          color: '#FFFEFC',
-                        },
-                    }
-                }}
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </Box>
-                ) : null}
-              </TableSortLabel>
+                {
+                    headCell.id !== 'role' ?
+                        <TableSortLabel
+                            active={orderBy === headCell.id}
+                            direction={orderBy === headCell.id ? order : 'asc'}
+                            onClick={createSortHandler(headCell.id)}
+                            sx={{ 
+                                '&:hover': {
+                                    color: 'white',
+                                    '& .MuiTableSortLabel-icon': {
+                                        color: '#dddddd',
+                                    },
+                                },
+                                color: 'white'
+                            }}
+                        >
+                            {headCell.label}
+                            {orderBy === headCell.id ? (
+                            <Box component="span" sx={visuallyHidden}>
+                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                            </Box>
+                            ) : null}
+                        </TableSortLabel>
+                    :
+                        <Box sx={styles.roleTableCell}>
+                            {headCell.label}
+                            <FilterListIcon sx={styles.roleFilterIcon}/>
+                        </Box>
+                }
             </TableCell>
           ))}
         </TableRow>
@@ -248,14 +246,182 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
-const MainFrame = () => {
+const MainFrame = (props: MainframeProps) => {
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('inUse');
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(8);
+    const rows = props.rows;
 
+    const handleRequestSort = (
+        event: React.MouseEvent<unknown>,
+        property: keyof Data,
+      ) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
+    const visibleRows = React.useMemo(
+        () =>
+        stableSort(rows, getComparator(order, orderBy)).slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage,
+        ),
+        [order, orderBy, page, rowsPerPage],
+    );
+
+    const [ data, setData ] = useState(visibleRows);
+    const [ searchedEmail, setSearchedEmail ] = useState('');
+
+    function handleEmailSearch(text) {
+        if (text.length > 0) {
+            const filteredRows = data.filter((row) => {
+                return row.emailAddress.toLowerCase().includes(text.toLowerCase());
+            });
+            setSearchedEmail(text);
+            setData(filteredRows);
+        } else {
+            setSearchedEmail(text);
+            setData(visibleRows);
+        }
+    }
+
+    return (
+        <Box sx={styles.main}>
+            <Typography sx={styles.pageName}>Users</Typography>
+            <Box sx={styles.searchFrame}>
+                <Paper
+                    component="form"
+                    sx={styles.searchField}
+                >
+                    <SearchIcon />
+                    <InputBase
+                        sx={{ ml: 1, flex: 1 }}
+                        value={searchedEmail}
+                        onChange={(e) => handleEmailSearch(e.target.value)}
+                        placeholder="search email..."
+                        inputProps={{ 'aria-label': 'search email address' }}
+                    />
+                </Paper>
+            </Box>
+            <Paper sx={styles.dataPaper}>
+                <TableContainer sx={styles.dataTable}>
+                    <Table stickyHeader aria-label="sticky table">
+                        <EnhancedTableHead
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
+                        />
+                        <TableBody>
+                            {
+                                data.map((row, index) => {
+                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                    return (
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
+                                            <TableCell
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                padding="normal"
+                                            >
+                                                {row.emailAddress}
+                                            </TableCell>
+                                            <TableCell align="right">{row.inUse}</TableCell>
+                                            <TableCell align="right">{row.overdue}</TableCell>
+                                            <TableCell align="right">{row.role}</TableCell>
+                                        </TableRow>
+                                    );
+                                })
+                            }
+                            {
+                                emptyRows > 0 && (
+                                    <TableRow style={{ height: 53 * emptyRows }}>
+                                        <TableCell colSpan={6} />
+                                    </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            </Paper>
+        </Box>
+    );
+};
+
+function RoleFilterDialog(props: RoleFilterDialogProps) {
+    const open = props.open;
+    const handleClose = props.handleClose;
+    const role = props.role;
+    const handleRoleChange = props.handleRoleChange;
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+        >
+            <DialogTitle>Select role</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    Display only the users whose role is:
+                </DialogContentText>
+                <Box
+                    noValidate
+                    component="form"
+                    sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    m: 'auto',
+                    width: 'fit-content',
+                    }}
+                >
+                    <FormControl sx={{ mt: 2, minWidth: 120 }}>
+                        <InputLabel htmlFor="max-width">role</InputLabel>
+                        <Select
+                            autoFocus
+                            value={role}
+                            onChange={handleRoleChange}
+                            label="maxWidth"
+                        >
+                            <MenuItem value="BASIC">BASIC</MenuItem>
+                            <MenuItem value="ADMIN">ADMIN</MenuItem>
+                            <MenuItem value="VOLUNTEER">VOLUNTEER</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose}>Done</Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////// Main component //////////////////////////////
+export default function Users() {
     const location = useLocation();
     let sessionToken = location.state;
+    const [ rows, setRows ] = useState([]);
 
     const fetchUsers = async () => {
         try {
@@ -306,127 +472,26 @@ const MainFrame = () => {
         setUpData();
     }, []);
 
-    const handleRequestSort = (
-        event: React.MouseEvent<unknown>,
-        property: keyof Data,
-      ) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
+    const [openedRoleFilter, setOpenedRoleFilter] = React.useState(false);
+
+    const handleRoleFilterOpen = () => {
+        setOpenedRoleFilter(true);
+    };
+    
+    const handleRoleFilterClose = () => {
+        setOpenedRoleFilter(false);
     };
 
-    const handleChangePage = (event: unknown, newPage: number) => {
-        setPage(newPage);
+    const [ role, setRole ] = useState('');
+
+    const handleRoleChange = (e) => {
+        setRole(e.target.checked);
     };
 
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-    const visibleRows = React.useMemo(
-        () =>
-        stableSort(rows, getComparator(order, orderBy)).slice(
-            page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage,
-        ),
-        [order, orderBy, page, rowsPerPage],
-    );
-
-    const [ data, setData ] = useState('');
-
-    const handleSubmit = (e) => {
-        setData(e.target.value);
-    };
-
-    const handleEnterKey = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSubmit(e);
-        }
-    };
-
-    return (
-        <Box sx={styles.main}>
-            <Typography sx={styles.pageName}>Users</Typography>
-            <Box sx={styles.searchFrame}>
-                <Paper
-                    component="form"
-                    sx={styles.searchField}
-                >
-                    <SearchIcon />
-                    <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        onKeyDown={handleEnterKey}
-                        placeholder="search email..."
-                        inputProps={{ 'aria-label': 'search email address' }}
-                    />
-                </Paper>
-                <Button variant="outlined" sx={styles.searchButton} onClick={handleSubmit}>
-                    Search
-                </Button>
-            </Box>
-            <Paper sx={styles.dataPaper}>
-                <TableContainer sx={styles.dataTable}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <EnhancedTableHead
-                            order={order}
-                            orderBy={orderBy}
-                            onRequestSort={handleRequestSort}
-                        />
-                        <TableBody>
-                            {
-                                visibleRows.map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-                                    return (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="normal"
-                                            >
-                                                {row.emailAddress}
-                                            </TableCell>
-                                            <TableCell align="right">{row.inUse}</TableCell>
-                                            <TableCell align="right">{row.overdue}</TableCell>
-                                            <TableCell align="right">{row.role}</TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            }
-                            {
-                                emptyRows > 0 && (
-                                    <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={6} />
-                                    </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={rows.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>
-        </Box>
-    );
-};
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////// Main component //////////////////////////////
-export default function Users() {
     return (
         <Box sx={styles.root}>
             <Sidebar />
-            <MainFrame />
+            <MainFrame rows={rows}/>
         </Box>
     );
 }
@@ -558,15 +623,6 @@ const styles = {
         boxShadow: '0',
         borderWidth: '1.3px',
         borderStyle: 'solid',
-        borderColor: 'black',
-        borderRadius: '20px'
-    },
-
-    searchButton: {
-        marginLeft: '10px',
-        width: '30%',
-        height: '80%',
-        color: '#68B49A',
         borderColor: '#68B49A',
         borderRadius: '20px'
     },
@@ -580,6 +636,23 @@ const styles = {
 
     dataTable: {
         maxHeight: `${window.innerHeight - 300}px`
+    },
+
+    roleTableCell: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        color: 'white'
+    },
+
+    roleFilterIcon: {
+        fontSize: '1.065rem',
+        marginLeft: '8px',
+        '&:hover': {
+            color: '#dddddd',
+        },
+        cursor: 'pointer'
     }
 };
 ///////////////////////////////////////////////////////////////////////
