@@ -41,7 +41,7 @@ const NewUser = (dishesUsed) => {
     <div style={{padding:'24px'}}>
       <div className="sub-header-3">
         How It Works
-          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+          <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
             <p className="details-1" style={{height:'60px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> More details about the process behind borrowing and returning dishes.</p>
             <LinkMUI href="https://www.dishzero.ca/how-it-works-1">
               <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
@@ -50,7 +50,7 @@ const NewUser = (dishesUsed) => {
       </div>
       <div className="sub-header-3" style={{marginTop: '24px'}}>
         Our Impact
-        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'88%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
+        <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
           <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> Learn more about the impact we are leaving on the environment.</p>
           <LinkMUI href="https://www.dishzero.ca/impact">
             <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
@@ -175,7 +175,7 @@ export default () => {
 
   let user = fbContext?.user
   if (user !== undefined){ // User is defined
-    if (Number(dishesUsed) == 0){ 
+    if (Number(dishesUsed) != 0){ 
       content = NewUser(dishesUsed)
     } else { 
       content = ExistingUser(dishesUsed)
