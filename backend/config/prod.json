@@ -24,5 +24,10 @@
         "dishes": "dishes",
         "users": "users",
         "qrcodes": "qr-codes"
+    },
+    "cron": {
+        "default": {
+            "email": "* * * * * Wednesday"
+        }
     }
 }

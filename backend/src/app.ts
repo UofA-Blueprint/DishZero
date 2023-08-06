@@ -8,6 +8,8 @@ import { userRouter } from './routes/users'
 import { authRouter } from './routes/auth'
 import cookieParser from 'cookie-parser'
 import { qrCodeRouter } from './routes/qrCode'
+import { CronFactory } from './cron/factory'
+import nodeConfig from 'config'
 
 const app = express()
 dotenv.config()
@@ -31,6 +33,12 @@ if (environment === 'prod') {
             },
         })
     )
+
+    let emailCron = new CronFactory().create('email')
+    emailCron?.start({
+        // default is set to run every wednesday
+        cronExpression: nodeConfig.get('cron.default.email'),
+    })
 }
 
 app.get('/health', (_: Request, res: Response) => {
