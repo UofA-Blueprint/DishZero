@@ -1,7 +1,7 @@
-import { collection, Timestamp, addDoc, getDocs, query, where, runTransaction, doc, orderBy, limit } from "firebase/firestore";
+import { collection, Timestamp, getDoc, getDocs, query, where, runTransaction, doc, orderBy, limit } from "firebase/firestore";
 import { FirebaseDatabase } from "../firebase";
 
-const TransactionsCollectionName = "transactions"
+const TransactionsCollectionName = "transactions-new"
 const DishCollectionName = "dishes"
 const UserCollectionName = "users"
 const QRCollectionName = "qr-codes"
@@ -56,21 +56,23 @@ const DishAPI = {
       const out = await runTransaction(FirebaseDatabase, async (transaction) => {
         const qrDoc = await transaction.get(qrRef)
         if (!qrDoc.exists()) {
-          throw "QR code not registered";
+          return null;
         }
 
-        const dish = qrDoc.data().dish
+        const dishRef = doc(FirebaseDatabase, "dishes", qrDoc.data().dishID);
+        const dishSnap = await getDoc(dishRef);
 
-        const docData = {
-          dish: dish,
-          user: user,
-          timestamp: Timestamp.now(),
+        if (dishSnap.exists()) {
+          const dish = dishSnap.data();
+          const docData = {
+            dish: dish,
+            user: user,
+            timestamp: Timestamp.now(),
+          }
+          const docRef = doc(collection(FirebaseDatabase, TransactionsCollectionName));
+          transaction.set(docRef, docData);
+          return docRef.id;
         }
-
-        const docRef = doc(collection(FirebaseDatabase, TransactionsCollectionName));
-
-        await transaction.set(docRef, docData);
-        return docRef.id;
       });
       return out;
   },
