@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import * as dotenv from 'dotenv'
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
-import { auth } from '../services/firebase'
+import { auth } from '../internal/firebase'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import Logger from '../utils/logger'
 dotenv.config()

@@ -1,14 +1,28 @@
-import { Cron, CronOptions } from "./factory";
+import { Cron, CronOptions } from './factory'
 import cron from 'node-cron'
+import { SendEmailCommand } from '@aws-sdk/client-ses'
+import { sesClient } from '../internal/sesClient'
+
+export enum EmailClient {
+    AWS = 'aws',
+    Nodemailer = 'nodemailer',
+}
 
 export class EmailCron implements Cron {
+    private job: cron.ScheduledTask
 
-    private job: cron.ScheduledTask | undefined
-
-    start(options: CronOptions): void {
+    constructor(options: CronOptions, client: EmailClient) {
         this.job = cron.schedule(options.cronExpression, () => {
-            console.log('running a cron task')
+            if (client === EmailClient.AWS) {
+                console.log('Sending email from AWS')
+            } else if (client === EmailClient.Nodemailer) {
+                console.log('Sending email from nodemailer')
+            }
         })
+    }
+
+    start(): void {
+        this.job?.start()
     }
     stop(): void {
         this.job?.stop()

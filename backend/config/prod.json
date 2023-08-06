@@ -23,11 +23,16 @@
         "transactions": "transactions-new",
         "dishes": "dishes",
         "users": "users",
-        "qrcodes": "qr-codes"
+        "qrcodes": "qr-codes",
+        "cron": "cron",
+        "email": "email"
     },
     "cron": {
         "default": {
             "email": "* * * * * Wednesday"
         }
+    },
+    "aws": {
+        "region": "us-west-2"
     }
 }

@@ -18,7 +18,7 @@ import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
 import { getTransaction, registerTransaction, getTransactionBydishId } from '../services/transactions'
 import { getQrCode } from '../services/qrCode'
-import { db } from '../services/firebase'
+import { db } from '../internal/firebase'
 import nodeConfig from 'config'
 
 export const getDishes = async (req: Request, res: Response) => {

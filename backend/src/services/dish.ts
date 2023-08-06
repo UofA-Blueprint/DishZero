@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import { Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
-import { db } from './firebase'
+import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 
 export const getDish = async (qid: number) => {

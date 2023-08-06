@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { User } from '../models/user'
-import { auth, db } from './firebase'
+import { auth, db } from '../internal/firebase'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 
 export const getUsersWithRole = async (role: string) => {

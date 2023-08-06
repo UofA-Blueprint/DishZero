@@ -1,19 +1,24 @@
-import { EmailCron } from "./email"
+import { EmailClient, EmailCron } from './email'
 
+// Interface for a cron job
 export interface Cron {
-    start(options: CronOptions): void
+    start(): void
     stop(): void
 }
 
+// Options for creating a cron job
 export type CronOptions = {
     cronExpression: string
     cronName?: string
 }
 
+// Factory class to create cron jobs
 export class CronFactory {
-    create(type: string): Cron | undefined {
+    create(type: string, options: CronOptions, client?: EmailClient): Cron | undefined {
         switch (type) {
-            case 'email': return new EmailCron()
+            case 'email':
+                // The default client is AWS. But there is a nodemailer client as well.
+                return new EmailCron(options, client || EmailClient.AWS)
         }
     }
 }
