@@ -12,6 +12,7 @@ import DishCard from "../widgets/dishcard";
 import '../styles/index.css'
 import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
+import { AppHeader } from "../widgets/appHeader";
 
 
 const DishLog = ({dishes}) => {

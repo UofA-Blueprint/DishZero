@@ -1,13 +1,18 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import Scanner from "../widgets/scanner"
+import { useNavigate, useLocation } from "react-router-dom"
+//import Scanner from "../widgets/scanner"
 import DishAPI from "../features/api"
 import '../styles/QRScanner.css';
-import { Button, Modal } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExclamation } from '@fortawesome/free-solid-svg-icons'
-
-const Report = ({ show, onSubmit, onCancel, id }) => {
+import axios from "axios";
+//import { Button, Modal } from 'react-bootstrap'
+//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+//import { faExclamation } from '@fortawesome/free-solid-svg-icons'
+import Cookies from 'js-cookie';
+import { AppHeader } from "../widgets/appHeader";
+import Scanner from "../widgets/scanner";
+import CameraInput from "../widgets/cameraScanner";
+import BottomTextInput from "../widgets/bottomTextInput";
+/*const Report = ({ show, onSubmit, onCancel, id }) => {
     const conditions = ["Small Chip/Crack", "Large chunk", "Shattered"]
     const [selectedCondition, setSelectedCondition] = useState("");
     const onConditionChange = e => {
@@ -63,8 +68,8 @@ const Notification = ({ show, type, onClick, id }) => {
         </div>
     ) : null;
 }
-
-export default () => {
+*/
+/*export delt () => {
     const [scanId, setScanId] = useState("")
     const [showNotif, setShowNotif] = useState(false);
     const [popUp, setPopUp] = useState(false);
@@ -122,4 +127,79 @@ export default () => {
             />
         </>
     )
+}*/
+const Return = () => {
+    const [scanId, setScanId] = useState("")
+    const [showNotif, setShowNotif] = useState(false);
+    const [popUp, setPopUp] = useState(false);
+    const [notifType, setNotifType] = useState("returned");
+    const [error, setError] = useState(false);
+
+    const navigate = useNavigate()
+    const location = useLocation();
+
+    const onScan = async (id: string) => {
+        setScanId(id);
+        let val = await DishAPI.updateDishReturn(id);
+        // if an animation is added, this will re-trigger it
+        if (!(val === null)) {
+            if (showNotif)
+                setShowNotif(false);
+            setNotifType("returned");
+            setShowNotif(true);
+        }
+    }
+
+    const onCancel = popUp ? () => {
+        setPopUp(false)
+    } : null
+
+    const onClick = () => {
+        setPopUp(true);
+    }
+
+    const onSubmit = (condition: string) => {
+        console.log("peewoop") //Remove this
+        const sessionToken = Cookies.get('sessionToken');
+        console.log("Session-token: ", sessionToken);
+        let dishID;
+
+        axios.get(`http://localhost:8080/api/qrcode?qid=${condition}`, {headers:{"x-api-key":"test","session-token":sessionToken}})
+        .then(function (response) {
+            
+            dishID = response.data.dishId;
+            axios.get(`http://localhost:8080/api/dish?id=${dishID}`, {headers:{"x-api-key":"test","session-token":sessionToken}})
+            .then(function (response) {
+            
+            console.log("Dish response: ", response);
+
+            })
+
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+            setError(true);
+            
+        })
+
+        
+        
+    
+        setPopUp(false);
+        if (showNotif)
+            setShowNotif(false);
+        setNotifType("reported");
+        setShowNotif(true);
+    }
+    return(
+        
+        <div style={{height: '100%', width: '100%', flex: 1}}>
+            <AppHeader title = {'Return Dishes'} className = {"headerDiv"}/>
+            <CameraInput style = {{height: '100%'}} onSubmit={onSubmit}/>
+            <BottomTextInput onSubmit = {onSubmit}/>
+        </div>
+    )
 }
+
+export default Return

@@ -16,11 +16,13 @@
 }
 .qr-scanner-wrapper{
   /* min-width: 30rem; */
-  height: 90vh !important;
-  display: flex;
-  align-items: center;
+  height: 100% !important;
+  position: absolute;
+  top: 15vh;
+  bottom: 0px;
+  left:0px;
+  right: 0px;
   flex-direction: column;
-  justify-content: center;
 }
 .scanner-wrapper {
   background-color: rgb(254,255,254);
@@ -35,9 +37,7 @@
 
 .qr-scanner-placeholder{
   border-radius: 10px;
-  margin: 5px 5px;
-  height: 67vh !important;
-  
+  height: 52vh !important;
   width: 100% !important;
   /* background-color: rgba(0,0,0,0.7); */
   color: black;
@@ -63,7 +63,8 @@
 }
 .search-bar{
   background-color: #D7D7D7;
-  border-radius: 1px !important;
+  border-radius: 25px !important;
+  width: 90%;
 
 }
 .search-bar:focus{
@@ -71,8 +72,10 @@
 }
 
 .search-button{
-  margin-left: 10px !important;
-  border-radius: 1px !important;
+  margin-left: 5px !important;
+  border-radius: 25px !important;
+  color: green;
+  width: 10%;
 }
 .qr-scan-nav{
   background-color: white !important;

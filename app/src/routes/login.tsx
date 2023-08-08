@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Button, Typography, Box, Avatar } from '@mui/material';
+import Cookies from 'js-cookie';
 import {BallTriangle} from 'react-loader-spinner';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
 import mobileLogo from "../assets/dishzero-logo-mobile.png";
@@ -77,6 +78,7 @@ function Login() {
           // Send id token to backend
           axios.post('http://localhost:8080/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
           .then(function (response) {
+            Cookies.set('sessionToken', response.data.session);
             navigate("/home",{state:response.data.session});
           })
           .catch(function (error) {
