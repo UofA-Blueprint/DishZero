@@ -31,13 +31,8 @@ export default ({ dish, token }) => {
   }
 
   const dishCheckOut = new Date(dish.timestamp);
-  // date.setDate(date.getDate() + 1);
-  // console.log(dishCheckOut.getDate())
   const oneDay = 86400000 // milliseconds
   const dishDue = new Date(dishCheckOut.getTime() + oneDay);
-  // console.log(dishDue)
-  // console.log("dishapi:", dishAPI)
-  // console.log("dish:", dish.timestamp)
   return (
     <div className="dish-card mb-3">
       <div className="type-icon">
