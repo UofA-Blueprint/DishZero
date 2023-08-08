@@ -145,7 +145,18 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    const res = await axios.post(
+      `${config.serverUrl}/api/auth/logout/`,
+      {},
+      {
+        headers: {
+          "x-api-key": config.apiKey,
+          "session-token": sessionToken
+        },
+      }
+    );
     auth.signOut();
+    console.log('logout response', res);
     setSessionToken(null);
     setCurrentUser(null);
     Cookies.remove("session-token");
