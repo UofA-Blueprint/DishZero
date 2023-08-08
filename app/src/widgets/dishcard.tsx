@@ -23,18 +23,18 @@ export default ({ dish, token }) => {
       });
   }, []);
 
-  // console.log(dishAPI['type'])
-
+  let icon
   if (dishAPI["type"] === "mug") {
-    var icon = mug;
+    icon = mug;
   } else {
-    var icon = container;
+    icon = container;
   }
 
   const dishCheckOut = new Date(dish.timestamp);
   // date.setDate(date.getDate() + 1);
   // console.log(dishCheckOut.getDate())
-  const dishDue = new Date(dishCheckOut.getTime() + 86400000);
+  const oneDay = 86400000 // milliseconds
+  const dishDue = new Date(dishCheckOut.getTime() + oneDay);
   // console.log(dishDue)
   // console.log("dishapi:", dishAPI)
   // console.log("dish:", dish.timestamp)

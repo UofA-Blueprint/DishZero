@@ -115,7 +115,7 @@ export default () => {
   const onScan = async (id: string) => {
     setScanId(id);
     try {
-      let response = await axios.post(
+      const response = await axios.post(
         `${config.serverUrl}/api/dish/return?qid=${id}`,
         {
           returned: {
@@ -157,7 +157,7 @@ export default () => {
 
   const onSubmit = async (condition: string) => {
     try {
-      let response = await axios.post(
+      const response = await axios.post(
         `${config.serverUrl}/api/dish/condition?qid=${scanId}`,
         { condition },
         {
@@ -167,7 +167,7 @@ export default () => {
           },
         }
       );
-      if (response && response.status === 200) {
+      if (response && response.status === 200 && response.statusText === "OK") {
         setPopUp(false);
         if (showNotif) {
           setShowNotif(false);

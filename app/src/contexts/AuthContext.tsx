@@ -34,7 +34,7 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [sessionToken, setSessionToken] = useState<string | null>(() => {
-    let cookie = Cookies.get("session-token");
+    const cookie = Cookies.get("session-token");
     return cookie ? cookie : null;
   });
   const [loading, setLoading] = useState(true);
@@ -48,23 +48,34 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function updateCookie() {
-    console.log('running update cookie')
-    if (loading) {
-      setLoading(false);
+    // only run once on app start to get information about the current user
+    // will run again if current user logs out
+    if (currentUser !== null) {
+      if (loading) {
+        setLoading(false);
+      }
+      return;
     }
 
-    try {
-      let response = await axios.get(`${config.serverUrl}/api/users/session`, {
-        headers: {
-          "x-api-key": config.apiKey,
-          "session-token": sessionToken,
-        },
-      });
+    console.log("running update cookie");
+    console.log("user is", currentUser);
 
-      let data = response.data.user;
+    try {
+      const response = await axios.get(
+        `${config.serverUrl}/api/users/session`,
+        {
+          headers: {
+            "x-api-key": config.apiKey,
+            "session-token": sessionToken,
+          },
+        }
+      );
+
+      const data = response.data.user;
       if (response && response.status === 200) {
         console.log("setting current user");
         console.log(data);
+        // if it gets here then current user should be null
         setCurrentUser({
           id: data.id,
           role: data.role,
@@ -82,23 +93,27 @@ export function AuthProvider({ children }) {
         logout();
       }
     }
+
+    if (loading) {
+      setLoading(false);
+    }
   }
 
   async function login() {
     try {
-      let credentials = await signInWithPopup(auth, provider);
+      const credentials = await signInWithPopup(auth, provider);
       console.log("credentials ", credentials);
       console.log("firebase user", credentials.user);
-      let idToken = await getIdToken(credentials.user);
+      const idToken = await getIdToken(credentials.user);
 
       if (!credentials.user.email?.match("@ualberta.ca")) {
         credentials.user?.delete();
         alert("Please login with your University of Alberta CCID");
-        logout()
-        return
+        logout();
+        return;
       }
 
-      let res = await axios.post(
+      const res = await axios.post(
         `${config.serverUrl}/api/auth/login/`,
         { idToken: idToken },
         {
@@ -108,14 +123,17 @@ export function AuthProvider({ children }) {
         }
       );
 
-      let data = res.data;
+      const { data } = res;
       console.log("data is", data);
       console.log("session is", data.session);
       setSessionToken(data.session);
       Cookies.set("session-token", data.session);
-      setCurrentUser({
-        ...data.user,
-      });
+      const newUser = data?.user;
+      if (newUser !== currentUser) {
+        setCurrentUser({
+          ...data.user,
+        });
+      }
       console.log("logged in");
 
       navigate("/home");
@@ -127,7 +145,7 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    auth.signOut()
+    auth.signOut();
     setSessionToken(null);
     setCurrentUser(null);
     Cookies.remove("session-token");

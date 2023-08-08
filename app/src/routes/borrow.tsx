@@ -34,7 +34,7 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
 };
 
 export default () => {
-  let {currentUser, sessionToken} = useAuth()
+  const {currentUser, sessionToken} = useAuth()
   console.log(sessionToken);
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -48,7 +48,7 @@ export default () => {
         setConfirm(true);
       };
 
-  const OnConfirm = async () => {
+  const onConfirm = async () => {
     if (!confirm) {
       return false;
     }
@@ -91,7 +91,7 @@ export default () => {
         show={confirm}
         id={scanId}
         onSubmit={async () => {
-          await OnConfirm();
+          await onConfirm();
         }}
         onCancel={onCancel}
       />
