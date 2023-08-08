@@ -20,6 +20,11 @@ const enum Role {
   volunteer = 'volunteer',
   basic = 'basic'
 }
+
+interface PermissionProps {
+  validator : (role: string | undefined) => boolean
+}
+
 const AuthLayout = () => {
   return (
     <AuthProvider>
@@ -43,9 +48,9 @@ const UserRoute = () => {
   return <LoginRoute />;
 };
 
-const PermissionsRoute = (props: any) => {
+const PermissionsRoute = (props: PermissionProps) => {
   const { currentUser } = useAuth();
-  if (props?.validator && props.validator(currentUser?.role)) {
+  if (props.validator(currentUser?.role)) {
     return <Outlet />;
   }
   return <Error404 />;
