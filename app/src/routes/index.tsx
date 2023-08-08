@@ -29,7 +29,7 @@ const AuthLayout = () => {
 };
 
 const UserRoute = () => {
-  let { currentUser } = useAuth();
+  const { currentUser } = useAuth();
 
   if (currentUser) {
     return (

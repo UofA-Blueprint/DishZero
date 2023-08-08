@@ -284,7 +284,7 @@ export default () => {
       });
   }, []);
 
-  let user = currentUser;
+  const user = currentUser;
 
   if (user) {
     // User is defined
