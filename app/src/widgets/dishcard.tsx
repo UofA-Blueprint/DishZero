@@ -7,9 +7,9 @@ import container from '../assets/dish_icon_contained.svg'
 export default ({dish,token}) => {
   const options = { weekday: 'long', year: 'numeric', month: 'long'};
   const [dishAPI, setDishAPI] = useState([])     
-
+  const dayInMs = 86400000
     useEffect(()=>{
-        axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/dish', {headers:{"x-api-key":"test","session-token":token}, params:{"id":dish.dish}})
+        axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {headers:{"x-api-key":"test","session-token":token}, params:{"id":dish.dish}})
         .then(function (response) {
           setDishAPI(response.data.dish)
         })
@@ -18,14 +18,11 @@ export default ({dish,token}) => {
         });
       },[])
 
-    if (dishAPI['type'] == 'mug'){
-      var icon = mug
-    } else {
-      var icon = container
-    }
+
+    const icon = dishAPI['type'] == 'mug' ? mug : container
 
     const dishCheckOut = new Date(dish.timestamp)
-    const dishDue = new Date(dishCheckOut.getTime() + 86400000)
+    const dishDue = new Date(dishCheckOut.getTime() + dayInMs)
     return (
         <div className="dish-card mb-3">
             <div className="type-icon">

@@ -30,19 +30,12 @@ function Login() {
   //const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
-
+  const sessionToken = Cookies.get('sessionToken')
   useEffect(() => {
-      if (fbContext?.user) {
-          console.log(transaction_id)
-          if(transaction_id){
-              DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
-              //send a firebase request to add the user to the document with the handle
-              
-          }
+      if (sessionToken) {
           navigate("/home");
-
       }
-  }, [fbContext?.user]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,7 +70,7 @@ function Login() {
         if (currentUser) {
           const token = await getIdToken(currentUser);
           // Send id token to backend
-          axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
+          axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login`,{idToken:token}, {headers:{"x-api-key":"test"}})
           .then(function (response) {
             Cookies.set('sessionToken', response.data.session)
             window.location.reload()
