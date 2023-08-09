@@ -119,8 +119,7 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     body:
     ```
     returned: {
-        broken: boolean,    * required
-        lost: boolean,   * required
+        condition: string,  * required
     }
     ```
 
