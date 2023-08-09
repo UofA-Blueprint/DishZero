@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Dish } from '../models/dish'
+import { Condition, Dish } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import {
     getDish,
@@ -199,7 +199,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             },
             userId: userClaims.uid,
             returned: {
-                condition: ""
+                condition: Condition.alright
             },
             timestamp: new Date().toISOString(),
         }
