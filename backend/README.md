@@ -122,6 +122,15 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
         condition: string,  * required
     }
     ```
+    allowed values for condition:
+    ```
+    Condition {
+        'small_crack_chip',
+        'large_crack_chunk',
+        'shattered',
+        'alright',
+    }
+    ```
 
 - #### POST `/api/dish/condition?id=`
     This route will update the condition for the dish.
@@ -141,6 +150,15 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     ```
     {
         condition: string,    * required
+    }
+    ```
+    allowed values for condition:
+    ```
+    Condition {
+        'small_crack_chip',
+        'large_crack_chunk',
+        'shattered',
+        'alright',
     }
     ```
 
