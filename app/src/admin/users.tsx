@@ -1,7 +1,9 @@
 ////////////////////////// Import Dependencies //////////////////////////
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { 
+    Dialog,
+    Select,
     FormControl,
     MenuItem,
     InputLabel,
@@ -35,9 +37,6 @@ import {
     Search as SearchIcon
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import axios from "axios";
-import Dialog, { DialogProps } from '@mui/material/Dialog';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////
@@ -136,17 +135,25 @@ interface EnhancedTableProps {
     onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
     order: Order;
     orderBy: string;
+    handleRoleFilterOpen: () => void;
+}
+
+interface Rows {
+    data: Array<Data>;
+    cache: Array<Data>;
 }
  
 interface MainframeProps {
-    rows: Data[]
+    rows: Rows;
+    handleRoleFilterOpen: () => void;
+    handleRoleUpdate: (arg0: String) => void;
 }
 
 interface RoleFilterDialogProps {
     open: boolean;
     handleClose: () => void;
     role: String;
-    handleRoleChange: () => void;
+    handleRoleChange: (arg0: String) => void;
 }
 //////////////////////////////////////////////////////////////
 
@@ -236,7 +243,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                     :
                         <Box sx={styles.roleTableCell}>
                             {headCell.label}
-                            <FilterListIcon sx={styles.roleFilterIcon}/>
+                            <FilterListIcon sx={styles.roleFilterIcon} onClick={props.handleRoleFilterOpen}/>
                         </Box>
                 }
             </TableCell>
@@ -247,11 +254,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 const MainFrame = (props: MainframeProps) => {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('inUse');
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(8);
-    const rows = props.rows;
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof Data>('inUse');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const handleRoleUpdate = props.handleRoleUpdate;
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -271,18 +278,24 @@ const MainFrame = (props: MainframeProps) => {
         setPage(0);
     };
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.data.length) : 0;
 
-    const visibleRows = React.useMemo(
-        () =>
-        stableSort(rows, getComparator(order, orderBy)).slice(
+    const [ data, setData ] = useState(
+        stableSort(props.rows.data, getComparator(order, orderBy)).slice(
             page * rowsPerPage,
             page * rowsPerPage + rowsPerPage,
-        ),
-        [order, orderBy, page, rowsPerPage],
+        )
     );
 
-    const [ data, setData ] = useState(visibleRows);
+    useEffect(() => {
+        setData(
+            stableSort(props.rows.data, getComparator(order, orderBy)).slice(
+                page * rowsPerPage,
+                page * rowsPerPage + rowsPerPage,
+            )
+        );
+    }, [order, orderBy, page, rowsPerPage]);
+
     const [ searchedEmail, setSearchedEmail ] = useState('');
 
     function handleEmailSearch(text) {
@@ -294,7 +307,12 @@ const MainFrame = (props: MainframeProps) => {
             setData(filteredRows);
         } else {
             setSearchedEmail(text);
-            setData(visibleRows);
+            setData(
+                stableSort(props.rows.data, getComparator(order, orderBy)).slice(
+                    page * rowsPerPage,
+                    page * rowsPerPage + rowsPerPage,
+                )
+            );
         }
     }
 
@@ -323,6 +341,7 @@ const MainFrame = (props: MainframeProps) => {
                             order={order}
                             orderBy={orderBy}
                             onRequestSort={handleRequestSort}
+                            handleRoleFilterOpen={props.handleRoleFilterOpen}
                         />
                         <TableBody>
                             {
@@ -340,7 +359,31 @@ const MainFrame = (props: MainframeProps) => {
                                             </TableCell>
                                             <TableCell align="right">{row.inUse}</TableCell>
                                             <TableCell align="right">{row.overdue}</TableCell>
-                                            <TableCell align="right">{row.role}</TableCell>
+                                            <TableCell align="right">
+                                                <Box sx={{ height: '50px' }}>
+                                                    <FormControl sx={{ width: '150px' }}>
+                                                        <Select
+                                                            labelId="demo-simple-select-label"
+                                                            id="demo-simple-select"
+                                                            value={row.role}
+                                                            label="Role"
+                                                            displayEmpty
+                                                            inputProps={{ 'aria-label': 'Without label' }}
+                                                            onChange={(e) => handleRoleUpdate(e.target.value)}
+                                                            renderValue={(selected) => {
+                                                                if (selected.length === 0) {
+                                                                  return <em>{row.role}</em>;
+                                                                }
+                                                                return selected
+                                                            }}
+                                                        >
+                                                            <MenuItem value={10}>BASIC</MenuItem>
+                                                            <MenuItem value={20}>ADMIN</MenuItem>
+                                                            <MenuItem value={30}>VOLUNTEER</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </Box>
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })
@@ -357,7 +400,7 @@ const MainFrame = (props: MainframeProps) => {
                 <TablePagination
                     rowsPerPageOptions={[10, 25, 100]}
                     component="div"
-                    count={rows.length}
+                    count={props.rows.data.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -379,7 +422,7 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
             open={open}
             onClose={handleClose}
         >
-            <DialogTitle>Select role</DialogTitle>
+            <DialogTitle>Filter role</DialogTitle>
             <DialogContent>
                 <DialogContentText>
                     Display only the users whose role is:
@@ -395,13 +438,14 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
                     }}
                 >
                     <FormControl sx={{ mt: 2, minWidth: 120 }}>
-                        <InputLabel htmlFor="max-width">role</InputLabel>
+                        <InputLabel htmlFor="max-width">Role</InputLabel>
                         <Select
                             autoFocus
                             value={role}
-                            onChange={handleRoleChange}
+                            onChange={(e) => handleRoleChange(e.target.value)}
                             label="maxWidth"
                         >
+                            <MenuItem value="ALL">ALL</MenuItem>
                             <MenuItem value="BASIC">BASIC</MenuItem>
                             <MenuItem value="ADMIN">ADMIN</MenuItem>
                             <MenuItem value="VOLUNTEER">VOLUNTEER</MenuItem>
@@ -419,58 +463,35 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
 
 ////////////////////////////// Main component //////////////////////////////
 export default function Users() {
-    const location = useLocation();
-    let sessionToken = location.state;
-    const [ rows, setRows ] = useState([]);
+    const [ isLoading, setIsLoading ] = useState(true);
+    const [ rows, setRows ] = useState<Rows>({
+        data: [],
+        cache: []
+    });
 
-    const fetchUsers = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:8080/api/users',
-                {headers:{"x-api-key":"test","session-token":sessionToken}}
-            );
-            const { data } = response;
-            let users : {}[] = [];
-            await Promise.all(
-                data.users.map((user) => {
-                    users.push(user);
-                })
-            );
-            return users;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
-    };
-
-    const fetchTransactions = async () => {
-        try {
-            const response = await axios.get(
-                'http://localhost:8080/api/transactions',
-                {headers:{"x-api-key":"test","session-token":sessionToken}}
-            );
-            const { data } = response;
-            let transactions : {}[] = [];
-            await Promise.all(
-                data.transactions.map((transaction) => {
-                    transactions.push(transaction);
-                })
-            );
-            return transactions;
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
+    const fetchRows = async () => {
+        const masterData = [
+            createData("bhphan@ualberta.ca", 3, 4, "BASIC"),
+            createData("phucphnvn@yahoo.com", 5, 6, "VOLUNTEER")
+        ]; // replace this with an api call to retrieve data and then use the createData function before calling setRows
+        setRows({
+            data: masterData,
+            cache: masterData
+        });
     };
 
     useEffect(() => {
-        // call users and transactions api
-        const setUpData =  async () => {
-            const users = await fetchUsers();
-            const transactions = await fetchTransactions();
-        };
-        setUpData();
+        fetchRows();
+        setIsLoading(false);
     }, []);
+
+    useEffect(() => {
+        if (isLoading) {
+            setIsLoading(false);
+        }
+    }, [JSON.stringify(rows)]);
+
+    const [ role, setRole ] = useState<String>('ALL');
 
     const [openedRoleFilter, setOpenedRoleFilter] = React.useState(false);
 
@@ -482,16 +503,50 @@ export default function Users() {
         setOpenedRoleFilter(false);
     };
 
-    const [ role, setRole ] = useState('');
+    function handleRoleChange(data: String) {
+        setRole(data);
+    }
 
-    const handleRoleChange = (e) => {
-        setRole(e.target.checked);
-    };
+    function handleRoleFilter() {
+        const filteredRows = rows.cache.filter((row) => {
+            return row.role === role;
+        });
+        setRows({
+            data: filteredRows,
+            cache: rows.cache
+        });
+    }
+
+    useEffect(() => {
+        if (role !== 'ALL') {
+            setIsLoading(true);
+            handleRoleFilter();
+        } else {
+            setIsLoading(true);
+            fetchRows();
+        }
+    }, [role]);
+
+    function handleRoleUpdate(newRole: String) {}
 
     return (
         <Box sx={styles.root}>
             <Sidebar />
-            <MainFrame rows={rows}/>
+            {
+                isLoading ?
+                    null
+                : <MainFrame 
+                    rows={rows} 
+                    handleRoleFilterOpen={handleRoleFilterOpen} 
+                    handleRoleUpdate={handleRoleUpdate}
+                />
+            }
+            <RoleFilterDialog 
+                open={openedRoleFilter}
+                handleClose={handleRoleFilterClose}
+                role={role}
+                handleRoleChange={handleRoleChange}
+            />
         </Box>
     );
 }
@@ -653,6 +708,10 @@ const styles = {
             color: '#dddddd',
         },
         cursor: 'pointer'
+    },
+
+    roleCell: {
+        width: '100px'
     }
 };
 ///////////////////////////////////////////////////////////////////////
