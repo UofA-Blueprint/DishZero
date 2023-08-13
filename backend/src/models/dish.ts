@@ -26,6 +26,13 @@ export enum DishStatus {
     available = 'available',
 }
 
+export enum Condition {
+    smallChip = 'small_crack_chip',
+    largeCrack = 'large_crack_chunk',
+    shattered = 'shattered',
+    alright = 'alright',
+}
+
 export type DishTableVM = {
     id: string
     type: string
