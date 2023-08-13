@@ -1,5 +1,5 @@
 ////////////////////////// Import Dependencies //////////////////////////
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
     Dialog,
@@ -146,14 +146,18 @@ interface Rows {
 interface MainframeProps {
     rows: Rows;
     handleRoleFilterOpen: () => void;
-    handleRoleUpdate: (arg0: String) => void;
+    handleRoleUpdate: (arg0: string, arg1: string) => void;
 }
 
 interface RoleFilterDialogProps {
     open: boolean;
     handleClose: () => void;
     role: String;
-    handleRoleChange: (arg0: String) => void;
+    handleRoleChange: (arg0: string) => void;
+}
+
+function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 //////////////////////////////////////////////////////////////
 
@@ -365,21 +369,21 @@ const MainFrame = (props: MainframeProps) => {
                                                         <Select
                                                             labelId="demo-simple-select-label"
                                                             id="demo-simple-select"
-                                                            value={row.role}
+                                                            value={capitalizeFirstLetter(row.role)}
                                                             label="Role"
                                                             displayEmpty
                                                             inputProps={{ 'aria-label': 'Without label' }}
-                                                            onChange={(e) => handleRoleUpdate(e.target.value)}
+                                                            onChange={(e) => handleRoleUpdate(e.target.value, row.emailAddress)}
                                                             renderValue={(selected) => {
                                                                 if (selected.length === 0) {
-                                                                  return <em>{row.role}</em>;
+                                                                  return capitalizeFirstLetter(row.role);
                                                                 }
                                                                 return selected
                                                             }}
                                                         >
-                                                            <MenuItem value={10}>BASIC</MenuItem>
-                                                            <MenuItem value={20}>ADMIN</MenuItem>
-                                                            <MenuItem value={30}>VOLUNTEER</MenuItem>
+                                                            <MenuItem value="basic">Basic</MenuItem>
+                                                            <MenuItem value="admin">Admin</MenuItem>
+                                                            <MenuItem value="volunteer">Volunteer</MenuItem>
                                                         </Select>
                                                     </FormControl>
                                                 </Box>
@@ -442,13 +446,13 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
                         <Select
                             autoFocus
                             value={role}
-                            onChange={(e) => handleRoleChange(e.target.value)}
+                            onChange={(e) => handleRoleChange(e.target.value.toString())}
                             label="maxWidth"
                         >
-                            <MenuItem value="ALL">ALL</MenuItem>
-                            <MenuItem value="BASIC">BASIC</MenuItem>
-                            <MenuItem value="ADMIN">ADMIN</MenuItem>
-                            <MenuItem value="VOLUNTEER">VOLUNTEER</MenuItem>
+                            <MenuItem value="All">All</MenuItem>
+                            <MenuItem value="basic">Basic</MenuItem>
+                            <MenuItem value="admin">Admin</MenuItem>
+                            <MenuItem value="volunteer">Volunteer</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -471,8 +475,8 @@ export default function Users() {
 
     const fetchRows = async () => {
         const masterData = [
-            createData("bhphan@ualberta.ca", 3, 4, "BASIC"),
-            createData("phucphnvn@yahoo.com", 5, 6, "VOLUNTEER")
+            createData("bhphan@ualberta.ca", 3, 4, "basic"),
+            createData("phucphnvn@yahoo.com", 5, 6, "volunteer")
         ]; // replace this with an api call to retrieve data and then use the createData function before calling setRows
         setRows({
             data: masterData,
@@ -491,9 +495,9 @@ export default function Users() {
         }
     }, [JSON.stringify(rows)]);
 
-    const [ role, setRole ] = useState<String>('ALL');
+    const [ role, setRole ] = useState<String>('All');
 
-    const [openedRoleFilter, setOpenedRoleFilter] = React.useState(false);
+    const [ openedRoleFilter, setOpenedRoleFilter ] = React.useState(false);
 
     const handleRoleFilterOpen = () => {
         setOpenedRoleFilter(true);
@@ -503,7 +507,7 @@ export default function Users() {
         setOpenedRoleFilter(false);
     };
 
-    function handleRoleChange(data: String) {
+    function handleRoleChange(data: string) {
         setRole(data);
     }
 
@@ -517,37 +521,92 @@ export default function Users() {
         });
     }
 
+    const resetRows = async () => {
+        if (rows.cache.length > 0) {
+            const original = {
+                data: rows.cache,
+                cache: rows.cache
+            };
+            setRows(original);
+        } else {
+            fetchRows();
+        }
+    }
+
     useEffect(() => {
-        if (role !== 'ALL') {
+        if (role !== 'All') {
             setIsLoading(true);
             handleRoleFilter();
         } else {
             setIsLoading(true);
-            fetchRows();
+            resetRows();
         }
     }, [role]);
 
-    function handleRoleUpdate(newRole: String) {}
+    function handleRoleUpdate(newRole: string, emailAddress: string) {
+        // update user's role's state
+        const updatedData = rows.data.map((row) => {
+            let updatedRow = row;
+            if (updatedRow.emailAddress === emailAddress) {
+                updatedRow.role = newRole;
+            }
+            return updatedRow;
+        });
+        const updatedCache = rows.cache.map((row) => {
+            let updatedRow = row;
+            if (updatedRow.emailAddress === emailAddress) {
+                updatedRow.role = newRole;
+            }
+            return updatedRow;
+        });
+        setRows({
+            data: updatedData,
+            cache: updatedCache
+        });
+        // call api to update user's role
+    }
+
+    const [ isMobile, setIsMobile ] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(window.innerWidth <= 768);
+        };
+    
+        window.addEventListener('resize', handleResize);
+        return () => {
+          window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     return (
-        <Box sx={styles.root}>
-            <Sidebar />
+        <>
             {
-                isLoading ?
-                    null
-                : <MainFrame 
-                    rows={rows} 
-                    handleRoleFilterOpen={handleRoleFilterOpen} 
-                    handleRoleUpdate={handleRoleUpdate}
-                />
+                !isMobile ?
+                    <Box sx={styles.root}>
+                        <Sidebar />
+                        {
+                            isLoading ?
+                                null
+                            : <MainFrame 
+                                rows={rows} 
+                                handleRoleFilterOpen={handleRoleFilterOpen} 
+                                handleRoleUpdate={handleRoleUpdate}
+                            />
+                        }
+                        <RoleFilterDialog 
+                            open={openedRoleFilter}
+                            handleClose={handleRoleFilterClose}
+                            role={role}
+                            handleRoleChange={handleRoleChange}
+                        />
+                    </Box>
+                : 
+                    <Box sx={styles.mobileInstructionFrame}>
+                        <Typography sx={styles.mobileInstruction}>Please use a computer to access an admin page.</Typography>
+                    </Box>
             }
-            <RoleFilterDialog 
-                open={openedRoleFilter}
-                handleClose={handleRoleFilterClose}
-                role={role}
-                handleRoleChange={handleRoleChange}
-            />
-        </Box>
+        </>
     );
 }
 /////////////////////////////////////////////////////////////////////////
@@ -556,14 +615,14 @@ export default function Users() {
 const styles = {
     root: {
         width: '100%',
-        height: `${window.innerHeight}px`,
+        minHeight: `${window.innerHeight}px`,
         display: 'flex',
         flexDirection: 'row'
     },
 
     sidebar: {
         width: '20%',
-        height: '100%',
+        minHeight: `${window.innerHeight}px`,
         backgroundColor: "#464646",
         display: 'flex',
         flexDirection: 'column'
@@ -648,7 +707,7 @@ const styles = {
 
     main: {
         width: '80%',
-        height: '100%',
+        minHeight: `${window.innerHeight}px`,
         display: 'flex',
         flexDirection: 'column',
         paddingLeft: '50px'
@@ -712,6 +771,21 @@ const styles = {
 
     roleCell: {
         width: '100px'
+    },
+
+    mobileInstructionFrame: {
+        width: '100%',
+        height: `${window.innerHeight}px`,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+
+    mobileInstruction: {
+        fontSize: '1.345rem',
+        fontWeight: 'bold',
+        color: '#464646',
+        textAlign: 'center'
     }
 };
 ///////////////////////////////////////////////////////////////////////
