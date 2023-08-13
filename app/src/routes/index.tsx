@@ -61,11 +61,6 @@ const router = createBrowserRouter([
         element: <HomeRoute />,
       },
       {
-        // will be removed here after the frontend for this page is completed
-        path: "/admin/users",
-        element: <Users />,
-      },
-      {
         path: "/borrow",
         element: <BorrowRoute />,
         loader: async ({ request }) => {
