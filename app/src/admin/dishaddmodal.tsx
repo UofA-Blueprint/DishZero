@@ -1,7 +1,6 @@
 import { Button, Modal } from 'react-bootstrap'
 import { useEffect, useRef, useState } from 'react';
 import '../styles/admin.css';
-import DishAPI from "../features/api";
 
 //const AddDishModal 
 export default function ({ show, onCancel }) {
@@ -33,7 +32,7 @@ export default function ({ show, onCancel }) {
             alert("Please fill in all fields");
             return;
         }
-        DishAPI.addNewDish(QRCode, selectedType);
+        // DishAPI.addNewDish(QRCode, selectedType);
         setQRCode("");
     }
 
@@ -47,7 +46,7 @@ export default function ({ show, onCancel }) {
                 if (dish[0].toLowerCase().indexOf("qr") > -1) {
                     return;
                 }
-                DishAPI.addNewDish(dish[0], dish[1]);
+                // DishAPI.addNewDish(dish[0], dish[1]);
             });
         }
 

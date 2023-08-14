@@ -61,7 +61,7 @@ export const getDishes = async (req: Request, res: Response) => {
     let dishes
 
     // if all is true, check if user is admin, if yes return all dishes
-    if (all == 'true') {
+    if (all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 module: 'dish.controller',
@@ -72,7 +72,7 @@ export const getDishes = async (req: Request, res: Response) => {
         }
 
         try {
-            if (transaction == 'true') {
+            if (transaction === 'true') {
                 dishes = await getAllDishes()
             } else {
                 dishes = await getAllDishesSimple()
@@ -99,7 +99,7 @@ export const getDishes = async (req: Request, res: Response) => {
 
     // return dishes that the user has currently borrowed
     try {
-        if (transaction == 'true') {
+        if (transaction === 'true') {
             dishes = await getUserDishes(userClaims)
         } else {
             dishes = await getUserDishesSimple(userClaims)
@@ -333,7 +333,6 @@ export const returnDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
-
         ongoingTransaction = await getTransactionBydishId(userClaims, id!)
         if (!ongoingTransaction) {
             Logger.error({
