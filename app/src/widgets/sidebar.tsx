@@ -31,6 +31,7 @@ export const Sidebar = () => {
     axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/logout', {}, {headers:{"x-api-key":"test","session-token":sessionToken}})
     .then(function (response) {
       console.log("response:", response)
+      Cookies.remove('sessionToken')
       window.location.reload()
     })
     .catch(function (error) {

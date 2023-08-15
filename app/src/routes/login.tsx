@@ -32,17 +32,10 @@ function Login() {
   const transaction_id = query.get("transaction_id");
 
   useEffect(() => {
-      if (fbContext?.user) {
-          console.log(transaction_id)
-          if(transaction_id){
-              DishAPI.updateDocWithuserId(transaction_id, fbContext?.user?.uid);  
-              //send a firebase request to add the user to the document with the handle
-              
-          }
-          navigate("/home");
-
+      if (Cookies.get('sessionToken')){
+        navigate("/home")
       }
-  }, [fbContext?.user]);
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {

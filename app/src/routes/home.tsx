@@ -65,19 +65,14 @@ const NewUser = (dishesUsed) => {
 
 
 const GetDishes = (dishesUsed) =>{
-  let dishesInUse = 0;
+  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == null).length
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
-          {dishesUsed.map(dish => {
-            if (dish.returned.timestamp == null){
-              dishesInUse = dishesInUse + 1
-            }
-          }) }
-          <p className="details-2 mt-1">{dishesInUse} in use</p>
+          <p className="details-2 mt-1">{checkedOutDishes} in use</p>
         </div>
-        { (dishesInUse != 0) ? <DishLog dishes={dishesUsed} /> :
+        { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">
             <div className="mt-5 d-flex justify-content-center">
               <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
@@ -89,8 +84,10 @@ const GetDishes = (dishesUsed) =>{
                 You don't have any dishes borrowed at the moment. Start borrowing to make an impact!
               </p>
             </div>
-            <a className="btn-primary align-self-center mt-2" href="/borrow" style={{textDecoration:'none'}}>
-              <p className="sub-header-3 text-center m-2">Borrow</p>
+            <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
+              <Link to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
+                <p className="sub-header-3 text-center m-2">Borrow</p>
+              </Link>
             </a>
           </div>
         }
@@ -100,7 +97,7 @@ const GetDishes = (dishesUsed) =>{
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
-  let dishReturned = 0;
+  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp !== null).length  
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -108,17 +105,12 @@ const ExistingUser = (dishesUsed) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-              {dishesUsed.map(dish => {
-                if (dish.returned.timestamp != null){
-                  dishReturned = dishReturned + 1
-                }
-              }) }
-            <p className="header mb-0">{dishReturned}</p>
+            <p className="header mb-0">{returnedDishes}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{dishReturned * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <div className="d-flex"><p className="header mb-0">{returnedDishes * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
             <p className="sub-header-3 mb-1">Waste Diverted</p>
           </div>
         </div>
@@ -162,7 +154,6 @@ export default () => {
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   let token = SessionToken()
-  console.log(token)
   // Fetch dishes transaction for the user
   useEffect(()=>{
     axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
