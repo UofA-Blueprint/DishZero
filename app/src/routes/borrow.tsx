@@ -39,7 +39,6 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
 
 export default () => {
   const sessionToken = Cookies.get('sessionToken')
-  console.log(sessionToken)
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
   const firebase = useContext(FirebaseContext);
@@ -61,7 +60,7 @@ export default () => {
     console.log("USER: " + user);
     console.log("scanid", scanId)
 
-    axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/dish/borrow', {}, {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
+    axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`, {}, {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
     .then(function (response) {
       navigate("/home")
     })

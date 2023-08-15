@@ -30,7 +30,7 @@ function Login() {
   //const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
-
+  const sessionToken = Cookies.get('sessionToken')
   useEffect(() => {
       if (Cookies.get('sessionToken')){
         navigate("/home")
@@ -70,7 +70,7 @@ function Login() {
         if (currentUser) {
           const token = await getIdToken(currentUser);
           // Send id token to backend
-          axios.post('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/auth/login',{idToken:token}, {headers:{"x-api-key":"test"}})
+          axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login`,{idToken:token}, {headers:{"x-api-key":"test"}})
           .then(function (response) {
             Cookies.set('sessionToken', response.data.session)
             window.location.reload()
