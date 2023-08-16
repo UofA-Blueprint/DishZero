@@ -6,37 +6,23 @@ import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
-import { GoogleAuth, FirebaseAuth, FirebaseContext } from '../firebase';
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { getIdToken, onAuthStateChanged, signInWithPopup, getAuth } from "firebase/auth";
-import axios from "axios";
-import DishAPI from "../features/api";
-import Cookies from "js-cookie"
+import { useAuth } from "../contexts/AuthContext";
+
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
-
-
-function Login() {
-  const fbContext = useContext(FirebaseContext);
-  const navigate = useNavigate();
+export default function Login() {
+  const { login } = useAuth()
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
   //Show spinner as soon as page is refreshed 
   const [isLoading, setIsLoading] = useState(true);
-  
-  const auth = getAuth();
+  const {currentUser} = useAuth()
   
   //const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
-  const sessionToken = Cookies.get('sessionToken')
-  useEffect(() => {
-      if (Cookies.get('sessionToken')){
-        navigate("/home")
-      }
-  }, []);
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -51,58 +37,15 @@ function Login() {
   
 
   // fired on button click while the user is not signed in.
-  // the userEmail state is set (or "dispatched") after getting it from "credentials".
-  const handleSignIn = () => {
-    let res = '';
-    signInWithPopup(FirebaseAuth, GoogleAuth)
-      .then((credentials) => {
-        if (!credentials.user.email?.match("@ualberta.ca")) {
-          credentials.user?.delete();
-          alert("Please login with your University of Alberta CCID");
-        }
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
-
-      onAuthStateChanged(FirebaseAuth, async (currentUser) => {
-        setIsLoading(false)
-        if (currentUser) {
-          const token = await getIdToken(currentUser);
-          // Send id token to backend
-          axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login`,{idToken:token}, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`}})
-          .then(function (response) {
-            Cookies.set('sessionToken', response.data.session)
-            window.location.reload()
-            navigate("/home");
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-        }
-      });
-    }
-
-
-
-
+  // logs in the user and navigates to home screen if successfully logged in
+  const handleSignIn = async () => {
+    await login()
+  }
 
   //Hide spinner as soon as Auth state has changed i.e. auth state has been read
-  useEffect(() => {onAuthStateChanged(auth, (user) => {
+  useEffect(() => {
     setIsLoading(false)
-    if (user) {
-      //if user is already signed in
-     
-    } else {
-      // User is not signed in.
-      // ...
-    }
-  });
-  }, []);
-
-  /*if (fbContext?.user) {
-    return <div></div>
-  }*/
+  }, [currentUser]);
 
   //As auth state is being read, display loader spinner
   if (isLoading){
@@ -149,7 +92,6 @@ function Login() {
     </Box>)
   
 }
-export default Login;
 
 const styles = {
   rootDesktop: {

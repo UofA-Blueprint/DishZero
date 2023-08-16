@@ -1,39 +1,32 @@
-import { useContext, useState, useEffect } from "react";
-import { FirebaseContext, Role } from "../firebase";
-import { useLocation, Link } from "react-router-dom";
-import DishAPI from "../features/api";
-import { faAngleDoubleLeft, faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useEffect } from "react";
+import { Link as ReactRouterLink} from "react-router-dom";
 import scan_icon from "../assets/scan.svg";
 import leaf_white from "../assets/leaf-white.svg";
 import leaf_green from "../assets/leaf-green.svg";
-import external_link from "../assets/external_link.svg"
+import external_link from "../assets/external_link.svg";
 import DishCard from "../widgets/dishcard";
-import '../styles/index.css'
+import "../styles/index.css";
 import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
-import Cookies from 'js-cookie';
+import { useAuth } from "../contexts/AuthContext";
 
-
-
-
-const DishLog = ({dishes}) => {
-  let token = SessionToken()
+const DishLog = ({ dishes }) => {
+  const { sessionToken } = useAuth();
   return (
     <div id="dish-log" className="mt-3">
-      { dishes.map(dish => {
-        if (dish.returned.timestamp == null){
-          return <DishCard dish={dish} token={token} key={dish.id} />
+      {dishes.map((dish) => {
+        if (dish.returned.timestamp == null) {
+          return <DishCard dish={dish} token={sessionToken} key={dish.id} />;
         }
       }) }
     </div>
-  )
+  );
 };
 
 const NewUser = (dishesUsed) => {
-  const content = GetDishes(dishesUsed)
-  return(
-    <div style={{padding:'24px'}}>
+  const content = GetDishes(dishesUsed);
+  return (
+    <div style={{ padding: "24px" }}>
       <div className="sub-header-3">
         How It Works
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
@@ -43,19 +36,27 @@ const NewUser = (dishesUsed) => {
             </LinkMUI>
           </div>
       </div>
-      <div className="sub-header-3" style={{marginTop: '24px'}}>
+      <div className="sub-header-3" style={{ marginTop: "24px" }}>
         Our Impact
         <div className="light-blue d-flex flex-column justify-content-end" style={{height:'80px', width:'100%', borderRadius:'10px', marginTop:'16px', position:'relative'}}>
           <p className="details-1" style={{height:'48px', width:'198px', marginTop:'-32px', marginBottom:'16px', marginLeft:'24px', marginRight:'40px'}}> Learn more about the impact we are leaving on the environment.</p>
           <LinkMUI href="https://www.dishzero.ca/impact">
-            <img src={external_link} alt="External Link" style={{position:'absolute', top:'19px', bottom:'20px', right:'24px'}}/>
+            <img
+              src={external_link}
+              alt="External Link"
+              style={{
+                position: "absolute",
+                top: "19px",
+                bottom: "20px",
+                right: "24px",
+              }}
+            />
           </LinkMUI>
         </div>
       </div>
       {content}
     </div>
-  )
-
+  );
 };
 
 
@@ -80,21 +81,21 @@ const GetDishes = (dishesUsed) =>{
               </p>
             </div>
             <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
-              <Link to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
+              <ReactRouterLink to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
                 <p className="sub-header-3 text-center m-2">Borrow</p>
-              </Link>
+              </ReactRouterLink>
             </a>
           </div>
         }
       </div>
-  )
-}
+     
+      )}
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
   const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != null).length  
   return (
-    <div style={{padding:'24px'}}>
+    <div style={{ padding: "24px" }}>
       <div id="impact" className="sub-header-3">
         My Impact
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
@@ -115,63 +116,74 @@ const ExistingUser = (dishesUsed) => {
   )
 }
 
-const SessionToken = ()=>{
-  const sessionToken = Cookies.get('sessionToken')
-  return (sessionToken)
-}
-
 const Header = () => {
   return (
     <div>
-      <Box sx={{flexGrow:1, position:'relative', height:'14vh'}}>
-        <AppBar position="static" sx={{backgroundColor:'#68B49A', height:'100%', alignItems:"center", justifyContent:"center"}}>
-          <Typography sx={{fontWeight:'500', fontSize:'20px', mb:'-24px'}}> Home </Typography>
+      <Box sx={{ flexGrow: 1, position: "relative", height: "14vh" }}>
+        <AppBar
+          position="static"
+          sx={{
+            backgroundColor: "#68B49A",
+            height: "100%",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography sx={{ fontWeight: "500", fontSize: "20px", mb: "-24px" }}>
+            {" "}
+            Home{" "}
+          </Typography>
         </AppBar>
       </Box>
     </div>
-  )
-}
+  );
+};
 
 const Footer = () => {
   return (
-    <div className="position-absolute bottom-0 end-0" style={{padding:'24px'}}>
-      <Link to={"/borrow"}>
+    <div
+      className="position-absolute bottom-0 end-0"
+      style={{ padding: "24px" }}
+    >
+      <ReactRouterLink to={"/borrow"}>
         <img src={scan_icon} alt="scan icon" />
-      </Link>
+      </ReactRouterLink>
     </div>
-  )
-}
-
-
+  );
+};
 
 export default () => {
-  const fbContext = useContext(FirebaseContext);
+  const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
-  let token = SessionToken()
-  console.log(token)
   // Fetch dishes transaction for the user
-  useEffect(()=>{
-    axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/transactions`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}})
-    .then(function (response) {
-      setDishesUsed(response.data.transactions)
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  },[])
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/transactions`, {
+        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+      })
+      .then(function (response) {
+        setDishesUsed(response.data.transactions);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }, []);
 
-  let user = fbContext?.user
-  if (user !== undefined){ // User is defined
-    if (Number(dishesUsed) == 0){ 
-      content = NewUser(dishesUsed)
-    } else { 
-      content = ExistingUser(dishesUsed)
+  const user = currentUser;
+
+  if (user) {
+    // User is defined
+    if (Number(dishesUsed) === 0) {
+      content = NewUser(dishesUsed);
+    } else {
+      content = ExistingUser(dishesUsed);
     }
   }
+
   return (
     <div>
-      <Header/>
+      <Header />
       {content}
       <Footer />
     </div>

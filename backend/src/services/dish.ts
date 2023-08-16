@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
-import { Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
+import { Condition, Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import { db } from './firebase'
 import Logger from '../utils/logger'
@@ -222,18 +222,32 @@ export const validateDishRequestBody = (dish: Dish) => {
 
 export const validateReturnDishRequestBody = (dish: Dish) => {
     const schema = Joi.object({
-        broken: Joi.boolean().required(),
-        lost: Joi.boolean().required(),
+        condition: Joi.string().valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright).required(),
     }).required()
 
     return schema.validate(dish)
 }
 
-export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToken, borrowed: boolean) => {
+export const validateUpdateConditonRequestBody = (body: Object) => {
+    const schema = Joi.object({
+        condition: Joi.string().valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright).required(),
+    }).required()
+
+    return schema.validate(body)
+}
+
+export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToken, borrowed: boolean, condition?: string) => {
     // when borrowing, set userId and increase timesBorrowed
     let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
     let userId = borrowed ? userClaims.uid : null
+    let dishCondition;
+    if (condition) {
+        dishCondition = condition
+    } else {
+        dishCondition = Condition.alright
+    }
     await db.collection('dishes').doc(dish.id).update({
+        condition: dishCondition,
         borrowed,
         timesBorrowed,
         userId,

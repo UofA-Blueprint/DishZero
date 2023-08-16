@@ -82,7 +82,7 @@ const CameraInput = ({ onSubmit }) => {
         setShowQr(false)
     };
     const handleScan = (data: any) => {
-        if (data == null) {
+        if (data === null) {
             return;
         }
         onSubmit(data.text);

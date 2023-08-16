@@ -1,8 +1,8 @@
-import '../styles/index.css'
-import {useEffect, useState } from "react";
+import "../styles/index.css";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import mug from '../assets/mug_icon_contained.svg'
-import container from '../assets/dish_icon_contained.svg'
+import mug from "../assets/mug_icon_contained.svg";
+import container from "../assets/dish_icon_contained.svg";
 
 export default ({dish,token}) => {
   const options = { weekday: 'long', year: 'numeric', month: 'long'};

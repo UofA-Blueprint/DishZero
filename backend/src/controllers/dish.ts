@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Dish } from '../models/dish'
+import { Condition, Dish } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import {
     getDish,
@@ -12,6 +12,7 @@ import {
     getUserDishesSimple,
     validateReturnDishRequestBody,
     getDishById,
+    validateUpdateConditonRequestBody,
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
@@ -60,7 +61,7 @@ export const getDishes = async (req: Request, res: Response) => {
     let dishes
 
     // if all is true, check if user is admin, if yes return all dishes
-    if (all == 'true') {
+    if (all === 'true') {
         if (!verifyIfUserAdmin(userClaims)) {
             Logger.error({
                 module: 'dish.controller',
@@ -71,7 +72,7 @@ export const getDishes = async (req: Request, res: Response) => {
         }
 
         try {
-            if (transaction == 'true') {
+            if (transaction === 'true') {
                 dishes = await getAllDishes()
             } else {
                 dishes = await getAllDishesSimple()
@@ -98,7 +99,7 @@ export const getDishes = async (req: Request, res: Response) => {
 
     // return dishes that the user has currently borrowed
     try {
-        if (transaction == 'true') {
+        if (transaction === 'true') {
             dishes = await getUserDishes(userClaims)
         } else {
             dishes = await getUserDishesSimple(userClaims)
@@ -198,8 +199,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             },
             userId: userClaims.uid,
             returned: {
-                broken: false,
-                lost: false,
+                condition: Condition.alright
             },
             timestamp: new Date().toISOString(),
         }
@@ -240,13 +240,13 @@ export const returnDish = async (req: Request, res: Response) => {
     if (validation.error) {
         Logger.error({
             module: 'dish.controller',
-            message: 'No values for broken or lost provided',
+            message: 'No values for condition provided',
             statusCode: 400,
         })
 
-        return res.status(400).json({ error: 'bad_request', message: 'no values for broken or lost provided' })
+        return res.status(400).json({ error: 'bad_request', message: 'no values for condition provided' })
     }
-    let { broken, lost } = req.body.returned
+    let { condition } = req.body.returned
 
     let userClaims = (req as CustomRequest).firebase
     try {
@@ -294,15 +294,14 @@ export const returnDish = async (req: Request, res: Response) => {
                 return res.status(400).json({ error: 'operation_not_allowed', message: 'Transaction not found' })
             }
 
-            await updateBorrowedStatus(associatedDish, userClaims, false)
+            await updateBorrowedStatus(associatedDish, userClaims, false, condition)
 
             await db
                 .collection(nodeConfig.get('collections.transactions'))
                 .doc(ongoingTransaction.id)
                 .update({
                     returned: {
-                        broken,
-                        lost,
+                        condition,
                         timestamp: new Date().toISOString(),
                     },
                 })
@@ -352,8 +351,7 @@ export const returnDish = async (req: Request, res: Response) => {
             .doc(ongoingTransaction.id)
             .update({
                 returned: {
-                    broken,
-                    lost,
+                    condition,
                     timestamp: new Date().toISOString(),
                 },
             })
@@ -386,6 +384,18 @@ export const updateDishCondition = async (req: Request, res: Response) => {
             statusCode: 400,
         })
         return res.status(400).json({ error: 'bad_request', message: 'dish_id not provided' })
+    }
+
+    let validation = validateUpdateConditonRequestBody(req.body)
+    if (validation.error) {
+        Logger.error({
+            module: 'dish.controller',
+            error: validation.error,
+            message: 'No values for condition provided',
+            statusCode: 400,
+        })
+
+        return res.status(400).json({ error: 'bad_request', message: 'validation for condition failed' })
     }
 
     let condition = req.body.condition

@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "NODE_ENV=prod node ./build/server.js",
+    "start": "NODE_ENV=prod NEW_RELIC_APP_NAME=dishzero_backend NEW_RELIC_LICENSE_KEY=$(grep NEW_RELIC_LICENSE_KEY .env | cut -d '=' -f2)  node -r newrelic ./build/server.js",
     "dev": "ts-node ./src/server.ts",
     "format": "prettier --write 'src/**/*.ts'"
   },
@@ -31,6 +31,7 @@
     "firebase-admin": "^11.9.0",
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
+    "newrelic": "^10.6.1",
     "pino-http": "^8.3.3",
     "pino-pretty": "^10.0.0",
     "winston": "^3.10.0"
