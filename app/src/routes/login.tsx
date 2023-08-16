@@ -70,7 +70,7 @@ function Login() {
         if (currentUser) {
           const token = await getIdToken(currentUser);
           // Send id token to backend
-          axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login`,{idToken:token}, {headers:{"x-api-key":"test"}})
+          axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login`,{idToken:token}, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`}})
           .then(function (response) {
             Cookies.set('sessionToken', response.data.session)
             window.location.reload()

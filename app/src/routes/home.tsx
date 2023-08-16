@@ -26,11 +26,6 @@ const DishLog = ({dishes}) => {
           return <DishCard dish={dish} token={token} key={dish.id} />
         }
       }) }
-      {/* <div style={{position:'fixed', left:'5px', bottom:'5px'}}>
-        <button id="prev">Prev</button>
-        <input type="number" id="page-number" />
-        <button id="next">Next</button>
-      </div> */}
     </div>
   )
 };
@@ -97,7 +92,7 @@ const GetDishes = (dishesUsed) =>{
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
-  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp !== null).length  
+  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != null).length  
   return (
     <div style={{padding:'24px'}}>
       <div id="impact" className="sub-header-3">
@@ -154,9 +149,10 @@ export default () => {
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   let token = SessionToken()
+  console.log(token)
   // Fetch dishes transaction for the user
   useEffect(()=>{
-    axios.get('http://ec2-34-213-210-231.us-west-2.compute.amazonaws.com/api/transactions', {headers:{"x-api-key":"test","session-token":token}})
+    axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/transactions`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}})
     .then(function (response) {
       setDishesUsed(response.data.transactions)
     })

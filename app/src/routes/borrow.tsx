@@ -60,7 +60,7 @@ export default () => {
     console.log("USER: " + user);
     console.log("scanid", scanId)
 
-    axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`, {}, {headers:{"x-api-key":"test","session-token":sessionToken}, params:{"qid":scanId}})
+    axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`, {}, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":sessionToken}, params:{"qid":scanId}})
     .then(function (response) {
       navigate("/home")
     })

@@ -28,7 +28,7 @@ export const Sidebar = () => {
   const Logout = ()=>{
     const sessionToken = Cookies.get('sessionToken')
     console.log("sessionToken:", sessionToken)
-    axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/logout`, {}, {headers:{"x-api-key":"test","session-token":sessionToken}})
+    axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/logout`, {}, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":sessionToken}})
     .then(function (response) {
       console.log("response:", response)
       Cookies.remove('sessionToken')
