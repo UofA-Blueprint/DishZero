@@ -7,7 +7,7 @@ import container from "../assets/dish_icon_contained.svg";
 export default ({dish,token}) => {
   const options = { weekday: 'long', year: 'numeric', month: 'long'};
   const [dishAPI, setDishAPI] = useState([])     
-  const dayInMs = 86400000
+  const twoDaysInMs = 86400000 * 2
     useEffect(()=>{
         axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}, params:{"id":dish.dish}})
         .then(function (response) {
@@ -22,7 +22,7 @@ export default ({dish,token}) => {
     const icon = dishAPI['type'] == 'mug' ? mug : container
 
     const dishCheckOut = new Date(dish.timestamp)
-    const dishDue = new Date(dishCheckOut.getTime() + dayInMs)
+    const dishDue = new Date(dishCheckOut.getTime() + twoDaysInMs)
     return (
         <div className="dish-card mb-3">
             <div className="type-icon">
