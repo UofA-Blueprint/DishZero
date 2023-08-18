@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser'
 import { qrCodeRouter } from './routes/qrCode'
 import nodeConfig from 'config'
 import { cronRouter } from './routes/cron'
-import { EmailClient, initializeEmailCron, isEmailCronEnabled } from './cron/email'
+import { EmailClient, initializeEmailCron } from './cron/email'
 import Logger from './utils/logger'
 
 const app = express()
@@ -40,7 +40,7 @@ if (environment === 'prod') {
 // Initialize all the cron jobs
 if (nodeConfig.get('cron.enabled')) {
     Logger.info('Initializing cron jobs')
-    initializeEmailCron({cronExpression: nodeConfig.get('cron.default.email')}, EmailClient.AWS)
+    initializeEmailCron({ cronExpression: nodeConfig.get('cron.default.email') }, EmailClient.AWS)
 }
 
 app.get('/health', (_: Request, res: Response) => {

@@ -199,7 +199,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             },
             userId: userClaims.uid,
             returned: {
-                condition: Condition.alright
+                condition: Condition.alright,
             },
             timestamp: new Date().toISOString(),
         }

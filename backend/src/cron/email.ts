@@ -13,22 +13,25 @@ export enum EmailClient {
 let emailCron: Cron | undefined
 
 export class EmailCron implements Cron {
-    private job: cron.ScheduledTask
+    private job: cron.ScheduledTask | undefined
+    private readonly client: EmailClient
+    private readonly options: CronOptions
 
     constructor(options: CronOptions, client: EmailClient) {
-        this.job = cron.schedule(options.cronExpression, () => {
-            if (client === EmailClient.AWS) {
-                console.log('Sending email from AWS')
-            } else if (client === EmailClient.Nodemailer) {
-                console.log('Sending email from nodemailer')
-            }
-        })
+        this.client = client || EmailClient.AWS
+        this.options = options
     }
 
     async start(): Promise<void> {
         let enabled = await isEmailCronEnabled()
         if (enabled) {
-            this.job?.start()
+            this.job = cron.schedule(this.options.cronExpression, () => {
+                if (this.client === EmailClient.AWS) {
+                    console.log('Sending email with AWS')
+                } else {
+                    console.log('Sending email with nodemailer')
+                }
+            })
         }
     }
     stop(): void {
@@ -36,17 +39,17 @@ export class EmailCron implements Cron {
     }
 }
 
-export const isEmailCronEnabled = async (): Promise<boolean> => {
+export const isEmailCronEnabled = async () => {
     const snapshot = await db.collection(nodeConfig.get('collections.cron')).doc('email').get()
     if (!snapshot.exists) {
         return false
     }
 
-    if (!snapshot.data()?.enabled) {
+    let data = snapshot.data()
+    if (!data) {
         return false
     }
-    
-    return true
+    return data.enabled
 }
 
 export const initializeEmailCron = async (options: CronOptions, client: EmailClient) => {
