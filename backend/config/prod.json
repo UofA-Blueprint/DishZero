@@ -28,8 +28,9 @@
         "email": "email"
     },
     "cron": {
+        "enabled": true,
         "default": {
-            "email": "* * * * * Wednesday"
+            "email": "0 0 12 * * WED *"
         }
     },
     "aws": {

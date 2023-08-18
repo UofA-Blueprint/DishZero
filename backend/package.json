@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "NODE_ENV=prod NEW_RELIC_APP_NAME=dishzero_backend NEW_RELIC_LICENSE_KEY=$(grep NEW_RELIC_LICENSE_KEY .env | cut -d '=' -f2)  node -r newrelic ./build/server.js",
-    "dev": "ts-node ./src/server.ts",
+    "dev": "NODE_ENV=dev ts-node ./src/server.ts",
     "format": "prettier --write 'src/**/*.ts'"
   },
   "devDependencies": {

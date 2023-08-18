@@ -8,9 +8,10 @@ import { userRouter } from './routes/users'
 import { authRouter } from './routes/auth'
 import cookieParser from 'cookie-parser'
 import { qrCodeRouter } from './routes/qrCode'
-import { CronFactory } from './cron/factory'
 import nodeConfig from 'config'
 import { cronRouter } from './routes/cron'
+import { EmailClient, initializeEmailCron, isEmailCronEnabled } from './cron/email'
+import Logger from './utils/logger'
 
 const app = express()
 dotenv.config()
@@ -34,9 +35,12 @@ if (environment === 'prod') {
             },
         })
     )
+}
 
-    let emailCron = new CronFactory().create('email', { cronExpression: nodeConfig.get('cron.default.email') })
-    emailCron?.start()
+// Initialize all the cron jobs
+if (nodeConfig.get('cron.enabled')) {
+    Logger.info('Initializing cron jobs')
+    initializeEmailCron({cronExpression: nodeConfig.get('cron.default.email')}, EmailClient.AWS)
 }
 
 app.get('/health', (_: Request, res: Response) => {
