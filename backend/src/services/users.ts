@@ -44,6 +44,19 @@ export const getUserByEmail = async (email: string) => {
     }
 }
 
+export const getUserById = async (id: string) => {
+    const snapshot = await db.collection('users').doc(id).get()
+    let data = snapshot.data()
+    if (!data) {
+        return null
+    }
+    return {
+        id: id,
+        role: data.role,
+        email: data.email,
+    }
+}
+
 export const verifyIfUserAdmin = (userClaims: DecodedIdToken) => {
     return userClaims.role === 'admin'
 }
