@@ -69,6 +69,86 @@ input[type="radio"] {
     margin-top: -4px;
 }
 
+.admin-container {
+    border-radius: 10px;
+    background-color: #E0F4F4;
+    width: 156px;
+    height: 118px;
+    margin-right: 40px;
+    padding: 16px;
+    border: 0;
+    color: black;
+}
+
+
+.table-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #464646;
+    width: 100%;
+    height: 56px;
+    padding: 16px;
+    border: 0;
+    color: white;
+}
+
+
+.search-container {
+    border-radius: 30px;
+    background-color: rgb(255, 255, 255);
+    width: 206px;
+    height: 40px;
+    margin-right: 40px;
+    border: 1px solid black;
+    color: #C2C2C2;
+    padding: 8px;
+}
+
+
+.search-b {
+    border-radius: 30px;
+    background-color: rgb(255, 255, 255);
+    width: 138px;
+    height: 40px;
+    border: 2px solid #68B49A;
+    color: #68B49A;
+    padding: 8px;
+    justify-content: space-around;
+}
+
+
+.add-dish {
+    border-radius: 30px;
+    background-color: #68B49A;
+    width: 213px;
+    height: 40px;
+    color: white;
+    padding: 8px;
+    justify-content: space-around;
+    align-self: flex-end;
+}
+
+.row-container {
+    width: 100%;
+    height: 56px;
+    padding: 16px;
+    border: 0;
+    color: black;
+}
+
+
+.tag-container {
+    border-radius: 30px;
+    background-color: rgb(255, 255, 255);
+    height: 40px;
+    border: 2px solid black;
+    padding: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
+    justify-content: center;
+}
+
+
 .admin-btn {
     border-radius: 0;
     background-color: var(--darkgrey);
