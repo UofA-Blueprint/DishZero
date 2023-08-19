@@ -17,10 +17,11 @@ import {
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
 import { verifyIfUserAdmin } from '../services/users'
-import { getTransaction, registerTransaction, getTransactionBydishId } from '../services/transactions'
+import { registerTransaction, getLatestTransaction, getLatestTransactionBydishId } from '../services/transactions'
 import { getQrCode } from '../services/qrCode'
 import { db } from '../internal/firebase'
 import nodeConfig from 'config'
+import { time } from 'console'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -200,6 +201,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             userId: userClaims.uid,
             returned: {
                 condition: Condition.alright,
+                timestamp: '',
             },
             timestamp: new Date().toISOString(),
         }
@@ -284,7 +286,7 @@ export const returnDish = async (req: Request, res: Response) => {
             }
 
             // update the existing transaction with the returned property
-            ongoingTransaction = await getTransaction(userClaims, parseInt(qid, 10))
+            ongoingTransaction = await getLatestTransaction(userClaims, parseInt(qid, 10))
             if (!ongoingTransaction) {
                 Logger.error({
                     module: 'dish.controller',
@@ -333,7 +335,7 @@ export const returnDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
-        ongoingTransaction = await getTransactionBydishId(userClaims, id!)
+        ongoingTransaction = await getLatestTransactionBydishId(userClaims, id!)
         if (!ongoingTransaction) {
             Logger.error({
                 module: 'dish.controller',
