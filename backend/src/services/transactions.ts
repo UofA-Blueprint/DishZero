@@ -52,11 +52,12 @@ export const registerTransaction = async (transaction: Transaction) => {
     }
 }
 
-export const getTransaction = async (userClaims: DecodedIdToken, qid: number) => {
+export const getLatestTransaction = async (userClaims: DecodedIdToken, qid: number) => {
     let transactionQuery = await db
         .collection(nodeConfig.get('collections.transactions'))
         .where('userId', '==', userClaims.uid)
         .where('dish.qid', '==', qid)
+        .where('returned.timestamp', '==', '')
         .get()
     if (transactionQuery.empty) {
         return null
@@ -74,11 +75,12 @@ export const getTransaction = async (userClaims: DecodedIdToken, qid: number) =>
     }
 }
 
-export const getTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
+export const getLatestTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
     let snapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
         .where('userId', '==', userClaims.uid)
         .where('dish.id', '==', dishId)
+        .where('returned.timestamp', '==', '')
         .get()
     if (snapshot.empty) {
         return null

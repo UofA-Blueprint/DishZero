@@ -9,7 +9,7 @@ export type Transaction = {
     userId: string
     returned: {
         condition: string
-        timestamp?: Date
+        timestamp?: string
     }
     timestamp: string
 }
