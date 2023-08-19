@@ -119,12 +119,21 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     body:
     ```
     returned: {
-        broken: boolean,    * required
-        lost: boolean,   * required
+        condition: string,  * required
+    }
+    ```
+    allowed values for condition:
+    ```
+    Condition {
+        'small_crack_chip',
+        'large_crack_chunk',
+        'shattered',
+        'alright',
     }
     ```
 
-- #### POST `/api/dish/condition?qid=`
+
+- #### POST `/api/dish/condition?id=`
     This route will update the condition for the dish.
 
     headers:
@@ -135,14 +144,22 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
 
     query:
     ```
-    qid: qr_code of the dish to be returned
-    id: id of the dish to be returned (required if qid is not provided)
+    id: id of the dish
     ```
 
     body:
     ```
     {
         condition: string,    * required
+    }
+    ```
+    allowed values for condition:
+    ```
+    Condition {
+        'small_crack_chip',
+        'large_crack_chunk',
+        'shattered',
+        'alright',
     }
     ```
 
@@ -202,3 +219,66 @@ the user routes are defined in the `src/routes/user.ts` file. The routes are mou
     }
     ```
     notes: when type is set to role, role property is required and only admin can update the role.
+
+### QR Codes
+the qr code routes are defined in the `src/routes/qrCode.ts` file. The routes are mounted on the `/qrcode` path. The routes are:
+
+- #### GET `/api/qrcode?qid=`
+    This route returns all the qr codes in the database only if the user is admin.
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qid: return the qr code with this qid
+    ```
+
+- #### POST `/api/qrcode/create`
+    Create a qr code with the given request body only if user is admin
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    body:
+    ```
+    qrCode: {
+        qid: number,     * required
+        dishId: string,  * required
+    }
+    ```
+
+- #### POST `/api/qrcode/update`
+    Update an existing qr code with the given request body only if user is admin
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    body:
+    ```
+    qrCode: {
+        qid: number,     * required
+        dishId: string,  * required
+    }
+    ```
+
+- #### DELETE `/api/qrcode?qid=`
+    This route deletes the qr code with the given qid only if the user is admin.
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+    query:
+    ```
+    qid: delete the qr code with this qid
+    ```
