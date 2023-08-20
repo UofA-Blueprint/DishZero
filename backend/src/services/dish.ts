@@ -240,8 +240,14 @@ export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToke
     // when borrowing, set userId and increase timesBorrowed
     let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
     let userId = borrowed ? userClaims.uid : null
+    let dishCondition;
+    if (condition) {
+        dishCondition = condition
+    } else {
+        dishCondition = Condition.alright
+    }
     await db.collection('dishes').doc(dish.id).update({
-        condition: condition ? condition : dish.condition,
+        condition: dishCondition,
         borrowed,
         timesBorrowed,
         userId,
