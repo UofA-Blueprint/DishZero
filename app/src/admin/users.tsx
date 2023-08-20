@@ -1,6 +1,6 @@
 ////////////////////////// Import Dependencies //////////////////////////
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
     Dialog,
     Select,
@@ -37,6 +37,7 @@ import {
     Search as SearchIcon
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
+import adminApi from "../apis/admin.api";
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////
@@ -84,15 +85,6 @@ interface Data {
     inUse: number;
     overdue: number;
     role: string;
-}
-
-function createData(
-    emailAddress: string,
-    inUse: number,
-    overdue: number,
-    role: string
-  ): Data {
-    return { emailAddress, inUse, overdue, role };
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -323,94 +315,100 @@ const MainFrame = (props: MainframeProps) => {
     return (
         <Box sx={styles.main}>
             <Typography sx={styles.pageName}>Users</Typography>
-            <Box sx={styles.searchFrame}>
-                <Paper
-                    component="form"
-                    sx={styles.searchField}
-                >
-                    <SearchIcon />
-                    <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        value={searchedEmail}
-                        onChange={(e) => handleEmailSearch(e.target.value)}
-                        placeholder="search email..."
-                        inputProps={{ 'aria-label': 'search email address' }}
-                    />
-                </Paper>
-            </Box>
-            <Paper sx={styles.dataPaper}>
-                <TableContainer sx={styles.dataTable}>
-                    <Table stickyHeader aria-label="sticky table">
-                        <EnhancedTableHead
-                            order={order}
-                            orderBy={orderBy}
-                            onRequestSort={handleRequestSort}
-                            handleRoleFilterOpen={props.handleRoleFilterOpen}
-                        />
-                        <TableBody>
-                            {
-                                data.map((row, index) => {
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-                                    return (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="normal"
-                                            >
-                                                {row.emailAddress}
-                                            </TableCell>
-                                            <TableCell align="right">{row.inUse}</TableCell>
-                                            <TableCell align="right">{row.overdue}</TableCell>
-                                            <TableCell align="right">
-                                                <Box sx={{ height: '50px' }}>
-                                                    <FormControl sx={{ width: '150px' }}>
-                                                        <Select
-                                                            labelId="demo-simple-select-label"
-                                                            id="demo-simple-select"
-                                                            value={capitalizeFirstLetter(row.role)}
-                                                            label="Role"
-                                                            displayEmpty
-                                                            inputProps={{ 'aria-label': 'Without label' }}
-                                                            onChange={(e) => handleRoleUpdate(e.target.value, row.emailAddress)}
-                                                            renderValue={(selected) => {
-                                                                if (selected.length === 0) {
-                                                                  return capitalizeFirstLetter(row.role);
-                                                                }
-                                                                return selected
-                                                            }}
+            {
+                props.rows.data ?
+                    <>
+                        <Box sx={styles.searchFrame}>
+                            <Paper
+                                component="form"
+                                sx={styles.searchField}
+                            >
+                                <SearchIcon />
+                                <InputBase
+                                    sx={{ ml: 1, flex: 1 }}
+                                    value={searchedEmail}
+                                    onChange={(e) => handleEmailSearch(e.target.value)}
+                                    placeholder="search email..."
+                                    inputProps={{ 'aria-label': 'search email address' }}
+                                />
+                            </Paper>
+                        </Box>
+                        <Paper sx={styles.dataPaper}>
+                            <TableContainer sx={styles.dataTable}>
+                                <Table stickyHeader aria-label="sticky table">
+                                    <EnhancedTableHead
+                                        order={order}
+                                        orderBy={orderBy}
+                                        onRequestSort={handleRequestSort}
+                                        handleRoleFilterOpen={props.handleRoleFilterOpen}
+                                    />
+                                    <TableBody>
+                                        {
+                                            data.map((row, index) => {
+                                                const labelId = `enhanced-table-checkbox-${index}`;
+                                                return (
+                                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
+                                                        <TableCell
+                                                            component="th"
+                                                            id={labelId}
+                                                            scope="row"
+                                                            padding="normal"
                                                         >
-                                                            <MenuItem value="basic">Basic</MenuItem>
-                                                            <MenuItem value="admin">Admin</MenuItem>
-                                                            <MenuItem value="volunteer">Volunteer</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </Box>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            }
-                            {
-                                emptyRows > 0 && (
-                                    <TableRow style={{ height: 53 * emptyRows }}>
-                                        <TableCell colSpan={6} />
-                                    </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[10, 25, 100]}
-                    component="div"
-                    count={props.rows.data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>
+                                                            {row.emailAddress}
+                                                        </TableCell>
+                                                        <TableCell align="right">{row.inUse}</TableCell>
+                                                        <TableCell align="right">{row.overdue}</TableCell>
+                                                        <TableCell align="right">
+                                                            <Box sx={{ height: '50px' }}>
+                                                                <FormControl sx={{ width: '150px' }}>
+                                                                    <Select
+                                                                        labelId="demo-simple-select-label"
+                                                                        id="demo-simple-select"
+                                                                        value={capitalizeFirstLetter(row.role)}
+                                                                        label="Role"
+                                                                        displayEmpty
+                                                                        inputProps={{ 'aria-label': 'Without label' }}
+                                                                        onChange={(e) => handleRoleUpdate(e.target.value, row.emailAddress)}
+                                                                        renderValue={(selected) => {
+                                                                            if (selected.length === 0) {
+                                                                            return capitalizeFirstLetter(row.role);
+                                                                            }
+                                                                            return selected
+                                                                        }}
+                                                                    >
+                                                                        <MenuItem value="basic">Basic</MenuItem>
+                                                                        <MenuItem value="admin">Admin</MenuItem>
+                                                                        <MenuItem value="volunteer">Volunteer</MenuItem>
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </Box>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })
+                                        }
+                                        {
+                                            emptyRows > 0 && (
+                                                <TableRow style={{ height: 53 * emptyRows }}>
+                                                    <TableCell colSpan={6} />
+                                                </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 25, 100]}
+                                component="div"
+                                count={props.rows.data.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </Paper>
+                    </>
+                : <Typography sx={styles.noDataText}>There is no data to display yet.</Typography>
+            }
         </Box>
     );
 };
@@ -473,11 +471,11 @@ export default function Users() {
         cache: []
     });
 
+    const location = useLocation();
+    let sessionToken = location.state;
+
     const fetchRows = async () => {
-        const masterData = [
-            createData("bhphan@ualberta.ca", 3, 4, "basic"),
-            createData("phucphnvn@yahoo.com", 5, 6, "volunteer")
-        ]; // replace this with an api call to retrieve data and then use the createData function before calling setRows
+        const masterData: Array<Data> = await adminApi.getDishesStatusForEachUser(sessionToken);
         setRows({
             data: masterData,
             cache: masterData
@@ -786,6 +784,12 @@ const styles = {
         fontWeight: 'bold',
         color: '#464646',
         textAlign: 'center'
+    },
+
+    noDataText: {
+        marginTop: 20,
+        fontSize: '1.225rem',
+        color: '#464646'
     }
 };
 ///////////////////////////////////////////////////////////////////////

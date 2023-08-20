@@ -61,6 +61,10 @@ const router = createBrowserRouter([
         element: <HomeRoute />,
       },
       {
+        path: "/admin/users",
+        element: <Users />,
+      },
+      {
         path: "/borrow",
         element: <BorrowRoute />,
         loader: async ({ request }) => {
