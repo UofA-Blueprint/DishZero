@@ -4,6 +4,7 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 import { auth } from '../services/firebase'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import Logger from '../utils/logger'
+import { getUserById } from '../services/users'
 dotenv.config()
 
 const API_KEY = process.env.API_KEY || 'test'
@@ -122,7 +123,19 @@ export const verifyFirebaseToken = (req: Request, res: Response, next: NextFunct
     auth.verifySessionCookie(sessionCookies, true /** check revoked */)
         .then((decodedClaims) => {
             ;(req as CustomRequest).firebase = decodedClaims
-            next()
+        })
+        .then(async () => {
+            // fetch the user from firebase and update the role in the request object
+            // This logic will overide the role in the firebase session token with the role in the database
+            let user = await getUserById((req as CustomRequest).firebase.uid)
+            if (!user) {
+                Logger.error({
+                    message: 'User not found',
+                    statusCode: 404,
+                })
+                return res.status(400).json({ error: 'user_not_found' })
+            }
+            ;(req as CustomRequest).firebase.role = user.role
         })
         .catch((error) => {
             Logger.error({
