@@ -136,6 +136,7 @@ export const verifyFirebaseToken = (req: Request, res: Response, next: NextFunct
                 return res.status(400).json({ error: 'user_not_found' })
             }
             ;(req as CustomRequest).firebase.role = user.role
+            next()
         })
         .catch((error) => {
             Logger.error({
