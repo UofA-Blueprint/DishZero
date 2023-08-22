@@ -222,7 +222,9 @@ export const validateDishRequestBody = (dish: Dish) => {
 
 export const validateReturnDishRequestBody = (dish: Dish) => {
     const schema = Joi.object({
-        condition: Joi.string().valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright).required(),
+        condition: Joi.string()
+            .valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright)
+            .required(),
     }).required()
 
     return schema.validate(dish)
@@ -230,17 +232,24 @@ export const validateReturnDishRequestBody = (dish: Dish) => {
 
 export const validateUpdateConditonRequestBody = (body: Object) => {
     const schema = Joi.object({
-        condition: Joi.string().valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright).required(),
+        condition: Joi.string()
+            .valid(Condition.smallChip, Condition.largeCrack, Condition.shattered, Condition.alright)
+            .required(),
     }).required()
 
     return schema.validate(body)
 }
 
-export const updateBorrowedStatus = async (dish: Dish, userClaims: DecodedIdToken, borrowed: boolean, condition?: string) => {
+export const updateBorrowedStatus = async (
+    dish: Dish,
+    userClaims: DecodedIdToken,
+    borrowed: boolean,
+    condition?: string
+) => {
     // when borrowing, set userId and increase timesBorrowed
     let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
     let userId = borrowed ? userClaims.uid : null
-    let dishCondition;
+    let dishCondition
     if (condition) {
         dishCondition = condition
     } else {
