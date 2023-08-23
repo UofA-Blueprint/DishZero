@@ -81,7 +81,7 @@ export const verifyUserSession = async (req: Request, res: Response) => {
         user: user,
         userData: userData,
     })
-    return res.status(200).json({ user : { ...user, ...userData}})
+    return res.status(200).json({ user: { ...user, ...userData } })
 }
 
 export const updateUser = async (req: Request, res: Response) => {
