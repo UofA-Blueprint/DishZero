@@ -62,7 +62,6 @@ const NewUser = (dishesUsed) => {
 
 const GetDishes = (dishesUsed) =>{
   const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == "").length
-  console.log(checkedOutDishes)
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
@@ -155,7 +154,6 @@ const Footer = () => {
 
 export default () => {
   const { currentUser, sessionToken } = useAuth();
-  console.log(sessionToken)
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   // Fetch dishes transaction for the user
