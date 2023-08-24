@@ -15,7 +15,7 @@ const DishLog = ({ dishes }) => {
   return (
     <div id="dish-log" className="mt-3">
       {dishes.map((dish) => {
-        if (dish.returned.timestamp == null) {
+        if (dish.returned.timestamp == "") {
           return <DishCard dish={dish} token={sessionToken} key={dish.id} />;
         }
       }) }
@@ -61,7 +61,8 @@ const NewUser = (dishesUsed) => {
 
 
 const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == null).length
+  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == "").length
+  console.log(checkedOutDishes)
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
@@ -93,7 +94,7 @@ const GetDishes = (dishesUsed) =>{
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
-  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != null).length  
+  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != "").length  
   return (
     <div style={{ padding: "24px" }}>
       <div id="impact" className="sub-header-3">
@@ -154,6 +155,7 @@ const Footer = () => {
 
 export default () => {
   const { currentUser, sessionToken } = useAuth();
+  console.log(sessionToken)
   const [dishesUsed, setDishesUsed] = useState([]);
   var content;
   // Fetch dishes transaction for the user
