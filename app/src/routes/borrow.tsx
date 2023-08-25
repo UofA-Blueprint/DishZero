@@ -5,11 +5,8 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Login from "./login";
-import Cookies from "js-cookie";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
-import { config } from "../config";
 
 const Confirm = ({ show, onSubmit, onCancel, id }) => {
   return (
@@ -35,7 +32,6 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
 
 export default () => {
   const {currentUser, sessionToken} = useAuth()
-  console.log(sessionToken);
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
 
@@ -59,14 +55,14 @@ export default () => {
 
     axios
       .post(
-        `${config.serverUrl}/api/dish/borrow`,
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`,{},
         {
-          headers: { "x-api-key": config.apiKey, "session-token": sessionToken },
+          headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
           params: { qid: scanId },
         }
       )
       .then(function (response) {
-        console.log("response:", response.data);
+        navigate("/home")
       })
       .catch(function (error) {
         console.log(error);

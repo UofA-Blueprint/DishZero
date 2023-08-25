@@ -3,58 +3,36 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import mug from "../assets/mug_icon_contained.svg";
 import container from "../assets/dish_icon_contained.svg";
-import { config } from "../config";
 
-export default ({ dish, token }) => {
-  const options = { weekday: "long", year: "numeric", month: "long" };
-  const [dishAPI, setDishAPI] = useState([]);
+export default ({dish,token}) => {
+  const options = { weekday: 'long', year: 'numeric', month: 'long'};
+  const [dishAPI, setDishAPI] = useState([])     
+  const twoDaysInMs = 86400000 * 2
+    useEffect(()=>{
+        axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}, params:{"id":dish.dish}})
+        .then(function (response) {
+          setDishAPI(response.data.dish)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      },[])
 
-  useEffect(() => {
-    axios
-      .get(`${config.serverUrl}/api/dish`, {
-        headers: { "x-api-key": config.apiKey, "session-token": token },
-        params: { id: dish.dish },
-      })
-      .then(function (response) {
-        setDishAPI(response.data.dish);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
 
-  let icon
-  if (dishAPI["type"] === "mug") {
-    icon = mug;
-  } else {
-    icon = container;
-  }
+    const icon = dishAPI['type'] == 'mug' ? mug : container
 
-  const dishCheckOut = new Date(dish.timestamp);
-  const oneDay = 86400000 // milliseconds
-  const dishDue = new Date(dishCheckOut.getTime() + oneDay);
-  return (
-    <div className="dish-card mb-3">
-      <div className="type-icon">
-        <img src={icon}></img>
-      </div>
-      <div className="flex-column">
-        <p className="details-1" style={{ marginLeft: "17px" }}>
-          Return before {dishDue.toLocaleDateString("en-US")}
-        </p>
-        <p
-          className="first-letter small-text-1"
-          style={{ marginLeft: "17px", marginTop: "-16px" }}
-        >
-          {dishAPI["type"]} # {dishAPI["qid"]}
-        </p>
-        <p
-          className="details-1"
-          style={{ marginLeft: "17px", marginTop: "-16px" }}
-        >
-          Checked out on {dishCheckOut.toLocaleDateString("en-US")}
-        </p>
-      </div>
-    </div>
-  );
-};
+    const dishCheckOut = new Date(dish.timestamp)
+    const dishDue = new Date(dishCheckOut.getTime() + twoDaysInMs)
+    return (
+        <div className="dish-card mb-3">
+            <div className="type-icon">
+              <img src={icon}></img>
+            </div>
+            <div className="flex-column">
+                <p className="details-1" style={{marginLeft:'17px'}}>Return before {dishDue.toLocaleDateString("en-US")}</p>
+                <p className="first-letter small-text-1" style={{marginLeft:'17px', marginTop:'-16px'}}>{dishAPI['type']} # {dishAPI['qid']}</p>
+                <p className="details-1" style={{marginLeft:'17px', marginTop:'-16px'}} >Checked out on {dishCheckOut.toLocaleDateString("en-US")}</p>
+            </div>
+        </div>
+    )
+}

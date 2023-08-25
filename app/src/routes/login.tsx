@@ -7,8 +7,6 @@ import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { getIdToken, onAuthStateChanged, signInWithPopup, getAuth } from "firebase/auth";
-import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
 
@@ -16,7 +14,6 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 
 export default function Login() {
   const { login } = useAuth()
-  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   
   //Show spinner as soon as page is refreshed 
@@ -26,7 +23,6 @@ export default function Login() {
   //const {transaction_id} = useParams();
   const query = useQuery();
   const transaction_id = query.get("transaction_id");
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);

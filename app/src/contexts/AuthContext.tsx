@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, provider } from "../firebase.tsx";
 import { getIdToken, signInWithPopup } from "firebase/auth";
 import axios from "axios";
-import { config } from "../config.ts";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
@@ -62,10 +61,10 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await axios.get(
-        `${config.serverUrl}/api/users/session`,
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/users/session`,
         {
           headers: {
-            "x-api-key": config.apiKey,
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
         }
@@ -114,11 +113,11 @@ export function AuthProvider({ children }) {
       }
 
       const res = await axios.post(
-        `${config.serverUrl}/api/auth/login/`,
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login/`,
         { idToken: idToken },
         {
           headers: {
-            "x-api-key": config.apiKey,
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
           },
         }
       );
@@ -146,11 +145,11 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     const res = await axios.post(
-      `${config.serverUrl}/api/auth/logout/`,
+      `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/logout/`,
       {},
       {
         headers: {
-          "x-api-key": config.apiKey,
+          "x-api-key": `${process.env.REACT_APP_API_KEY}`,
           "session-token": sessionToken
         },
       }
