@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
-import { onAuthStateChanged, getAuth } from "firebase/auth";
 import "../styles/sidebar.css";
 import { Link } from "@mui/material";
 import how_it_works_icon from "../assets/how_it_works.png";
@@ -86,3 +85,4 @@ export const Sidebar = () => {
     </Menu>
   );
 };
+
