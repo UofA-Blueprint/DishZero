@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Condition, Dish } from '../models/dish'
+import { Condition } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import {
     getDish,
@@ -16,12 +16,15 @@ import {
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
-import { verifyIfUserAdmin } from '../services/users'
-import { registerTransaction, getLatestTransaction, getLatestTransactionBydishId } from '../services/transactions'
+import { verifyIfUserAdmin, verifyIfUserVolunteer } from '../services/users'
+import {
+    registerTransaction,
+    getLatestTransactionByTstamp,
+    getLatestTransactionByTstampAndDishId,
+} from '../services/transactions'
 import { getQrCode } from '../services/qrCode'
 import { db } from '../services/firebase'
 import nodeConfig from 'config'
-import { time } from 'console'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -251,6 +254,14 @@ export const returnDish = async (req: Request, res: Response) => {
     let { condition } = req.body.returned
 
     let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims) && !verifyIfUserVolunteer(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
     try {
         let qrCodeExits
         let associatedDish
@@ -286,7 +297,7 @@ export const returnDish = async (req: Request, res: Response) => {
             }
 
             // update the existing transaction with the returned property
-            ongoingTransaction = await getLatestTransaction(userClaims, parseInt(qid, 10))
+            ongoingTransaction = await getLatestTransactionByTstamp(parseInt(qid, 10))
             if (!ongoingTransaction) {
                 Logger.error({
                     module: 'dish.controller',
@@ -335,7 +346,7 @@ export const returnDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not borrowed' })
         }
-        ongoingTransaction = await getLatestTransactionBydishId(userClaims, id!)
+        ongoingTransaction = await getLatestTransactionByTstampAndDishId(id!)
         if (!ongoingTransaction) {
             Logger.error({
                 module: 'dish.controller',
