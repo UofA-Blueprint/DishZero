@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Login from "./login";
-import Cookies from "js-cookie";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 import { config } from "../config";

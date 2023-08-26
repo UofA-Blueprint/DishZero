@@ -156,7 +156,6 @@ const DishData = ({ origDishList }) => {
         if (i >= newSelItems.length) { return; }
         newSelItems[i] = !newSelItems[i];
         setSelectedList(newSelItems);
-        console.log(`Len: ${selectedList.length}; ${selectedList[i]}`);
     }
 
     // Handles the state change of the checkbox in table head

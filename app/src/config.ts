@@ -1,4 +1,4 @@
 export const config = {
-    "apiKey": "test",
-    "serverUrl": "http://localhost:8080",
+    "apiKey": process.env.REACT_APP_API_KEY,
+    "serverUrl": process.env.REACT_APP_BACKEND_ADDRESS
 }

@@ -21,7 +21,7 @@ type DishStatusByUser = {
 
 const headers = (token: string) => {
     return {
-        "x-api-key": "test",
+        "x-api-key": process.env.REACT_APP_API_KEY || "test",
         "session-token": token
     };
 };
