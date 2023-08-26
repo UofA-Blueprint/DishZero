@@ -2,7 +2,7 @@ const adminApi = {
     serverAddress: "http://localhost:3000",
 
     getAllDishes: async function() {
-        let allDishesReq = await fetch(`${this.serverAddress}/dish/all`);
+        const allDishesReq = await fetch(`${this.serverAddress}/dish/all`);
         if (allDishesReq.ok) {
             return await allDishesReq.json();
         }

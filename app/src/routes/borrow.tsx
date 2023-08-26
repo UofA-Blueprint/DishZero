@@ -1,15 +1,13 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
+import React from 'react';
 import { useNavigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import DishAPI from "../features/api";
-import { FirebaseContext } from "../firebase";
-import Login from "./login";
-import { GoogleAuth, FirebaseAuth } from "../firebase";
-import { signInWithPopup } from "firebase/auth";
+import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
 
 const Confirm = ({ show, onSubmit, onCancel, id }) => {
   return (
@@ -34,9 +32,10 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
 };
 
 export default () => {
+  const {currentUser, sessionToken} = useAuth()
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
-  const firebase = useContext(FirebaseContext);
+
   const navigate = useNavigate();
   const [Buffer, setBuffer] = useState(false);
   const onScan = confirm
@@ -51,19 +50,24 @@ export default () => {
       return false;
     }
     setConfirm(false);
-    const user = firebase?.user?.uid || null;
+    const user = currentUser?.id || null;
     console.log("USER: " + user);
-    const docId = await DishAPI.addDishBorrow(scanId, user);
-    setBuffer(true);
+    console.log("scanid", scanId);
 
-    console.log("doc ref" + docId);
-    const transactionID = docId;
-
-    if (!firebase?.user) {
-      console.log("USER IS NULL");
-      navigate(`/login/?transaction_id=${transactionID}`);
-    }
-    console.log("LOGGEd out user" + user);
+    axios
+      .post(
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`,{},
+        {
+          headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+          params: { qid: scanId },
+        }
+      )
+      .then(function (response) {
+        navigate("/home")
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   const onCancel = confirm

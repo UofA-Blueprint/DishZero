@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Container, Button, InputGroup } from 'react-bootstrap'
 import QrReader from "react-qr-scanner";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from 'react'
 
 import {
     faCameraRotate,

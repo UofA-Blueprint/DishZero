@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHouse, faBellConcierge, faUser, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 
 import "../styles/admin.css"
+import { Link as ReactRouterLink } from 'react-router-dom';
 export default () => {
     return (
         <>
@@ -18,29 +19,31 @@ export default () => {
                         <p className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-uppercase">
                             Admin Panel
                         </p>
+
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} href="/admin">
+                            <ReactRouterLink className={`nav-link mt-3`} to="/admin">
                                 <FontAwesomeIcon icon={faHouse} className="sidebar-icon" />
                                 Home
-                            </a>
+                            </ReactRouterLink>
                         </li>
+
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} href="/admin/dishes">
+                            <ReactRouterLink className={`nav-link mt-3`} to="/admin/dishes">
                                 <FontAwesomeIcon icon={faBellConcierge} className="sidebar-icon" />
                                 Dishes
-                            </a>
+                            </ReactRouterLink>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link mt-3" href="/admin/users">
+                            <ReactRouterLink className="nav-link mt-3" to="/admin/users">
                                 <FontAwesomeIcon icon={faUser} className="sidebar-icon" />
                                 Users
-                            </a>
+                            </ReactRouterLink>
                         </li>
                         <li className="nav-item">
-                            <a className={`nav-link mt-3`} aria-current="page" href="/admin/email">
+                            <ReactRouterLink className={`nav-link mt-3`} aria-current="page" to="/admin/email">
                                 <FontAwesomeIcon icon={faEnvelope} className="sidebar-icon" />
                                 Email
-                            </a>
+                            </ReactRouterLink>
                         </li>
                     </ul>
                 </div>

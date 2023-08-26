@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/index.css';
 import reportWebVitals from './reportWebVitals';
-import FirebaseProvider from './firebase'
 import Router from './routes'
 
 // Considering redux a service which provides a centralized state which can be accessed
@@ -14,9 +13,7 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-      <FirebaseProvider>
         <Router/>
-      </FirebaseProvider>
   </React.StrictMode>
 );
 

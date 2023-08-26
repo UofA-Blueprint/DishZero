@@ -8,9 +8,8 @@ export type Transaction = {
     }
     userId: string
     returned: {
-        broken: boolean
-        lost: boolean
-        timestamp?: Date
+        condition: string
+        timestamp?: string
     }
     timestamp: string
 }

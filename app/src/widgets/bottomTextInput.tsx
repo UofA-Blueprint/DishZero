@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { useLocation } from "react-router-dom"
 import { Container, Button, InputGroup } from 'react-bootstrap';
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faSearch
