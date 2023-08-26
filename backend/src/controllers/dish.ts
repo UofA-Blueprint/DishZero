@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Condition, Dish } from '../models/dish'
+import { Condition } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import {
     getDish,
@@ -25,7 +25,6 @@ import {
 import { getQrCode } from '../services/qrCode'
 import { db } from '../services/firebase'
 import nodeConfig from 'config'
-import { time } from 'console'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
