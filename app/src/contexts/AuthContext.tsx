@@ -101,8 +101,6 @@ export function AuthProvider({ children }) {
   async function login() {
     try {
       const credentials = await signInWithPopup(auth, provider);
-      console.log("credentials ", credentials);
-      console.log("firebase user", credentials.user);
       const idToken = await getIdToken(credentials.user);
 
       if (!credentials.user.email?.match("@ualberta.ca")) {
@@ -123,6 +121,7 @@ export function AuthProvider({ children }) {
       );
 
       const { data } = res;
+      // TODO remove later
       console.log("data is", data);
       console.log("session is", data.session);
       setSessionToken(data.session);
