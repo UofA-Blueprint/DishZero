@@ -96,6 +96,41 @@ export const enableEmail = async (req: Request, res: Response) => {
     }
 }
 
+export const updateEmailTemplate = async (req: Request, res: Response) => {
+    // only admin can save templates
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            message: 'User is not admin',
+            moduleName,
+            function: 'enableEmail',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    const template = req.body.template
+    if (!template) {
+        Logger.error({
+            moduleName,
+            message: 'No template provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    await db.collection(nodeConfig.get('collections.email')).doc('template').update({
+        template: template,
+    })
+
+    Logger.info({
+        message: 'Updated email template',
+        moduleName,
+        function: 'updateEmailTemplate',
+    })
+    return res.status(200).json({ template })
+}
+
 export const fetchEmailCron = async () => {
     let snapshot = await db.collection(nodeConfig.get('collections.cron')).doc('email').get()
     if (!snapshot.exists) {

@@ -54,7 +54,7 @@ function Email() {
                             </FormGroup>
                             <div>
                                 <Button variant="outlined">Reset</Button>
-                                <Button variant="contained">Save Changes</Button>
+                                <Button variant="contained" onClick={saveTemplate}>Save Changes</Button>
                             </div>
                         </Box>
                     </div>
@@ -62,6 +62,10 @@ function Email() {
             </BrowserView>
         </>
     );
+}
+
+function saveTemplate() {
+    alert('saved')
 }
 
 export default Email;

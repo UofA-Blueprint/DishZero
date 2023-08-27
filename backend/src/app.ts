@@ -12,6 +12,7 @@ import nodeConfig from 'config'
 import { cronRouter } from './routes/cron'
 import { EmailClient, initializeEmailCron } from './cron/email'
 import Logger from './utils/logger'
+import { emailRouter } from './routes/email'
 
 const app = express()
 dotenv.config()
@@ -53,5 +54,6 @@ app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/qrcode', qrCodeRouter)
 app.use('/api/cron', cronRouter)
+app.use('/api/email', emailRouter)
 
 export { app }

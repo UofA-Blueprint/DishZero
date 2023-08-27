@@ -31,6 +31,8 @@ export class EmailCron implements Cron {
                 } else {
                     console.log('Sending email with nodemailer')
                 }
+            }, {
+                scheduled: false, // to not auto start
             })
         }
     }
