@@ -5,7 +5,6 @@ import "../styles/QRScanner.css";
 import { Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation } from "@fortawesome/free-solid-svg-icons";
-import { config } from "../config";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -116,7 +115,7 @@ export default () => {
     setScanId(id);
     try {
       const response = await axios.post(
-        `${config.serverUrl}/api/dish/return?qid=${id}`,
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/return?qid=${id}`,
         {
           returned: {
             broken: false,
@@ -125,7 +124,7 @@ export default () => {
         },
         {
           headers: {
-            "x-api-key": config.apiKey,
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-cookie": sessionToken,
           },
         }
@@ -158,11 +157,11 @@ export default () => {
   const onSubmit = async (condition: string) => {
     try {
       const response = await axios.post(
-        `${config.serverUrl}/api/dish/condition?qid=${scanId}`,
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/condition?qid=${scanId}`,
         { condition },
         {
           headers: {
-            "x-api-key": config.apiKey,
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
         }

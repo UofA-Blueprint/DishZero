@@ -61,6 +61,10 @@ export const verifyIfUserAdmin = (userClaims: DecodedIdToken) => {
     return userClaims.role === 'admin'
 }
 
+export const verifyIfUserVolunteer = (userClaims: DecodedIdToken) => {
+    return userClaims.role === 'volunteer'
+}
+
 export const verifyRole = (role: string) => {
     return role === 'admin' || role === 'volunteer' || role === 'customer'
 }
