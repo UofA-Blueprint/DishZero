@@ -3,6 +3,8 @@ import { Transaction } from '../models/transaction'
 import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 import nodeConfig from 'config'
+import { getUserById } from './users'
+import { User } from '../models/user'
 
 export const getUserTransactions = async (userClaims: DecodedIdToken) => {
     let transactions = <Array<Transaction>>[]
@@ -140,4 +142,31 @@ export const getLatestTransactionBydishId = async (userClaims: DecodedIdToken, d
         ...snapshot.docs[0].data(),
         id: snapshot.docs[0].id,
     }
+}
+
+export const getOverdueUserEmails = async () => {
+    // get all transactions that are not returned
+    let snapshot = await db
+        .collection(nodeConfig.get('collections.transactions'))
+        .where('returned.timestamp', '==', '')
+        .get()
+
+    if (snapshot.empty) {
+        return []
+    }
+
+    // if older than 24 hours and not returned, add the user address to overdue
+    let userEmails = <Array<string>>[]
+    snapshot.docs.forEach(async (doc) => {
+        let data = doc.data() as Transaction
+        const borrowedTime = new Date(data.timestamp)
+        const hour = 3600000
+        const difference = Math.ceil((Date.now() - borrowedTime.getTime())/hour)
+        if (difference > 24) {
+            const user = await getUserById(data.userId) as User
+            userEmails.push(user.email)
+        }
+    }) 
+
+    return userEmails
 }

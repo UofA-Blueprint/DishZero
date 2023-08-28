@@ -1,9 +1,11 @@
 import { Cron, CronOptions } from './factory'
 import cron from 'node-cron'
 import { SendEmailCommand } from '@aws-sdk/client-ses'
-import { sesClient } from '../internal/sesClient'
+import { sendEmail, sesClient } from '../internal/sesClient'
 import { db } from '../internal/firebase'
 import nodeConfig from 'config'
+import { getOverdueUserEmails } from '../services/transactions'
+import { getTemplate } from '../services/email'
 
 export enum EmailClient {
     AWS = 'aws',
@@ -25,9 +27,17 @@ export class EmailCron implements Cron {
     async start(): Promise<void> {
         let enabled = await isEmailCronEnabled()
         if (enabled) {
-            this.job = cron.schedule(this.options.cronExpression, () => {
+            this.job = cron.schedule(this.options.cronExpression, async () => {
                 if (this.client === EmailClient.AWS) {
                     console.log('Sending email with AWS')
+                    // enable later 
+                    if (false) {
+                        // get overdue email addresses
+                        const recipients = await getOverdueUserEmails()
+                        // send the emails
+                        const {subject, content} = await getTemplate()
+                        sendEmail(recipients, subject, content)
+                    }
                 } else {
                     console.log('Sending email with nodemailer')
                 }
