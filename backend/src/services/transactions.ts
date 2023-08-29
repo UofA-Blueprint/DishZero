@@ -75,6 +75,50 @@ export const getLatestTransaction = async (userClaims: DecodedIdToken, qid: numb
     }
 }
 
+/**
+ * Fetches the latest transaction by timestamp and qid
+ * @param qid number
+ * @returns Promise<Transaction>
+ */
+export const getLatestTransactionByTstamp = async (qid: number) => {
+    let transactionQuery = await db
+        .collection(nodeConfig.get('collections.transactions'))
+        .where('dish.qid', '==', qid)
+        .where('returned.timestamp', '==', '')
+        .orderBy('timestamp', 'desc')
+        .limit(1)
+        .get()
+    if (transactionQuery.empty) {
+        return null
+    }
+    return {
+        ...transactionQuery.docs[0].data(),
+        id: transactionQuery.docs[0].id,
+    }
+}
+
+/**
+ * Fetches the latest transaction by timestamp and dishId
+ * @param dishId string
+ * @returns Promise<Transaction>
+ */
+export const getLatestTransactionByTstampAndDishId = async (dishId: string) => {
+    let transactionQuery = await db
+        .collection(nodeConfig.get('collections.transactions'))
+        .where('dish.id', '==', dishId)
+        .where('returned.timestamp', '==', '')
+        .orderBy('timestamp', 'desc')
+        .limit(1)
+        .get()
+    if (transactionQuery.empty) {
+        return null
+    }
+    return {
+        ...transactionQuery.docs[0].data(),
+        id: transactionQuery.docs[0].id,
+    }
+}
+
 export const getLatestTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
     let snapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
