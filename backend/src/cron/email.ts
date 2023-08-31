@@ -1,7 +1,7 @@
 import { Cron, CronOptions } from './factory'
 import cron from 'node-cron'
-import { SendEmailCommand } from '@aws-sdk/client-ses'
-import { sesClient } from '../internal/sesClient'
+// import { SendEmailCommand } from '@aws-sdk/client-ses'
+// import { sesClient } from '../internal/sesClient'
 import { db } from '../internal/firebase'
 import nodeConfig from 'config'
 

@@ -104,7 +104,7 @@ export const modifyUserRole = async (user: User, userClaims: DecodedIdToken) => 
     }
 }
 
-export const modifyUserData = async (user: User, userClaims: DecodedIdToken) => {
+export const modifyUserData = async (user: User, _: DecodedIdToken) => {
     const { error } = validateUserRequestBody(user)
     if (error) {
         throw new Error(error.details[0].message)
