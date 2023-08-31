@@ -65,7 +65,7 @@ export const updateEmail = async (req: Request, res: Response) => {
     // split fields by comma and trim
     let fields = query.split(',').map((field) => field.trim())
     // validate fields
-    if(!validateEmailFields(fields)) {
+    if (!validateEmailFields(fields)) {
         Logger.error({
             message: 'Invalid fields parameter',
             moduleName,
@@ -92,7 +92,7 @@ export const updateEmail = async (req: Request, res: Response) => {
             moduleName,
             function: 'updateEmail',
         })
-        return res.status(200).json({ message: "email_updated" })
+        return res.status(200).json({ message: 'email_updated' })
     } catch (error: any) {
         Logger.error({
             error: error,

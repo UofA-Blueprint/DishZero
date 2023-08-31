@@ -25,7 +25,7 @@ export class EmailCron implements Cron {
     async start(): Promise<void> {
         let enabled = await isEmailCronEnabled()
         if (enabled) {
-            this.job = cron.schedule(this.options.cronExpression, () => {
+            this.job = cron.schedule(this.options.cronExpression, async () => {
                 if (this.client === EmailClient.AWS) {
                     console.log('Sending email with AWS')
                 } else {
@@ -61,6 +61,6 @@ export const getEmailCron = () => {
     return emailCron
 }
 
-export const setEmailCron = (cron: Cron) => {
+export const setEmailCron = (cron: EmailCron) => {
     emailCron = cron
 }
