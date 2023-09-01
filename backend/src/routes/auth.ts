@@ -1,5 +1,5 @@
 import express from 'express'
-import { verifyApiKey, verifyFirebaseToken } from '../middlewares/auth'
+import { verifyApiKey } from '../middlewares/auth'
 import { login, logout } from '../controllers/auth'
 
 const router = express.Router()
