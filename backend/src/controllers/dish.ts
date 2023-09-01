@@ -29,6 +29,7 @@ import nodeConfig from 'config'
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
     let id = req.query['id']?.toString()
+    let qid = req.query['qid']?.toString()
 
     if (id) {
         try {
@@ -48,6 +49,34 @@ export const getDishes = async (req: Request, res: Response) => {
                 function: 'getDishes',
             })
             return res.status(200).json({ dish: dish.data() })
+        } catch (error: any) {
+            Logger.error({
+                message: 'Error when retrieving dish',
+                error,
+                statusCode: 500,
+                module: 'dish.controller',
+                function: 'getDishes',
+            })
+            return res.status(500).json({ error: 'internal_server_error', message: error.message })
+        }
+    } else if (qid) {
+        try {
+            let dish = await getDish(parseInt(qid, 10))
+            if (!dish) {
+                Logger.error({
+                    message: 'Dish does not exist',
+                    statusCode: 404,
+                    module: 'dish.controller',
+                    function: 'getDishes',
+                })
+                return res.status(400).json({ error: 'dish_not_found' })
+            }
+            Logger.info({
+                message: 'retrieved dish',
+                module: 'dish.controller',
+                function: 'getDishes',
+            })
+            return res.status(200).json({ dish })
         } catch (error: any) {
             Logger.error({
                 message: 'Error when retrieving dish',
