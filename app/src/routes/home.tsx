@@ -9,6 +9,8 @@ import "../styles/index.css";
 import axios from "axios";
 import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
+import {BallTriangle} from 'react-loader-spinner';
+import MobileBackground from '../assets/leaf-mobile-background.png';
 
 const DishLog = ({ dishes }) => {
   const { sessionToken } = useAuth();
@@ -22,6 +24,7 @@ const DishLog = ({ dishes }) => {
     </div>
   );
 };
+
 
 const NewUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed);
@@ -120,20 +123,20 @@ const Header = () => {
   return (
     <div>
       <Box sx={{ flexGrow: 1, position: "relative", height: "14vh" }}>
-        <AppBar
-          position="static"
-          sx={{
-            backgroundColor: "#68B49A",
-            height: "100%",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Typography sx={{ fontWeight: "500", fontSize: "20px", mb: "-24px" }}>
-            {" "}
-            Home{" "}
-          </Typography>
-        </AppBar>
+          <AppBar
+            position="relative"
+            sx={{
+              backgroundColor: "#68B49A",
+              height: "100%",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography sx={{ fontWeight: "500", fontSize: "20px", mb: "-24px" }}>
+              {" "}
+              Home{" "}
+            </Typography>
+          </AppBar>
       </Box>
     </div>
   );
@@ -142,8 +145,7 @@ const Header = () => {
 const Footer = () => {
   return (
     <div
-      className="position-absolute bottom-0 end-0"
-      style={{ padding: "24px" }}
+      style={{ padding: "24px", position:'fixed', bottom:'0px', right:"0px" }}
     >
       <ReactRouterLink to={"/borrow"}>
         <img src={scan_icon} alt="scan icon" />
@@ -153,8 +155,12 @@ const Footer = () => {
 };
 
 export default () => {
+  //Show spinner as soon as page is refreshed 
+  const [isLoading, setIsLoading] = useState(true);
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   var content;
   // Fetch dishes transaction for the user
   useEffect(() => {
@@ -164,6 +170,7 @@ export default () => {
       })
       .then(function (response) {
         setDishesUsed(response.data.transactions);
+        setIsLoading(false)
       })
       .catch(function (error) {
         console.log(error);
@@ -180,12 +187,46 @@ export default () => {
       content = ExistingUser(dishesUsed);
     }
   }
-
+  if (isLoading){
+    return(
+      <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
+      <BallTriangle
+          height={100}
+          width={100}
+          radius={5}
+          color="#4fa94d"
+          ariaLabel="ball-triangle-loading"
+          visible={true}
+        />
+      </Box>
+    )
+  }
   return (
     <div>
-      <Header />
+      <Header/>
       {content}
       <Footer />
     </div>
   );
 };
+
+const styles = {
+  rootDesktop: {
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  rootMobileLoader:{
+    width: '100vw',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundImage: `url(${MobileBackground})`,
+    backgroundSize: 'cover'
+
+  },
+}
