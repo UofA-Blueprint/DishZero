@@ -72,7 +72,6 @@ The dish routes are defined in the `src/routes/dish.ts` file. The routes are mou
     id: if set, then only the dish with this id will be returned
     qid: if set, then only the dish with this qid will be returned
     ```
-    ```
 
 - #### POST `/api/dish/create`
     This route will create a new dish in the database only if user is an admin.
