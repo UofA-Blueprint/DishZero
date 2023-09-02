@@ -13,7 +13,12 @@ import { AppHeader } from "../widgets/appHeader";
 import Scanner from "../widgets/scanner";
 import CameraInput from "../widgets/cameraScanner";
 import BottomTextInput from "../widgets/bottomTextInput";
+import { Button, Typography, Box, Avatar } from '@mui/material';
 import { useAuth } from "../contexts/AuthContext";
+import {BallTriangle} from 'react-loader-spinner';
+import plateIcon from "../assets/dish_icon_contained.svg";
+import mugIcon from "../assets/mug_icon_contained.svg";
+import MobileBackground from '../assets/leaf-mobile-background.png';
 /*const Report = ({ show, onSubmit, onCancel, id }) => {
     const conditions = ["Small Chip/Crack", "Large chunk", "Shattered"]
     const [selectedCondition, setSelectedCondition] = useState("");
@@ -207,8 +212,13 @@ const Return = () => {
     const [scanId, setScanId] = useState("")
     const [showNotif, setShowNotif] = useState(false);
     const [popUp, setPopUp] = useState(false);
+    const [dishType, setDishType] = useState('');
+    const [qid, setQid] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [dishIcon, setDishIcon] = useState();
     const [notifType, setNotifType] = useState("returned");
-    const [error, setError] = useState(false);
+    const [error, setError] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const { currentUser, sessionToken } = useAuth();
 
     const navigate = useNavigate()
@@ -234,43 +244,188 @@ const Return = () => {
         setPopUp(true);
     }
 
-    const onSubmit = (condition: string) => {
+    const onSubmit = async (condition: string) => {
         console.log("peewoop") //Remove this
         
         console.log("Session-token: ", sessionToken);
         let dishID;
 
-        axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/return?qid=${condition}`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":sessionToken}})
+        console.log("API-KEY: ", process.env.REACT_APP_API_KEY);
+
+        if (!(/^\d+$/.test(condition))){
+          const matches = condition.match(/[0-9]+$/);
+          if (matches){
+            condition = String(parseInt(matches[0], 10));
+          }
+        }
+
+        console.log("Condition: ", condition);
+
+        setQid(condition);
+        setIsLoading(true);
+
+       await axios
+      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {
+        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+        params: {qid: condition}
+      })
+      .then(function (response) {
+        console.log(response)
+        setDishType(response.data.dish.type)
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+      //let icon = eval(dishType + "Icon") Trying to create a dynamic variable which does work but does not properly reference the imported image variable. 
+      //How are we gonna handle other dish types?
+      //setDishIcon(icon); 
+          
+
+        
+
+        
+
+        await axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/return`, {
+           
+            "returned": {
+              "condition": "alright",
+            }
+         
+        },
+        {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":sessionToken, 'Content-Type': 'application/json'},
+         params: {qid: condition},
+           })
         .then(function (response) {
-            
-          console.log(response);
-            
+
+          setIsLoading(false);
+          setPopUp(true)
 
         })
         .catch(function (error) {
             // handle error
-            console.log(error);
-            setError(true);
+            console.log(error.response);
+            setError(error.response.message);
+            setPopUp(true);
             
         })
 
         
         
     
-        setPopUp(false);
-        if (showNotif)
-            setShowNotif(false);
-        setNotifType("reported");
-        setShowNotif(true);
+        
     }
+
+    
     return(
         
-        <div style={{height: '100%', width: '100%', flex: 1}}>
-            <AppHeader title = {'Return Dishes'} className = {"headerDiv"}/>
-            <CameraInput style = {{height: '100%'}} onSubmit={onSubmit}/>
-            <BottomTextInput onSubmit = {onSubmit}/>
-        </div>
+          
+            <div style={{height: '100%', width: '100%', flex: 1}}>
+              <AppHeader title = {'Return Dishes'} className = {"headerDiv"}/>
+              {(isLoading) ?
+              
+                <Box sx={isMobile ? stylesConst.rootMobileLoader : stylesConst.rootDesktop}>
+                  <BallTriangle
+                      height={100}
+                      width={100}
+                      radius={5}
+                      color="#4fa94d"
+                      ariaLabel="ball-triangle-loading"
+                      visible={true}
+                    />
+                </Box> : <></>}
+              {(popUp) ? 
+                <Box sx={stylesConst.boxContainer}>
+                  
+                    <Avatar
+                      src={dishType === 'plate' ? plateIcon : mugIcon}
+                      sx={{marginRight: 2.5}}
+                      alt="Sign In Button Logo"
+                    />
+                    <div style={stylesConst.divContainer}>
+                      {
+                        (error) ? 
+                        <div>
+                          <Typography sx={stylesConst.errorText}>
+                            {error} 
+                          </Typography >
+                          <Typography sx={stylesConst.errorText}>
+                            Failed to return
+                          </Typography >
+                        </div> :
+                          <Typography sx={stylesConst.successText}>
+                            Successfully returned
+                          </Typography >
+                      }
+                      <Typography variant="h6" sx={stylesConst.text}>
+                        {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
+                      </Typography>
+                    </div>
+                </Box>:<></> }
+              <CameraInput style = {{height: '100%'}} onSubmit={onSubmit}/>
+              <BottomTextInput onSubmit = {onSubmit}/>
+            </div>
+          
     )
 }
 
 export default Return
+
+const stylesConst = {
+  boxContainer: {
+    width: "85%",
+    height: "5%",
+    display: 'flex',
+    position: 'absolute',
+    bottom: '10px',
+    alignItems: 'center',
+    borderRadius: 5,
+    borderWidth: 1,
+    flexDirection: "row",
+    padding: 5,
+    justifyContent: "center",
+  },
+
+  divContainer: {
+    
+    flexDirection: 'column'
+   
+  },
+
+  errorText:{
+    fontSize: '10px',
+    fontFamily: 'Poppins, sans-serif',
+    color: 'red',
+  },
+
+  successText: {
+    fontSize: '10px',
+    fontFamily: 'Poppins, sans-serif',
+    color: 'green',
+  },
+
+  text: {
+    fontSize: '15px',
+    fontFamily: 'Poppins, sans-serif',
+    color: '#4c4242',
+  },
+
+  rootDesktop: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2
+  },
+  rootMobileLoader:{
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'grey',
+    zIndex: 3
+  },
+
+} as const;
