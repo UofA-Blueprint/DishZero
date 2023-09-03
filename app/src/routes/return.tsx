@@ -252,6 +252,7 @@ const Return = () => {
 
         console.log("API-KEY: ", process.env.REACT_APP_API_KEY);
 
+        setDishType('');
         if (!(/^\d+$/.test(condition))){
           const matches = condition.match(/[0-9]+$/);
           if (matches){
@@ -298,22 +299,19 @@ const Return = () => {
            })
         .then(function (response) {
 
+          setError('');
           setIsLoading(false);
           setPopUp(true)
 
         })
         .catch(function (error) {
             // handle error
-            console.log(error.response);
-            setError(error.response.message);
+            console.log(error.response.data.message);
+            setError(error.response.data.message);
+            setIsLoading(false);
             setPopUp(true);
             
-        })
-
-        
-        
-    
-        
+        })        
     }
 
     
@@ -373,17 +371,20 @@ export default Return
 
 const stylesConst = {
   boxContainer: {
-    width: "85%",
+    width: "60%",
     height: "5%",
     display: 'flex',
-    position: 'absolute',
-    bottom: '10px',
-    alignItems: 'center',
+    position: 'fixed',
+    bottom: '100px',
+    left: '20%',
+    alignItems: "center",
     borderRadius: 5,
     borderWidth: 1,
+    backgroundColor: 'white',
     flexDirection: "row",
     padding: 5,
-    justifyContent: "center",
+    justifyContent: "space-evenly",
+    zIndex: 999
   },
 
   divContainer: {
@@ -416,16 +417,17 @@ const stylesConst = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 2
+    zIndex: 50
   },
   rootMobileLoader:{
     width: '100%',
     height: '100%',
+    position: 'fixed',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'grey',
-    zIndex: 3
+    zIndex: 50
   },
 
 } as const;

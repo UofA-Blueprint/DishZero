@@ -16,13 +16,14 @@
 }
 .qr-scanner-wrapper{
   /* min-width: 30rem; */
-  height: 100% !important;
+  height: 75% !important;
   position: absolute;
   top: 15vh;
   bottom: 0px;
   left:0px;
   right: 0px;
   flex-direction: column;
+  /*background-color: grey;*/
 }
 .scanner-wrapper {
   background-color: rgb(254,255,254);
@@ -37,9 +38,9 @@
 
 .qr-scanner-placeholder{
   border-radius: 10px;
-  height: 52vh !important;
+  height: 100% !important;
   width: 100% !important;
-  /* background-color: rgba(0,0,0,0.7); */
+  /*background-color: red;*/
   color: black;
   /* z-index: 100; */
 
@@ -48,6 +49,7 @@
   width: 100%;
   height: 100%;
   display:flex;
+  /*background-color: blue;*/
   justify-content: center;
   align-items: center;
 }

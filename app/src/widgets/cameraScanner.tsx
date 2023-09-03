@@ -63,7 +63,8 @@ const CameraInput = (props) => {
                     {showQr ? (
                         <QrReader
                             delay={100}
-                            //style={style}
+                            style={{position: 'fixed',
+                                     height: '85%'}}
                             onError={handleError}
                             onScan={handleScan}
                             // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
