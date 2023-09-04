@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom";
 import React from 'react';
 //import Scanner from "../widgets/scanner"
@@ -236,6 +236,15 @@ const Return = () => {
         }
     }*/
 
+    useEffect(()=>{
+      const timer = setTimeout( () => {
+        if(popUp){
+          setPopUp(false)
+        }
+      }, 3000)
+      return () => clearTimeout(timer);
+    }, [popUp])
+
     const onCancel = popUp ? () => {
         setPopUp(false)
     } : null
@@ -319,7 +328,7 @@ const Return = () => {
         
           
             <div style={{height: '100%', width: '100%', flex: 1}}>
-              <AppHeader title = {'Return Dishes'} className = {"headerDiv"}/>
+              {(isLoading) ? <></> : <AppHeader title = {'Return Dishes'} className = {"headerDiv"} /> }
               {(isLoading) ?
               
                 <Box sx={isMobile ? stylesConst.rootMobileLoader : stylesConst.rootDesktop}>
@@ -360,8 +369,8 @@ const Return = () => {
                       </Typography>
                     </div>
                 </Box>:<></> }
-              <CameraInput style = {{height: '100%'}} onSubmit={onSubmit}/>
-              <BottomTextInput onSubmit = {onSubmit}/>
+              <CameraInput setLoading={setIsLoading} style = {{height: '100%'}} onSubmit={onSubmit}/>
+              <BottomTextInput disabled = {isLoading} onSubmit = {onSubmit}/>
             </div>
           
     )
@@ -422,12 +431,16 @@ const stylesConst = {
   rootMobileLoader:{
     width: '100%',
     height: '100%',
-    position: 'fixed',
+    position: 'absolute',
+    top:0,
+    bottom:0,
+    left:0,
+    right:0,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'grey',
-    zIndex: 50
+    backgroundColor: 'white',
+    zIndex: 1000
   },
 
 } as const;

@@ -17,7 +17,7 @@ const BottomTextInput = (props) => {
     console.log("woo");
     const handleSubmit = (e) => {
         
-    
+        console.log('BhamWham');
         e.preventDefault();
         props.onSubmit(input)
         return false;
@@ -34,7 +34,7 @@ const BottomTextInput = (props) => {
 
                         <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
 
-                        <Button onSubmit={handleSubmit} type="submit" className="search-button">
+                        <Button onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button">
                             Enter
                         </Button>
 

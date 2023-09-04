@@ -18,6 +18,8 @@ const CameraInput = (props) => {
     const [frontCamera, setFrontCamera] = useState(false)
 
     const style = { height: "100%" };
+
+
     const handleError = (err: any) => {
         console.error(err.message)
         if (err.message === "Permission denied") {
@@ -66,7 +68,10 @@ const CameraInput = (props) => {
                             style={{position: 'fixed',
                                      height: '85%'}}
                             onError={handleError}
-                            onScan={handleScan}
+                            onScan={(data) => {
+                                setFrontCamera(false);
+                                handleScan(data);
+                            }}
                             // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
                             facingMode={frontCamera ? "user" : "environment"}
                         />

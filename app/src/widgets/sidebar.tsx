@@ -29,6 +29,8 @@ export const Sidebar = () => {
     }
   }, [currentUser]);
 
+  
+
   return (
     <Menu>
       <p
