@@ -241,7 +241,7 @@ const Return = () => {
         if(popUp){
           setPopUp(false)
         }
-      }, 3000)
+      }, 5000)
       return () => clearTimeout(timer);
     }, [popUp])
 

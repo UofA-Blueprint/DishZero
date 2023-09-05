@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Button, InputGroup } from 'react-bootstrap'
 import QrReader from "react-qr-scanner";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -18,6 +18,10 @@ const CameraInput = (props) => {
     const [frontCamera, setFrontCamera] = useState(false)
 
     const style = { height: "100%" };
+
+    /*useEffect(() => {
+        console.log(showQr)
+    },[showQr])*/
 
 
     const handleError = (err: any) => {
@@ -59,18 +63,29 @@ const CameraInput = (props) => {
                     </Button>
                 </div>
 
-                <div className="qr-scanner-tag" onClick={() => setShowQr(!showQr)}>
+                <div className="qr-scanner-tag" onClick={() => {
+                    
+                    console.log(showQr);
+                    setShowQr(!showQr)
+                    }}>
                     {/* <div className="crosshair"/> */}
 
                     {showQr ? (
                         <QrReader
-                            delay={100}
+                            
+                            delay = {100000} //should we keep this
                             style={{position: 'fixed',
                                      height: '85%'}}
                             onError={handleError}
                             onScan={(data) => {
-                                setFrontCamera(false);
-                                handleScan(data);
+
+                                if(data != null){
+                                    setShowQr(false);
+                                    handleScan(data);
+
+                                }
+
+                                
                             }}
                             // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
                             facingMode={frontCamera ? "user" : "environment"}
