@@ -31,7 +31,7 @@ const adminApi = {
 
     getAllDishes: async function() {
         try {
-            let allDishesReq = await fetch(`${this.serverAddress}/dish/all`);
+            let allDishesReq = await fetch(`${this.serverAddress}/api/dish`);
             if (allDishesReq.ok) {
                 return await allDishesReq.json();
             }
