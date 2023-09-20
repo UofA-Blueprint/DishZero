@@ -181,7 +181,7 @@ The transaction routes are defined in the `src/routes/transaction.ts` file. The 
 
 ### User
 the user routes are defined in the `src/routes/user.ts` file. The routes are mounted on the `/users` path. The routes are:
-- #### GET `/api/users?role=`
+- #### GET `/api/users?role=&id=`
     This route returns all the users in the database only if the user is admin.
     
     headers:
@@ -192,6 +192,7 @@ the user routes are defined in the `src/routes/user.ts` file. The routes are mou
     query:
     ```
     role: only return users with this role
+    id: return the user with this id
     ```
 
 - #### GET `api/users/session`
