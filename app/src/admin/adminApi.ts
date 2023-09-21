@@ -69,9 +69,9 @@ const adminApi = {
         try {
             let result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
-            if (dishes) {
+            if (dishes.length > 0) {
                 const users = await this.getUsers(token);
-                if (users) {
+                if (users.length > 0) {
                     for (let user of users) {
                         let count = 0;
                         for (let dish of dishes) {
@@ -97,9 +97,9 @@ const adminApi = {
         try {
             let result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
-            if (dishes) {
+            if (dishes.length > 0) {
                 const users = await this.getUsers(token);
-                if (users) {
+                if (users.length > 0) {
                     for (let user of users) {
                         let count = 0;
                         for (let dish of dishes) {

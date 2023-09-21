@@ -1,6 +1,7 @@
 ////////////////////////// Import Dependencies //////////////////////////
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import { 
     Dialog,
     Select,
@@ -471,15 +472,21 @@ export default function Users() {
         cache: []
     });
 
-    const location = useLocation();
-    let sessionToken = location.state;
+    const { currentUser, sessionToken } = useAuth();
 
     const fetchRows = async () => {
-        const masterData: Array<Data> = await adminApi.getDishesStatusForEachUser(sessionToken);
-        setRows({
-            data: masterData,
-            cache: masterData
-        });
+        if (sessionToken) {
+            const masterData: Array<Data> = await adminApi.getDishesStatusForEachUser(sessionToken);
+            setRows({
+                data: masterData,
+                cache: masterData
+            });
+        } else {
+            setRows({
+                data: [],
+                cache: []
+            });
+        }
     };
 
     useEffect(() => {
