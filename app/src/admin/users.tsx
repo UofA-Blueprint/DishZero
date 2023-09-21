@@ -37,7 +37,7 @@ import {
     Search as SearchIcon
 } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import adminApi from "../apis/admin.api";
+import adminApi from "./adminApi";
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////

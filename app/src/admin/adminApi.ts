@@ -29,9 +29,14 @@ const headers = (token: string) => {
 const adminApi = {
     serverAddress: process.env.REACT_APP_BACKEND_ADDRESS,
 
-    getAllDishes: async function() {
+    getAllDishes: async function(token: string) {
         try {
-            let allDishesReq = await fetch(`${this.serverAddress}/api/dish`);
+            let allDishesReq = await fetch(
+                `${this.serverAddress}/api/dish`, 
+                {
+                    headers: headers(token)
+                }
+            );
             if (allDishesReq.ok) {
                 return await allDishesReq.json();
             }
@@ -63,7 +68,7 @@ const adminApi = {
     getInUseDishesForEachUser: async function (token: string) {
         try {
             let result: Array<StatusItem> = [];
-            const dishes = await this.getAllDishes();
+            const dishes = await this.getAllDishes(token);
             if (dishes) {
                 const users = await this.getUsers(token);
                 if (users) {
@@ -91,7 +96,7 @@ const adminApi = {
     getOverdueDishesForEachUser: async function (token: string) {
         try {
             let result: Array<StatusItem> = [];
-            const dishes = await this.getAllDishes();
+            const dishes = await this.getAllDishes(token);
             if (dishes) {
                 const users = await this.getUsers(token);
                 if (users) {

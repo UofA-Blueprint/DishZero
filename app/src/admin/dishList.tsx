@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Toolbar from './toolbar';
-import adminApi from "../apis/admin.api";
+import adminApi from "./adminApi";
 import { Simulate } from "react-dom/test-utils";
 import load = Simulate.load;
 import { StyledDishDataLayout } from './styledDishes';
