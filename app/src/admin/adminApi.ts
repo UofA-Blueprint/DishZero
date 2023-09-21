@@ -31,14 +31,14 @@ const adminApi = {
 
     getAllDishes: async function(token: string) {
         try {
-            let allDishesReq = await fetch(
+            const allDishesResponse = await fetch(
                 `${this.serverAddress}/api/dish`, 
                 {
                     headers: headers(token)
                 }
             );
-            if (allDishesReq.ok) {
-                return await allDishesReq.json();
+            if (allDishesResponse.ok) {
+                return await allDishesResponse.json();
             }
         } catch (err) {
             // encountered error
