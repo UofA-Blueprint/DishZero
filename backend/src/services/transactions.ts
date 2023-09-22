@@ -31,7 +31,7 @@ export const getAllTransactions = async () => {
         transactions.push({
             id: doc.id,
             dish: data.dish ? data.dish.id : null,
-            userId: data.user,
+            userId: data.userId,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp : null,
         })
