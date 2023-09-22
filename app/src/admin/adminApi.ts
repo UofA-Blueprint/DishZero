@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 enum DishStatus {
     overdue = 'overdue',
     inUse = 'in_use',
@@ -30,39 +32,33 @@ const adminApi = {
     serverAddress: process.env.REACT_APP_BACKEND_ADDRESS,
 
     getAllDishes: async function(token: string) {
-        try {
-            const allDishesResponse = await fetch(
-                `${this.serverAddress}/api/dish`, 
-                {
-                    headers: headers(token)
-                }
-            );
-            if (allDishesResponse.ok) {
-                return await allDishesResponse.json();
+        const response: any = await axios.get(
+            `${this.serverAddress}/api/dish`, 
+            {
+                headers: headers(token)
             }
-        } catch (err) {
-            // encountered error
-            console.log(`Couldn't get the dish data`);
-            return [];
-        }
+        ).then(
+            res => { return res; }
+        ).catch(
+            err => { console.log(`Failed to get dishes from database. ${err}.`); }
+        );
+        const dishes = response.data.dishes;
+        return dishes;
     },
 
     getUsers: async function (token: string) {
-        try {
-            const getUsersResponse = await fetch(
-                `${this.serverAddress}/api/users`, 
-                {
-                    headers: headers(token)
-                }
-            );
-            if (getUsersResponse.ok) {
-                return await getUsersResponse.json();
+        const response: any = await axios.get(
+            `${this.serverAddress}/api/users`, 
+            {
+                headers: headers(token)
             }
-        }
-        catch (err) {
-            console.log(`ERROR: could not retrieve users from backend. ${err}.`);
-            return [];
-        }
+        ).then(
+            res => { return res; }
+        ).catch(
+            err => { console.log(`Failed to get users from database. ${err}.`) }
+        );
+        const users = response.data.users;
+        return users;
     },
 
     getInUseDishesForEachUser: async function (token: string) {
@@ -127,7 +123,7 @@ const adminApi = {
             const overdueDishesByUser = await this.getOverdueDishesForEachUser(token);
             const users = await this.getUsers(token);
             let result: Array<DishStatusByUser> = [];
-            if (inUseDishesByUser && overdueDishesByUser) {
+            if (inUseDishesByUser.length > 0 && overdueDishesByUser.length > 0) {
                 for (let i = 0; i < users.length; i++) {
                     result.push({
                         emailAddress: users[i].email,
