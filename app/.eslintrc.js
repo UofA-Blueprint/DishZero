@@ -3,9 +3,10 @@ module.exports = {
       "node": true,
       "es2021": true
   },
-  "extends": "eslint:recommended",
-  "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-  },
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  rules: {
+    'no-console': 'warn',
+  }
 }
