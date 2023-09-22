@@ -47,8 +47,8 @@ const DishData = ({ origDishList }) => {
         })
     }
     const CreateFilter = () => {
-        var dishType = [""]
-        var dishStatus = [""]
+        let dishType = [""]
+        let dishStatus = [""]
         if (dishTypeFilter.Mug) {
             dishType.push("Mug");
         }
@@ -77,7 +77,7 @@ const DishData = ({ origDishList }) => {
     }
 
     const loadDataFromBackend = async function () {
-        let dishData = await adminApi.getAllDishes();
+        const dishData = await adminApi.getAllDishes();
         setDishList(dishData);
         resetStateVars(dishData);
     }

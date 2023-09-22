@@ -12,7 +12,7 @@ export default function ({ show, onCancel }) {
     useEffect(() => {
         if (file != null) {
             addFromCSV();
-        };
+        }
     })
     
     const fileButton = useRef<HTMLInputElement | null>(null);
@@ -41,7 +41,7 @@ export default function ({ show, onCancel }) {
         reader.onload = function (e) {
             const data = (e.target!.result as string).split("\r\n");
             data.forEach(row => {
-                var dish = row.split(",");
+                const dish = row.split(",");
                 // skip header if any
                 if (dish[0].toLowerCase().indexOf("qr") > -1) {
                     return;
