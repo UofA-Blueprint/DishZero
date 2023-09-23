@@ -1,3 +1,5 @@
+import { User } from "./user"
+
 // need more info on returned type
 export type Transaction = {
     id?: string
@@ -6,10 +8,10 @@ export type Transaction = {
         id: string
         type: string
     }
-    userId: string
     returned: {
         condition: string
         timestamp?: string
     }
-    timestamp: string
+    timestamp: string,
+    user: User | undefined
 }
