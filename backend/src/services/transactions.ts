@@ -15,7 +15,7 @@ export const getUserTransactions = async (userClaims: DecodedIdToken) => {
         transactions.push({
             id: doc.id,
             dish: data.dish ? data.dish.id : null,
-            userId: data.user,
+            user: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp : null,
         })
@@ -31,7 +31,7 @@ export const getAllTransactions = async () => {
         transactions.push({
             id: doc.id,
             dish: data.dish ? data.dish.id : null,
-            userId: data.userId,
+            user: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp : null,
         })
