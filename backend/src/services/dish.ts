@@ -1,7 +1,6 @@
 import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
-import { Condition, Dish, DishSimple, DishStatus, DishTableVM } from '../models/dish'
-import { Transaction } from '../models/transaction'
+import { Condition, Dish, DishStatus } from '../models/dish'
 import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 

@@ -73,6 +73,6 @@ export const getEmailCron = () => {
     return emailCron
 }
 
-export const setEmailCron = (cron: Cron) => {
+export const setEmailCron = (cron: EmailCron) => {
     emailCron = cron
 }

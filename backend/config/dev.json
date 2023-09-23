@@ -30,7 +30,7 @@
     "cron": {
         "enabled": true,
         "default": {
-            "email": "*/5 * * * * *"
+            "email": "*/30 * * * * *"
         }
     },
     "aws": {

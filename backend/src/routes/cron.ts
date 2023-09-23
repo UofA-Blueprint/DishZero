@@ -1,6 +1,6 @@
 import express from 'express'
 import { verifyApiKey, verifyFirebaseToken } from '../middlewares/auth'
-import { enableEmail, getEmail, updateEmail } from '../controllers/email'
+import { enableEmail, getEmail, updateEmail } from '../controllers/cron/email'
 
 const router = express.Router()
 
