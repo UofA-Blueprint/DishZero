@@ -37,12 +37,12 @@ export class EmailCron implements Cron {
                         // send the emails
                         const {subject, body} = await getTemplate()
                         sendEmail(recipients, subject, body)
+                    } else {
+                        console.log("sending email cron active")
                     }
                 } else {
                     console.log('Sending email with nodemailer')
                 }
-            }, {
-                scheduled: false, // to not auto start
             })
         }
     }
