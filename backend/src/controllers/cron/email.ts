@@ -184,8 +184,8 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
     }
 
     await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
-            subject,
-            body
+        subject,
+        body,
     })
 
     Logger.info({
@@ -196,6 +196,50 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
     return res.status(200).json({ subject, body })
 }
 
+export const updateEmailCronExpression = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            message: 'User is not admin',
+            moduleName,
+            function: 'updateEmail',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+    
+    const days = req.body.days
+    const daysArr =  ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    if (!validateUpdateEmailBody(days, daysArr)) {
+        Logger.error({
+            moduleName,
+            message: 'days request bad',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    let cronExpression = "0 0 12 * * " // 12 am for the set days, can change later to change time too
+    let setDays = []
+    for (let day of daysArr) {
+        if (days[day]) {
+            setDays.push(day.substring(0, 3).toUpperCase())
+        }
+    }
+    cronExpression += setDays.join(",")
+
+    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
+        expression: cronExpression,
+    })
+
+    Logger.info({
+        message: 'Updated cron expression',
+        moduleName,
+        function: 'updateCronExpression',
+    })
+    return res.status(200).json({ days })
+
+}
 export const fetchEmailCron = async () => {
     let snapshot = await db.collection(nodeConfig.get('collections.cron')).doc('email').get()
     if (!snapshot.exists) {

@@ -27,7 +27,7 @@
         "cron": "cron"
     },
     "cron": {
-        "enabled": true,
+        "enabled": false,
         "default": {
             "email": "*/5 * * * * *"
         }
