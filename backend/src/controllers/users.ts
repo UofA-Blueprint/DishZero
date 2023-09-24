@@ -16,7 +16,7 @@ import Logger from '../utils/logger'
 // get all users information from firebase
 export const getUsers = async (req: Request, res: Response) => {
     let role = req.query['role']?.toString()
-
+    const id = req.query['id']?.toString()
     // only send users information if user is admin
 
     let userClaims = (req as CustomRequest).firebase
@@ -43,7 +43,22 @@ export const getUsers = async (req: Request, res: Response) => {
             })
             return res.status(500).json({ error: 'internal_server_error' })
         }
-    } else {
+    } else if (id) {
+        try {
+            let user = await getUserById(id)
+            Logger.info({
+                message: `Retrieved user with id ${id}`,
+            })
+            return res.status(200).json({ user })
+        } catch (error) {
+            Logger.error({
+                error: error,
+                message: 'Error when fetching user from firebase',
+                statusCode: 500,
+            })
+            return res.status(500).json({ error: 'internal_server_error' })
+        }
+    }else {
         try {
             let users = await getAllUsers()
             Logger.info({
