@@ -83,6 +83,7 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface Data {
+    userId: string;
     emailAddress: string;
     inUse: number;
     overdue: number;
@@ -148,10 +149,6 @@ interface RoleFilterDialogProps {
     handleClose: () => void;
     role: String;
     handleRoleChange: (arg0: string) => void;
-}
-
-function capitalizeFirstLetter(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
 }
 //////////////////////////////////////////////////////////////
 
@@ -258,6 +255,8 @@ const MainFrame = (props: MainframeProps) => {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleRoleUpdate = props.handleRoleUpdate;
 
+    const { currentUser } = useAuth();
+
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
         property: keyof Data,
@@ -292,7 +291,7 @@ const MainFrame = (props: MainframeProps) => {
                 page * rowsPerPage + rowsPerPage,
             )
         );
-    }, [order, orderBy, page, rowsPerPage]);
+    }, [order, orderBy, page, rowsPerPage, props.rows.data]);
 
     const [ searchedEmail, setSearchedEmail ] = useState('');
 
@@ -361,29 +360,28 @@ const MainFrame = (props: MainframeProps) => {
                                                         <TableCell align="right">{row.inUse}</TableCell>
                                                         <TableCell align="right">{row.overdue}</TableCell>
                                                         <TableCell align="right">
-                                                            <Box sx={{ height: '50px' }}>
-                                                                <FormControl sx={{ width: '150px' }}>
-                                                                    <Select
-                                                                        labelId="demo-simple-select-label"
-                                                                        id="demo-simple-select"
-                                                                        value={capitalizeFirstLetter(row.role)}
-                                                                        label="Role"
-                                                                        displayEmpty
-                                                                        inputProps={{ 'aria-label': 'Without label' }}
-                                                                        onChange={(e) => handleRoleUpdate(e.target.value, row.emailAddress)}
-                                                                        renderValue={(selected) => {
-                                                                            if (selected.length === 0) {
-                                                                            return capitalizeFirstLetter(row.role);
-                                                                            }
-                                                                            return selected
-                                                                        }}
-                                                                    >
-                                                                        <MenuItem value="basic">Basic</MenuItem>
-                                                                        <MenuItem value="admin">Admin</MenuItem>
-                                                                        <MenuItem value="volunteer">Volunteer</MenuItem>
-                                                                    </Select>
-                                                                </FormControl>
-                                                            </Box>
+                                                            {
+                                                                currentUser && currentUser.email !== row.emailAddress ?
+                                                                    <Box sx={{ height: '50px' }}>
+                                                                        <FormControl sx={{ width: '150px' }}>
+                                                                            <Select
+                                                                                labelId="demo-simple-select-label"
+                                                                                id="demo-simple-select"
+                                                                                value={row.role}
+                                                                                label="Role"
+                                                                                defaultValue=""
+                                                                                displayEmpty
+                                                                                inputProps={{ 'aria-label': 'Without label' }}
+                                                                                onChange={(e) => handleRoleUpdate(e.target.value, row.emailAddress)}
+                                                                            >
+                                                                                <MenuItem value="customer">customer</MenuItem>
+                                                                                <MenuItem value="admin">admin</MenuItem>
+                                                                                <MenuItem value="volunteer">volunteer</MenuItem>
+                                                                            </Select>
+                                                                        </FormControl>
+                                                                    </Box>
+                                                                : <Typography sx={styles.myRole}>{row.role}</Typography>
+                                                            }
                                                         </TableCell>
                                                     </TableRow>
                                                 );
@@ -450,7 +448,7 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
                             label="maxWidth"
                         >
                             <MenuItem value="All">All</MenuItem>
-                            <MenuItem value="basic">Basic</MenuItem>
+                            <MenuItem value="customer">Customer</MenuItem>
                             <MenuItem value="admin">Admin</MenuItem>
                             <MenuItem value="volunteer">Volunteer</MenuItem>
                         </Select>
@@ -473,7 +471,7 @@ export default function Users() {
         cache: []
     });
 
-    const { currentUser, sessionToken } = useAuth();
+    const { sessionToken } = useAuth();
 
     const fetchRows = async () => {
         if (sessionToken) {
@@ -570,6 +568,10 @@ export default function Users() {
             cache: updatedCache
         });
         // call api to update user's role
+        if (sessionToken) {
+            const userId = rows.data.filter((row) => { return row.emailAddress === emailAddress; })[0].userId;
+            adminApi.modifyRole(sessionToken, userId, newRole, emailAddress);
+        }
     }
 
     const [ isMobile, setIsMobile ] = useState(false);
@@ -816,6 +818,10 @@ const styles = {
         marginTop: 20,
         fontSize: '1.225rem',
         color: '#464646'
+    },
+
+    myRole: {
+        fontSize: '1rem',
     }
 };
 ///////////////////////////////////////////////////////////////////////

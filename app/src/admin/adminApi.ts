@@ -15,6 +15,7 @@ type StatusItem = {
 };
 
 type DishStatusByUser = {
+    userId: string;
     emailAddress: string;
     inUse: number;
     overdue: number;
@@ -46,7 +47,7 @@ const adminApi = {
         return dishes;
     },
 
-    getUsers: async function (token: string) {
+    getUsers: async function(token: string) {
         const response: any = await axios.get(
             `${this.serverAddress}/api/users`, 
             {
@@ -61,7 +62,7 @@ const adminApi = {
         return users;
     },
 
-    getInUseDishesForEachUser: async function (token: string) {
+    getInUseDishesForEachUser: async function(token: string) {
         try {
             let result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
@@ -89,7 +90,7 @@ const adminApi = {
         }
     },
 
-    getOverdueDishesForEachUser: async function (token: string) {
+    getOverdueDishesForEachUser: async function(token: string) {
         try {
             let result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
@@ -117,7 +118,7 @@ const adminApi = {
         }
     },
 
-    getDishesStatusForEachUser: async function (token: string) {
+    getDishesStatusForEachUser: async function(token: string) {
         try {
             const inUseDishesByUser = await this.getInUseDishesForEachUser(token);
             const overdueDishesByUser = await this.getOverdueDishesForEachUser(token);
@@ -126,6 +127,7 @@ const adminApi = {
             if (inUseDishesByUser.length > 0 && overdueDishesByUser.length > 0) {
                 for (let i = 0; i < users.length; i++) {
                     result.push({
+                        userId: users[i].id,
                         emailAddress: users[i].email,
                         inUse: inUseDishesByUser[i].count,
                         overdue: overdueDishesByUser[i].count,
@@ -138,6 +140,30 @@ const adminApi = {
             console.log(`ERROR: could not get dishes status for each user from backend. ${err}.`);
             return [];
         }
+    },
+
+    modifyRole: async function(token: string, userId: string, newRole: string, email: string) {
+        await axios.post(
+            `${this.serverAddress}/api/users/modify/role`, 
+            {
+                user: {
+                    id: userId,
+                    role: newRole,
+                    email: email
+                }
+            },
+            {
+                headers: headers(token)
+            }
+        ).then(
+            res => {
+                console.log("Successfully modified user's role.");
+            }
+        ).catch(
+            err => {
+                console.log(`ERROR: Failed to modify user's role. ${err}.`);
+            }
+        );
     }
 };
 
