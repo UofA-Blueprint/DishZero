@@ -35,8 +35,8 @@ export class EmailCron implements Cron {
                         // get overdue email addresses
                         const recipients = await getOverdueUserEmails()
                         // send the emails
-                        const {subject, content} = await getTemplate()
-                        sendEmail(recipients, subject, content)
+                        const {subject, body} = await getTemplate()
+                        sendEmail(recipients, subject, body)
                     }
                 } else {
                     console.log('Sending email with nodemailer')

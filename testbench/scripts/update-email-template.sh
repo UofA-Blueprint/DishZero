@@ -18,5 +18,5 @@ curl -i -X POST \
     -H "x-api-key: test" \
     -H "session-token: $SESSION_TOKEN" \
     -H "Content-Type: application/json" \
-    -d "{\"template\" : {\"subject\" : \"$1\", \"content\" : \"$2\"}}" \
+    -d "{\"template\" : {\"subject\" : \"$1\", \"body\" : \"$2\"}}" \
     http://localhost:8080/api/email/template

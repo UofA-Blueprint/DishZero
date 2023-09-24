@@ -171,11 +171,10 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    // TODO validate template body
     const template = req.body.template
     const subject = template?.subject
-    const content = template?.content
-    if (!template || !subject || !content) {
+    const body = template?.body
+    if (!template || !subject || !body) {
         Logger.error({
             moduleName,
             message: 'No template provided',
@@ -184,9 +183,9 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
         return res.status(400).json({ error: 'bad_request' })
     }
 
-    await db.collection(nodeConfig.get('collections.email')).doc('template').update({
+    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
             subject,
-            content
+            body
     })
 
     Logger.info({
@@ -194,7 +193,7 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
         moduleName,
         function: 'updateEmailTemplate',
     })
-    return res.status(200).json({ subject, content })
+    return res.status(200).json({ subject, body })
 }
 
 export const fetchEmailCron = async () => {

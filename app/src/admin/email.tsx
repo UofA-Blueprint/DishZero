@@ -46,8 +46,8 @@ function Email() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/api/email/template`,
         {
           template: {
-            subject,
-            content,
+            subject: subject,
+            body: content,
           },
         },
         {

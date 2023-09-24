@@ -24,8 +24,7 @@
         "dishes": "dishes",
         "users": "users",
         "qrcodes": "qr-codes",
-        "cron": "cron",
-        "email": "email"
+        "cron": "cron"
     },
     "cron": {
         "enabled": true,
