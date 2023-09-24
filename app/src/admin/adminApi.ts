@@ -33,7 +33,7 @@ const adminApi = {
 
     getAllDishes: async function(token: string) {
         const response: any = await axios.get(
-            `${this.serverAddress}/api/dish`, 
+            `${this.serverAddress}/api/dish?all=true`, 
             {
                 headers: headers(token)
             }

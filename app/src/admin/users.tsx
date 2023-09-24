@@ -1,6 +1,6 @@
 ////////////////////////// Import Dependencies //////////////////////////
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { 
     Dialog,
@@ -27,6 +27,7 @@ import {
     TablePagination,
     TableRow
 } from '@mui/material';
+import {BallTriangle} from 'react-loader-spinner';
 import DishzeroSidebarLogo from '../assets/dishzero-sidebar-logo.png';
 import 'typeface-poppins';
 import { 
@@ -592,7 +593,16 @@ export default function Users() {
                         <Sidebar />
                         {
                             isLoading ?
-                                null
+                                <Box sx={styles.loaderFrame}>
+                                    <BallTriangle
+                                        height={100}
+                                        width={100}
+                                        radius={5}
+                                        color="#4fa94d"
+                                        ariaLabel="ball-triangle-loading"
+                                        visible={true}
+                                    />
+                                </Box>
                             : <MainFrame 
                                 rows={rows} 
                                 handleRoleFilterOpen={handleRoleFilterOpen} 
@@ -623,6 +633,15 @@ const styles = {
         minHeight: `${window.innerHeight}px`,
         display: 'flex',
         flexDirection: 'row'
+    },
+
+    loaderFrame: {
+        width: '80%',
+        minHeight: `${window.innerHeight}px`,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
 
     sidebar: {
