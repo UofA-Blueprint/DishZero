@@ -16,7 +16,7 @@ import {
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
-import { verifyIfUserAdmin, verifyIfUserVolunteer } from '../services/users'
+import { getUserById, verifyIfUserAdmin, verifyIfUserVolunteer } from '../services/users'
 import {
     registerTransaction,
     getLatestTransactionByTstamp,
@@ -25,6 +25,7 @@ import {
 import { getQrCode } from '../services/qrCode'
 import { db } from '../services/firebase'
 import nodeConfig from 'config'
+import { User } from '../models/user'
 
 export const getDishes = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
@@ -224,13 +225,14 @@ export const borrowDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish already borrowed' })
         }
 
+        const user = await getUserById(userClaims.uid) as User
         let transaction: Transaction = {
             dish: {
                 qid: associatedDish.qid,
                 id: associatedDish.id,
                 type: associatedDish.type,
             },
-            userId: userClaims.uid,
+            user: user,
             returned: {
                 condition: Condition.alright,
                 timestamp: '',
