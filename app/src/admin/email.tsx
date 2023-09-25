@@ -5,6 +5,7 @@ import Toolbar from "./toolbar";
 import {} from "./styledEmail";
 import { StyledAdminPageLayout } from "./styledAdmin";
 import {
+  Avatar,
   Box,
   Button,
   Checkbox,
@@ -12,10 +13,10 @@ import {
   FormGroup,
   FormLabel,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
-
 function Email() {
   const { sessionToken } = useAuth();
   const [subject, setSubject] = useState<string>("");
@@ -32,9 +33,9 @@ function Email() {
 
   useEffect(() => {
     // get data from backend and set state
-    getInfo()
+    getInfo();
   }, []);
-  
+
   async function getInfo() {
     try {
       const response = await axios.get(
@@ -49,24 +50,26 @@ function Email() {
 
       if (!(response && response.status === 200)) {
         console.log("data", response.data);
-        alert("Unable to get saved template! Make sure you enter all fields before saving.");
+        alert(
+          "Unable to get saved template! Make sure you enter all fields before saving."
+        );
         return;
       } else {
-        const data = response.data
-        setContent(data.cron.body)
-        setSubject(data.cron.subject)
-        const daysArr = (data.cron.expression as String).split(" ")
-        const daysExpr = daysArr[daysArr.length-1] as string
-        console.log(daysExpr)
+        const data = response.data;
+        setContent(data.cron.body);
+        setSubject(data.cron.subject);
+        const daysArr = (data.cron.expression as String).split(" ");
+        const daysExpr = daysArr[daysArr.length - 1] as string;
+        console.log(daysExpr);
         const exprMap = {
-          "MON": "monday",
-          "TUE": "tuesday",
-          "WED": "wednesday",
-          "THU": "thursday",
-          "FRI": "friday",
-          "SAT": "saturday",
-          "SUN": "sunday",
-        }
+          MON: "monday",
+          TUE: "tuesday",
+          WED: "wednesday",
+          THU: "thursday",
+          FRI: "friday",
+          SAT: "saturday",
+          SUN: "sunday",
+        };
         let days = {
           monday: false,
           tuesday: false,
@@ -75,15 +78,17 @@ function Email() {
           friday: false,
           saturday: false,
           sunday: false,
-        }
+        };
         for (let day of daysExpr.split(",")) {
-          days[exprMap[day]] = true
+          days[exprMap[day]] = true;
         }
-        setDays(days)
+        setDays(days);
       }
     } catch (error: any) {
       console.log(error);
-      alert("Unable to get saved template! Make sure you enter all fields before saving.");
+      alert(
+        "Unable to get saved template! Make sure you enter all fields before saving."
+      );
       return;
     }
   }
@@ -93,6 +98,23 @@ function Email() {
       ...prev,
       [day]: !prev[day],
     }));
+  }
+
+  function DayCheckBox(day) {
+    return (
+      <Avatar
+        variant="square"
+        sx={{
+          background: `${days[day] ? "#68B49A" : "white"}`,
+          color: `${days[day] ? "white" : "#757575"}`,
+          borderRadius: "20%",
+          fontSize: "16px",
+        }}
+        onClick={() => handleDayChange(day)}
+      >
+        {day[0].toUpperCase()}
+      </Avatar>
+    );
   }
 
   async function saveTemplate() {
@@ -163,6 +185,190 @@ function Email() {
       sunday: false,
     });
   }
+
+  return (
+    <>
+      {/* on mobile */}
+      <MobileView>
+        <div>
+          <h1>Admin Panel</h1>
+        </div>
+
+        <img src={leaf_icon} alt="" />
+        <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
+      </MobileView>
+
+      {/* on desktop */}
+      <BrowserView>
+        <Box sx={{ display: "flex" }}>
+          <Toolbar />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              flexGrow: 1,
+              marginLeft: "40px",
+              marginTop: "40px",
+              height: "28px",
+            }}
+          >
+            {/* heading */}
+            <Typography
+              gutterBottom
+              sx={{
+                lineHeight: "36px",
+                fontSize: "28px",
+                fontWeight: "bold",
+              }}
+            >
+              Configure Overdue Email
+            </Typography>
+
+            {/* subject */}
+            <Box
+              sx={{
+                display: "flex",
+                flexGrow: 1,
+                marginTop: "40px",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  weight: "500",
+                  fontWeight: "bold",
+                }}
+              >
+                Subject
+              </Typography>
+
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                value={subject}
+                placeholder="Type subject here..."
+                onChange={(e) => {
+                  setSubject(e.target.value);
+                }}
+                size="small"
+                sx={{
+                  marginLeft: "120px",
+                  width: "80%",
+                }}
+              />
+            </Box>
+
+            {/* content */}
+            <Box
+              sx={{
+                display: "flex",
+                flexGrow: 1,
+                marginTop: "40px",
+                alignItems: "baseline",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  weight: "500",
+                  fontWeight: "bold",
+                }}
+              >
+                Content
+              </Typography>
+
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                value={content}
+                placeholder="Type subject here..."
+                onChange={(e) => {
+                  setContent(e.target.value);
+                }}
+                sx={{
+                  marginLeft: "120px",
+                  width: "80%",
+                }}
+                multiline
+                rows={12}
+              />
+            </Box>
+
+            {/* checkboxes and button */}
+            <Box
+              sx={{
+                display: "flex",
+                flexGrow: 1,
+                marginTop: "40px",
+                alignItems: "baseline",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  weight: "500",
+                  fontWeight: "bold",
+                }}
+              >
+                Repeat
+              </Typography>
+
+              <Box sx={{ marginLeft: "120px" }}>{DayCheckBox("sunday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("monday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("tuesday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("wednesday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("thursday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("friday")}</Box>
+              <Box sx={{ marginLeft: "8px" }}>{DayCheckBox("saturday")}</Box>
+
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  marginRight: "120px"
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  onClick={resetInputValues}
+                  sx={{
+                    ":hover": {
+                      borderColor: "#68B49A",
+                    },
+                    color: "#68B49A",
+                    borderRadius: "30px",
+                    borderColor: "#68B49A",
+                    width: "100px",
+                  }}
+                >
+                  Reset
+                </Button>
+
+                <Button
+                  variant="contained"
+                  onClick={saveTemplate}
+                  sx={{
+                    ":hover": {
+                      background: "#68B49A",
+                    },
+                    background: "#68B49A",
+                    color: "white",
+                    borderRadius: "30px",
+                    width: "200px",
+                    marginLeft: "20px"
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </BrowserView>
+    </>
+  );
   return (
     <>
       {/* on mobile */}
@@ -190,7 +396,6 @@ function Email() {
             >
               <TextField
                 id="outlined-basic"
-                label="Subject"
                 variant="outlined"
                 value={subject}
                 onChange={(e) => {
