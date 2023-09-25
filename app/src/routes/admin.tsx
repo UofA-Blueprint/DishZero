@@ -4,7 +4,6 @@ import { MobileView, BrowserView } from "react-device-detect";
 import Toolbar from "../admin/toolbar";
 import '../styles/admin.css';
 import leaf_white from "../assets/leaf-white.svg";
-import search_icon from "../assets/search.svg";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -73,23 +72,6 @@ function dishTag(text) {
   );
 }
 
-function searchBar() {
-  return(
-    <div className="search-container d-flex" style={{marginRight: '8px'}}>
-      <img src={search_icon} style={{height: '14px', width: '14px', alignSelf: 'center', marginRight: '8px'}}/>
-      <p>Type text here...</p>
-    </div>
-  );
-}
-
-function searchButton() {
-  return(
-    <div className="search-b d-flex">
-      <p className='sub-header-3'>Search</p>
-    </div>
-  );
-}
-
 function addDish() {
   return(
     <div className="add-dish d-flex">
@@ -110,16 +92,7 @@ function dishTable() {
   );
 }
 
-function findEmail(ID, users) {
-  if (ID == null) {
-    return('')
-  }
-  const user = users.filter(user => user.id == ID);
-  if (user[0] == undefined) {
-    return('');
-  }
-  return(user[0].email)
-}
+
 
 function findDish(ID, dishesUsed) {
   if (ID == null) {
@@ -149,7 +122,7 @@ function findOverdue(dishesUsed, transactionsUsed) {
   return num;
 }
 
-function createRows(dishesUsed, transactionsUsed, users) {
+function createRows(dishesUsed, transactionsUsed) {
   const list: any[] = [];
   const timeToday = new Date();
   transactionsUsed.map(transaction => {
@@ -162,7 +135,7 @@ function createRows(dishesUsed, transactionsUsed, users) {
     }
     let id = dish.qid;
     let type = dish.type;
-    let email = findEmail(transaction.userId, users);
+    let email = transaction.user.email;
     var status = '';
     let overdue = '';
     let timestamp = transaction.timestamp
@@ -189,7 +162,17 @@ function createRows(dishesUsed, transactionsUsed, users) {
   return list;
 }
 
-function Rows(tableRows) {
+function Rows(tableRows, search) {
+
+  function searchFilter(item) {
+    return item.id == search
+  }
+
+  if (search.length > 0) {
+    const rows = tableRows.filter(searchFilter)
+    tableRows = rows;
+  }
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 6;
   const lastIndex = currentPage * recordsPerPage;
@@ -197,6 +180,7 @@ function Rows(tableRows) {
   const records = tableRows.slice(firstIndex, lastIndex);
   const npage = Math.ceil(tableRows.length / recordsPerPage);
   const numbers: number[] = [];
+
   for (let i = 1; i <= npage; i++) {
     numbers.push(i);
   }
@@ -222,7 +206,7 @@ function Rows(tableRows) {
           <div style={{position: "absolute", marginLeft: '22%'}}>{dishTag(row.type)}</div>
           <p style={{position: "absolute", marginLeft: '41%'}}>{dishTag(row.status)}</p>
           <p style={{position: "absolute", marginLeft: '65%'}}>{row.overdue}</p>
-          <p style={{position: "absolute", marginLeft: '84%'}}>xxxxx1@ualberta.ca</p>
+          <p style={{position: "absolute", marginLeft: '84%'}}>{row.email}</p>
         </div>
       )}
       </div>
@@ -273,8 +257,10 @@ function Admin() {
 
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
   const [transactionsUsed, setTransactionsUsed] = useState<any[]>([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  console.log(searchInput)
 
   //get dishes
   useEffect(() => {
@@ -291,20 +277,7 @@ function Admin() {
       });
   }, []);
 
-  //get users
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/users`, {
-        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
-      })
-      .then(function (response) {
-        setUsers(response.data.users);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
-
+  
   //get transactions
   useEffect(() => {
     axios
@@ -313,6 +286,7 @@ function Admin() {
         params: {all: true},
       })
       .then(function (response) {
+        console.log(response.data.transactions)
         setTransactionsUsed(response.data.transactions);
       })
       .catch(function (error) {
@@ -320,6 +294,14 @@ function Admin() {
       });
   }, []);
 
+  const searchChange = (value) => {
+    value.preventDefault();
+    setSearchInput(value.target.value);
+  };
+
+  const handleClick = () => {
+    setSearchValue(searchInput)
+  }
 
   const numBorrowedDishes = dishesUsed.filter(dish => dish.borrowed == true).length;
   const returnedDishes = dishesUsed.filter(dish => dish.borrowed == false).length;
@@ -327,14 +309,13 @@ function Admin() {
   const overdue = findOverdue(dishesUsed, transactionsUsed);
 
   let dishNumbers = [numBorrowedDishes, returnedDishes, overdue, brokenDishes];
-  let tableRows = createRows(dishesUsed, transactionsUsed, users);
+  let tableRows = createRows(dishesUsed, transactionsUsed);
   tableRows = sortRows(tableRows);
-  let row = Rows(tableRows); 
+  let row = Rows(tableRows, searchValue); 
   let bar = dishStatus(dishNumbers);
   let table = dishTable();
-  let search = searchBar();
-  let button = searchButton();
   let add = addDish();
+
 
   return (
     <>
@@ -357,8 +338,21 @@ function Admin() {
             <p className="sub-header-2" style={{marginTop: 40}}>Recent transactions</p>
  
             <div className="d-flex" style={{marginBottom: '16px'}}>
-              {search}
-              {button}
+
+              {/* search Bar */}
+              
+              <input 
+                className="search-container d-flex" 
+                type="text" 
+                placeholder="Type text here..." 
+                onChange={searchChange}
+                value={searchInput}
+                style={{marginRight: '8px'}}/>
+
+              <button className="search-b d-flex" onClick={handleClick}>
+                <p className='sub-header-3'>Search</p>
+              </button>
+              
               <div className="d-flex justify-content-end" style={{width: '100%'}}>
                 {add}
               </div>
