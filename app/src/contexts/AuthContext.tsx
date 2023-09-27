@@ -56,9 +56,6 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    console.log("running update cookie");
-    console.log("user is", currentUser);
-
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_ADDRESS}/api/users/session`,
@@ -72,8 +69,6 @@ export function AuthProvider({ children }) {
 
       const data = response.data.user;
       if (response && response.status === 200) {
-        console.log("setting current user");
-        console.log(data);
         // if it gets here then current user should be null
         setCurrentUser({
           id: data.id,
@@ -85,7 +80,7 @@ export function AuthProvider({ children }) {
         logout();
       }
     } catch (error: any) {
-      console.error("Failed to call authentication. e ");
+      console.error("Failed to call authentication.");
       console.error(error);
       if (error.response.status === 401) {
         console.log("user unauthorised");
@@ -122,8 +117,6 @@ export function AuthProvider({ children }) {
 
       const { data } = res;
       // TODO remove later
-      console.log("data is", data);
-      console.log("session is", data.session);
       setSessionToken(data.session);
       Cookies.set("session-token", data.session);
       const newUser = data?.user;
@@ -132,7 +125,6 @@ export function AuthProvider({ children }) {
           ...data.user,
         });
       }
-      console.log("logged in");
 
       navigate("/home");
     } catch (error: any) {
@@ -154,7 +146,6 @@ export function AuthProvider({ children }) {
       }
     );
     auth.signOut();
-    console.log('logout response', res);
     setSessionToken(null);
     setCurrentUser(null);
     Cookies.remove("session-token");
