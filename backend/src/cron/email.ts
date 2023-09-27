@@ -30,16 +30,8 @@ export class EmailCron implements Cron {
             this.job = cron.schedule(this.options.cronExpression, async () => {
                 if (this.client === EmailClient.AWS) {
                     console.log('Sending email with AWS')
-                    // enable later 
-                    if (false) {
-                        // get overdue email addresses
-                        const recipients = await getOverdueUserEmails()
-                        // send the emails
-                        const {subject, body} = await getTemplate()
-                        sendEmail(recipients, subject, body)
-                    } else {
-                        console.log("sending email cron active")
-                    }
+                    // get overdue email addresses
+                    // send the emails
                 } else {
                     console.log('Sending email with nodemailer')
                 }
