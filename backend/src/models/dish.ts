@@ -8,6 +8,7 @@ export type Dish = {
     timesBorrowed: number
     status: DishStatus
     userId: string | null
+    borrowedAt: string | null
 }
 
 export type DishSimple = {
