@@ -26,7 +26,7 @@ const DishData = ({ origDishList }) => {
     const [query, setQuery] = useState("");
     const [headerChecked, setHeaderChecked] = useState(false);
     const [selectedList, setSelectedList] = useState(Array(dishList.length).fill(false));
-    const [selectedCount, setSelectedCount] = useState(0);
+    const [selectedCount, setSelectedCount] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
     const [shownDishList, setShownDishList] = useState(dishList);
     const [dishTypeFilter, setDishTypeFilter] = useState({ "All": false, "Mug": false, "Dish": false });
     const [dishFilterClick, setDishFilterClick] = useState(false);
@@ -106,7 +106,7 @@ const DishData = ({ origDishList }) => {
     }, [dishStatusFilter, dishTypeFilter])
     ///
     ///
-    const handleDishStatusClick = () => {
+    const handleDishStatusClick = () => { // eslint-disable-line @typescript-eslint/no-unused-vars
         setDishStatusClick(!dishStatusClick);
     }
     const handleAllStatus = () => {
@@ -174,7 +174,7 @@ const DishData = ({ origDishList }) => {
         }
         return dishes.filter(dish => dish.id.includes(query));
     }
-    const searchBarHandleChange = (value) => {
+    const searchBarHandleChange = (value) => { // eslint-disable-line @typescript-eslint/no-unused-vars
         setQuery(value);
         setShownDishList(getSearchedDishes(query, dishList));
     }
@@ -307,7 +307,7 @@ const DishData = ({ origDishList }) => {
         </StyledDishDataLayout>
     )
 }
-const TransactionHistory = () => {
+/* const TransactionHistory = () => {
     return (
         <div>
             <div className='dishDashboard-main-title'>
@@ -322,6 +322,6 @@ const TransactionHistory = () => {
 
 const DishDashboard = () => {
 
-}
+} */
 
 export default DishData;

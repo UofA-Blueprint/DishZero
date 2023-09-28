@@ -121,7 +121,6 @@ export default () => {
       return false;
     }
     setConfirm(false);
-    const user = currentUser?.id || null;
 
     axios
       .post(
