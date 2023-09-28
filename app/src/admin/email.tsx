@@ -2,7 +2,6 @@ import React from "react";
 import leaf_icon from "../assets/leaf.svg";
 import { BrowserView, MobileView } from "react-device-detect";
 import Toolbar from "./toolbar";
-import { } from "./styledEmail";
 import { StyledAdminPageLayout } from "./styledAdmin";
 import { Box, Button, Checkbox, FormControlLabel, FormGroup, FormLabel, TextField } from "@mui/material";
 
