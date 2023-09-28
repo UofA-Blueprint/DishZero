@@ -89,7 +89,6 @@ export default () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const previousURL = queryParams.get('previousURL');
-    console.log(previousURL)
     if (previousURL?.includes("dishzero.ca")) {
       const dishID = (previousURL.match(/dishID=([^&]+)/) || "")[1];
       setConfirm(true);
@@ -112,7 +111,8 @@ export default () => {
   const onScan = confirm
     ? null
     : (id: string) => {
-        const dishID = (id.match(/dishID=([^&]+)/) || "")[1];
+        const urlID = id.match(/dishID=([^&]+)/);
+        const dishID = urlID ? urlID[1] : id;
         setScanId(dishID);
         setConfirm(true);
       };
