@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";
@@ -107,7 +107,6 @@ export default () => {
   });
 
   const navigate = useNavigate();
-  const [Buffer, setBuffer] = useState(false);
   const onScan = confirm
     ? null
     : (id: string) => {
@@ -123,8 +122,6 @@ export default () => {
     }
     setConfirm(false);
     const user = currentUser?.id || null;
-    console.log("USER: " + user);
-    console.log("scanid", scanId);
 
     axios
       .post(

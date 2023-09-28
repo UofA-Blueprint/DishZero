@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import Toolbar from './toolbar';
+import { useEffect, useState } from 'react';
 import adminApi from "./adminApi";
-import { Simulate } from "react-dom/test-utils";
-import load = Simulate.load;
 import { StyledDishDataLayout } from './styledDishes';
 
 const AdminDishTableRow = ({ dish, selectedHandler, index, selectedList }) => {

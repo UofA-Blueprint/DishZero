@@ -5,8 +5,7 @@ import mug from "../assets/mug_icon_contained.svg";
 import container from "../assets/dish_icon_contained.svg";
 
 export default ({dish,token}) => {
-  const options = { weekday: 'long', year: 'numeric', month: 'long'};
-  const [dishAPI, setDishAPI] = useState([])     
+  const [dishAPI, setDishAPI] = useState([])
   const twoDaysInMs = 86400000 * 2
     useEffect(()=>{
         axios.get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}, params:{"id":dish.dish}})
