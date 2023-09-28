@@ -99,14 +99,18 @@ const adminApi = {
     getOverdueDishesForEachUser: async function(token: string) {
         try {
             let result: Array<StatusItem> = [];
-            const transactions = await this.getTransactions(token);
-            if (transactions.length > 0) {
+            const dishes = await this.getAllDishes(token);
+            if (dishes.length > 0) {
                 const users = await this.getUsers(token);
                 if (users.length > 0) {
                     for (let user of users) {
                         let count = 0;
-                        for (let transaction of transactions) {
-                            if (transaction.user === user.id && transaction.timestamp === 0) {
+                        for (let dish of dishes) {
+                            const firebaseTimestamp = dish.timestamp;
+                            const currentTimestamp = new Date().getTime();
+                            const timeDifference = currentTimestamp - firebaseTimestamp;
+                            const hoursDifference = timeDifference / (1000 * 60 * 60);
+                            if (dish.user === user.id && hoursDifference > 48) {
                                 count += 1;
                             }
                         }
