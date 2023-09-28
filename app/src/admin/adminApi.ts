@@ -1,14 +1,5 @@
 import axios from 'axios';
 
-enum DishStatus {
-    overdue = 'overdue',
-    inUse = 'in_use',
-    returned = 'returned',
-    broken = 'broken',
-    lost = 'lost',
-    available = 'available'
-}
-
 type StatusItem = {
     email: string,
     count: number
@@ -31,6 +22,21 @@ const headers = (token: string) => {
 
 const adminApi = {
     serverAddress: process.env.REACT_APP_BACKEND_ADDRESS,
+
+    getTransactions: async function(token: string) {
+        const response: any = await axios.get(
+            `${this.serverAddress}/api/transactions?all=true`,
+            {
+                headers: headers(token)
+            }
+        ).then(
+            res => { return res; }
+        ).catch(
+            err => { console.log(`Failed to get transactions from database. ${err}.`); }
+        );
+        const transactions = response.data.transactions;
+        return transactions;
+    },
 
     getAllDishes: async function(token: string) {
         const response: any = await axios.get(
@@ -72,7 +78,7 @@ const adminApi = {
                     for (let user of users) {
                         let count = 0;
                         for (let dish of dishes) {
-                            if (dish.userId === user.id && dish.status === DishStatus.inUse) {
+                            if (dish.userId === user.id && dish.borrowed === true) {
                                 count += 1;
                             }
                         }
@@ -93,14 +99,14 @@ const adminApi = {
     getOverdueDishesForEachUser: async function(token: string) {
         try {
             let result: Array<StatusItem> = [];
-            const dishes = await this.getAllDishes(token);
-            if (dishes.length > 0) {
+            const transactions = await this.getTransactions(token);
+            if (transactions.length > 0) {
                 const users = await this.getUsers(token);
                 if (users.length > 0) {
                     for (let user of users) {
                         let count = 0;
-                        for (let dish of dishes) {
-                            if (dish.userId === user.id && dish.status === DishStatus.overdue) {
+                        for (let transaction of transactions) {
+                            if (transaction.user === user.id && transaction.timestamp === 0) {
                                 count += 1;
                             }
                         }

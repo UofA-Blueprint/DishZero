@@ -300,8 +300,10 @@ const MainFrame = (props: MainframeProps) => {
             const filteredRows = data.filter((row) => {
                 return row.emailAddress.toLowerCase().includes(text.toLowerCase());
             });
+            if (filteredRows.length > 0) {
+                setData(filteredRows);
+            }
             setSearchedEmail(text);
-            setData(filteredRows);
         } else {
             setSearchedEmail(text);
             setData(
