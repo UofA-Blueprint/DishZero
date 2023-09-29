@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import { useState } from "react"
 import '../styles/QRScanner.css';
 import Form from 'react-bootstrap/Form';

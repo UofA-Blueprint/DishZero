@@ -5,7 +5,6 @@ import mug from "../assets/mug_icon_contained.svg";
 import container from "../assets/dish_icon_contained.svg";
 
 export default ({dish,token}) => {
-  const options = { weekday: 'long', year: 'numeric', month: 'long'};
   const [dishAPI, setDishAPI] = useState([])     
   const twoDaysInMs = 86400000 * 2
     useEffect(()=>{
