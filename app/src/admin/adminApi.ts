@@ -106,11 +106,11 @@ const adminApi = {
                     for (let user of users) {
                         let count = 0;
                         for (let dish of dishes) {
-                            const firebaseTimestamp = dish.timestamp;
+                            const firebaseTimestamp = dish.borrowedAt;
                             const currentTimestamp = new Date().getTime();
                             const timeDifference = currentTimestamp - firebaseTimestamp;
                             const hoursDifference = timeDifference / (1000 * 60 * 60);
-                            if (dish.user === user.id && hoursDifference > 48) {
+                            if (dish.userId === user.id && hoursDifference > 48) {
                                 count += 1;
                             }
                         }

@@ -296,22 +296,25 @@ const MainFrame = (props: MainframeProps) => {
     const [ searchedEmail, setSearchedEmail ] = useState('');
 
     function handleEmailSearch(text) {
+        const masterData = stableSort(props.rows.data, getComparator(order, orderBy)).slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+        );
         if (text.length > 0) {
-            const filteredRows = data.filter((row) => {
-                return row.emailAddress.toLowerCase().includes(text.toLowerCase());
+            const filteredRows = masterData.filter((row) => {
+                const stripIndex = row.emailAddress.indexOf('@');
+                const name = row.emailAddress.substring(0, stripIndex);
+                return name.toLowerCase().includes(text.toLowerCase());
             });
             if (filteredRows.length > 0) {
                 setData(filteredRows);
+            } else {
+                setData([]);
             }
             setSearchedEmail(text);
         } else {
             setSearchedEmail(text);
-            setData(
-                stableSort(props.rows.data, getComparator(order, orderBy)).slice(
-                    page * rowsPerPage,
-                    page * rowsPerPage + rowsPerPage,
-                )
-            );
+            setData(masterData);
         }
     }
 
