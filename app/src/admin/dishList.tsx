@@ -323,8 +323,6 @@ const TransactionHistory = () => {
     )
 }
 
-const DishDashboard = () => {
 
-}
 
 export default DishData;

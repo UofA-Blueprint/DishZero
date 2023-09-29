@@ -4,7 +4,6 @@ import React from 'react';
 //import Scanner from "../widgets/scanner"
 //import DishAPI from "../features/api"
 import '../styles/QRScanner.css';
-import axios from "axios";
 //import { Button, Modal } from 'react-bootstrap'
 //import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 //import { faExclamation } from '@fortawesome/free-solid-svg-icons'
@@ -13,12 +12,14 @@ import { AppHeader } from "../widgets/appHeader";
 import Scanner from "../widgets/scanner";
 import CameraInput from "../widgets/cameraScanner";
 import BottomTextInput from "../widgets/bottomTextInput";
-import { Button, Typography, Box, Avatar } from '@mui/material';
+import { Button, Typography, Box, Avatar, FormGroup, FormControlLabel, Checkbox, RadioGroup, Radio } from '@mui/material';
 import { useAuth } from "../contexts/AuthContext";
 import {BallTriangle} from 'react-loader-spinner';
 import plateIcon from "../assets/dish_icon_contained.svg";
 import mugIcon from "../assets/mug_icon_contained.svg";
 import MobileBackground from '../assets/leaf-mobile-background.png';
+import ReportIcon from "../assets/report.png";
+import axios from "axios";
 /*const Report = ({ show, onSubmit, onCancel, id }) => {
     const conditions = ["Small Chip/Crack", "Large chunk", "Shattered"]
     const [selectedCondition, setSelectedCondition] = useState("");
@@ -219,7 +220,12 @@ const Return = () => {
     const [notifType, setNotifType] = useState("returned");
     const [error, setError] = useState('');
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [reportPopUp, setReportPopUp] = useState(false);
+    const [reportValue, setReportValue] = useState('alright');
+    const [dishID, setDishID] = useState('')
     const { currentUser, sessionToken } = useAuth();
+
+    
 
     const navigate = useNavigate()
     const location = useLocation();
@@ -282,6 +288,7 @@ const Return = () => {
       .then(function (response) {
         console.log(response)
         setDishType(response.data.dish.type)
+        setDishID(response.data.dish.id)
       })
       .catch(function (error) {
         console.log(error);
@@ -323,6 +330,37 @@ const Return = () => {
         })        
     }
 
+    const reportToggle = () => {
+
+      console.log(dishID)
+      console.log(reportValue)
+
+      if(reportPopUp){
+        axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/condition?id=${dishID}`, {
+           
+         
+            "condition": `${reportValue}`
+          
+       
+      }, {
+        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken, 'Content-Type': 'application/json' },
+      }).then(function (response) {
+
+        console.log(response)
+
+      })
+      .catch(function (error) {
+          // handle error
+          console.log(error.response.data.message);
+          setError(error.response.data.message);
+      })        
+      }
+
+      setReportPopUp(!reportPopUp)
+      
+
+    }
+
     
     return(
         
@@ -341,6 +379,28 @@ const Return = () => {
                       visible={true}
                     />
                 </Box> : <></>}
+                {
+                    (reportPopUp) ? 
+                    <Box sx={{...stylesConst.boxContainer, width: 300, height: 500, border: 3, flexDirection: 'column', borderColor: "black", color: "white", justifyContent: 'space-evenly', alignItems: 'center', position: 'absolute', top: 200}}>
+                      <Typography sx = {{color: "black", fontSize: 30}}>Report</Typography>
+                      <Avatar src={dishType == "plate" ? plateIcon : mugIcon} sx = {{width: 75, height: 75}}></Avatar>
+                      <FormGroup>
+                        <RadioGroup
+                          aria-labelledby="demo-radio-buttons-group-label"
+                          defaultValue="alright"
+                          name="radio-buttons-group"
+                        >
+                        <FormControlLabel value = "small_crack_chip" control={<Radio onClick={() => {setReportValue("small_crack_chip")}} />} sx = {{color: "black"}} label="Small crack/chip" />
+                        <FormControlLabel value = "large_crack_chunk" control={<Radio onClick={() => {setReportValue("large_crack_chunk")}}/>} sx = {{color: "black"}} label="Large crack/chunk missing" />
+                        <FormControlLabel value = "shattered" control={<Radio onClick={() => {setReportValue("shattered")}} />} sx = {{color: "black"}} label="Shattered" />
+                      </RadioGroup>
+                    </FormGroup>
+                    <Button variant="contained" onClick={reportToggle} sx = {{color : "white", backgroundColor: "red"}}>Report</Button>
+
+                      
+          
+                    </Box> : <></>
+                  }
               {(popUp) ? 
                 <Box sx={stylesConst.boxContainer}>
                   
@@ -350,6 +410,7 @@ const Return = () => {
                       alt="Sign In Button Logo"
                     />
                     <div style={stylesConst.divContainer}>
+                      
                       {
                         (error) ? 
                         <div>
@@ -360,9 +421,13 @@ const Return = () => {
                             Failed to return
                           </Typography >
                         </div> :
+                        <div style={{flex: 1,flexDirection: "row"}}>
                           <Typography sx={stylesConst.successText}>
                             Successfully returned
                           </Typography >
+                          <img style={{ paddingRight: 16 }} src={ReportIcon} alt="" onClick={reportToggle}/>
+                          
+                        </div>
                       }
                       <Typography variant="h6" sx={stylesConst.text}>
                         {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}

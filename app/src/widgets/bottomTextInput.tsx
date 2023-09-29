@@ -12,7 +12,7 @@ import {
 
 
 const BottomTextInput = (props) => {
-    let [input, setInput] = useState("");
+    const [input, setInput] = useState("");
     
     console.log("woo");
     const handleSubmit = (e) => {
