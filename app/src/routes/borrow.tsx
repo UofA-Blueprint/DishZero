@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Scanner from "../widgets/scanner";
 import Modal from "react-bootstrap/Modal";
@@ -130,7 +130,7 @@ export default () => {
           params: { qid: scanId },
         }
       )
-      .then(function (response) {
+      .then(function () {
         setBorrowDishResult({ show: true, success: true });
       })
       .catch(function (error) {
