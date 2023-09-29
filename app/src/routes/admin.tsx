@@ -22,7 +22,7 @@ function dishStatus(dishNumbers: number[]) {
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
         <p className="header" style={{marginTop: 10}}>{dishNumbers[1]}</p>
-        <p className="sub-header-4">Returned</p>
+        <p className="sub-header-4">Available</p>
       </div>
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
@@ -32,7 +32,7 @@ function dishStatus(dishNumbers: number[]) {
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
         <p className="header" style={{marginTop: 10}}>{dishNumbers[3]}</p>
-        <p className="sub-header-4">Broken/lost</p>
+        <p className="sub-header-4">Dishes Lost</p>
       </div>
 
   </div>
@@ -122,6 +122,23 @@ function findOverdue(dishesUsed, transactionsUsed) {
   return num;
 }
 
+function findLost(dishesUsed, transactionsUsed) {
+  const transactions = transactionsUsed.filter(transaction => transaction.returned.timestamp == "");
+  const timeToday = new Date();
+  var num = 0;
+  transactions.map(transaction => 
+    {
+      var time = transaction.timestamp.slice(0,10);
+      time = new Date(time);
+      var difference = (timeToday.getTime() - time.getTime()) / 86400000;
+      difference = parseInt(difference.toString());
+      if (difference >=30) {
+        num += 1;
+      }
+  });
+  return num;
+}
+
 function createRows(dishesUsed, transactionsUsed) {
   const list: any[] = [];
   const timeToday = new Date();
@@ -135,19 +152,35 @@ function createRows(dishesUsed, transactionsUsed) {
     }
     let id = dish.qid;
     let type = dish.type;
-    let email = transaction.user.email;
+    let email = '';
+    if(transaction.user == undefined) {
+      email = 'NULL';
+    }
+    else {
+      email = transaction.user.email;
+    }
+    let lost = '';
     var status = '';
     let overdue = '';
-    let timestamp = transaction.timestamp
+    var timestamp;
+    if (transaction.returned.timestamp != '') {
+      timestamp = transaction.returned.timestamp;
+    }
+    else {
+      timestamp = transaction.timestamp;
+    }
     if (transaction.returned.timestamp == "") {
       var time = transaction.timestamp.slice(0,10);
       time = new Date(time);
       var difference = (timeToday.getTime() - time.getTime()) / 86400000;
       difference = parseInt(difference.toString());
-      if (difference > 2) {
+      if (difference >= 30) {
+        status = 'lost'
+      }
+      else if (difference > 2) {
         status = 'overdue';
         difference = difference - 2;
-        overdue = difference.toString()+' days';
+        overdue = difference.toString()+' day(s)';
       }
       else {
         status = 'in use';
@@ -237,9 +270,10 @@ function Rows(tableRows, search) {
 
 function sortRows(rows) {
   const tableRows = rows.sort(function(a, b) {
-    var aTime = a.timestamp.slice(0,10);
+
+    let aTime = a.timestamp.slice(0,19);
     aTime = new Date(aTime);
-    var bTime = b.timestamp.slice(0,10);
+    let bTime = b.timestamp.slice(0,19);
     bTime = new Date(bTime);
     if (aTime.getTime() < bTime.getTime()) {
       return 1;
@@ -260,7 +294,6 @@ function Admin() {
   const [transactionsUsed, setTransactionsUsed] = useState<any[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [searchValue, setSearchValue] = useState("");
-  console.log(searchInput)
 
   //get dishes
   useEffect(() => {
@@ -286,7 +319,6 @@ function Admin() {
         params: {all: true},
       })
       .then(function (response) {
-        console.log(response.data.transactions)
         setTransactionsUsed(response.data.transactions);
       })
       .catch(function (error) {
@@ -305,10 +337,10 @@ function Admin() {
 
   const numBorrowedDishes = dishesUsed.filter(dish => dish.borrowed == true).length;
   const returnedDishes = dishesUsed.filter(dish => dish.borrowed == false).length;
-  const brokenDishes = dishesUsed.filter(dish => dish.condition == 'shattered').length;
-  const overdue = findOverdue(dishesUsed, transactionsUsed);
+  const lost = findLost(dishesUsed, transactionsUsed);
+  const overdue = findOverdue(dishesUsed, transactionsUsed) - lost;
 
-  let dishNumbers = [numBorrowedDishes, returnedDishes, overdue, brokenDishes];
+  let dishNumbers = [numBorrowedDishes, returnedDishes, overdue, lost];
   let tableRows = createRows(dishesUsed, transactionsUsed);
   tableRows = sortRows(tableRows);
   let row = Rows(tableRows, searchValue); 
