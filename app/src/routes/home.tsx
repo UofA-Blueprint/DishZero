@@ -161,7 +161,7 @@ export default () => {
   const [dishesUsed, setDishesUsed] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
-  var content;
+  let content;
   // Fetch dishes transaction for the user
   useEffect(() => {
     axios

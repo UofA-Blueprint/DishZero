@@ -12,16 +12,6 @@
     "@mui/icons-material": "^5.14.6",
     "@mui/material": "^5.13.6",
     "@mui/styled-engine-sc": "^5.12.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "^16.11.65",
-    "@types/react": "^18.0.21",
-    "@types/react-burger-menu": "^2.8.3",
-    "@types/react-dom": "^18.0.6",
-    "@types/react-router-dom": "^5.3.3",
-    "@types/styled-components": "^5.1.26",
     "antd": "^5.4.2",
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
@@ -52,7 +42,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --fix ."
   },
   "eslintConfig": {
     "extends": [
@@ -71,5 +62,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.11.65",
+    "@types/react": "^18.0.21",
+    "@types/react-burger-menu": "^2.8.3",
+    "@types/react-dom": "^18.0.6",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/styled-components": "^5.1.26",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.49.0"
   }
 }

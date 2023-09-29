@@ -49,8 +49,8 @@ const DishData = ({ origDishList }) => {
         })
     }
     const CreateFilter = () => {
-        var dishType = [""]
-        var dishStatus = [""]
+        let dishType = [""]
+        let dishStatus = [""]
         if (dishTypeFilter.Mug) {
             dishType.push("Mug");
         }
