@@ -147,7 +147,7 @@ interface MainframeProps {
 interface RoleFilterDialogProps {
     open: boolean;
     handleClose: () => void;
-    role: String;
+    role: string;
     handleRoleChange: (arg0: string) => void;
 }
 //////////////////////////////////////////////////////////////
@@ -504,7 +504,7 @@ export default function Users() {
         }
     }, [JSON.stringify(rows)]);
 
-    const [ role, setRole ] = useState<String>('All');
+    const [ role, setRole ] = useState<string>('All');
 
     const [ openedRoleFilter, setOpenedRoleFilter ] = React.useState(false);
 
@@ -555,14 +555,14 @@ export default function Users() {
     function handleRoleUpdate(newRole: string, emailAddress: string) {
         // update user's role's state
         const updatedData = rows.data.map((row) => {
-            let updatedRow = row;
+            const updatedRow = row;
             if (updatedRow.emailAddress === emailAddress) {
                 updatedRow.role = newRole;
             }
             return updatedRow;
         });
         const updatedCache = rows.cache.map((row) => {
-            let updatedRow = row;
+            const updatedRow = row;
             if (updatedRow.emailAddress === emailAddress) {
                 updatedRow.role = newRole;
             }

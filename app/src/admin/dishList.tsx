@@ -328,7 +328,7 @@ const TransactionHistory = () => {
 }
 
 const DishDashboard = () => {
-
+    console.log("placeholder");
 }
 
 export default DishData;

@@ -22,8 +22,8 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
   sessionToken: null,
-  login: async () => {},
-  logout: async () => {},
+  login: async () => { console.log("placeholder"); },
+  logout: async () => { console.log("placeholder"); },
 });
 
 export function useAuth() {

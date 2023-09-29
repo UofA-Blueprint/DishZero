@@ -70,14 +70,14 @@ const adminApi = {
 
     getInUseDishesForEachUser: async function(token: string) {
         try {
-            let result: Array<StatusItem> = [];
+            const result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
             if (dishes.length > 0) {
                 const users = await this.getUsers(token);
                 if (users.length > 0) {
-                    for (let user of users) {
+                    for (const user of users) {
                         let count = 0;
-                        for (let dish of dishes) {
+                        for (const dish of dishes) {
                             if (dish.userId === user.id && dish.borrowed === true) {
                                 count += 1;
                             }
@@ -98,14 +98,14 @@ const adminApi = {
 
     getOverdueDishesForEachUser: async function(token: string) {
         try {
-            let result: Array<StatusItem> = [];
+            const result: Array<StatusItem> = [];
             const dishes = await this.getAllDishes(token);
             if (dishes.length > 0) {
                 const users = await this.getUsers(token);
                 if (users.length > 0) {
-                    for (let user of users) {
+                    for (const user of users) {
                         let count = 0;
-                        for (let dish of dishes) {
+                        for (const dish of dishes) {
                             const firebaseTimestamp = dish.borrowedAt;
                             const currentTimestamp = new Date().getTime();
                             const timeDifference = currentTimestamp - firebaseTimestamp;
@@ -133,7 +133,7 @@ const adminApi = {
             const inUseDishesByUser = await this.getInUseDishesForEachUser(token);
             const overdueDishesByUser = await this.getOverdueDishesForEachUser(token);
             const users = await this.getUsers(token);
-            let result: Array<DishStatusByUser> = [];
+            const result: Array<DishStatusByUser> = [];
             if (inUseDishesByUser.length > 0 && overdueDishesByUser.length > 0) {
                 for (let i = 0; i < users.length; i++) {
                     result.push({
