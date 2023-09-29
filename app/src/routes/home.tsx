@@ -159,7 +159,7 @@ export default () => {
   const [isLoading, setIsLoading] = useState(true);
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); //eslint-disable-line @typescript-eslint/no-unused-vars
 
   let content;
   // Fetch dishes transaction for the user

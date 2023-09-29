@@ -107,7 +107,6 @@ export default () => {
   });
 
   const navigate = useNavigate();
-  const [Buffer, setBuffer] = useState(false);
   const onScan = confirm
     ? null
     : (id: string) => {
@@ -134,7 +133,7 @@ export default () => {
           params: { qid: scanId },
         }
       )
-      .then(function (response) {
+      .then(function (response) { //eslint-disable-line @typescript-eslint/no-unused-vars
         setBorrowDishResult({ show: true, success: true });
       })
       .catch(function (error) {

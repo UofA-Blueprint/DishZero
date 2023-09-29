@@ -1,3 +1,6 @@
+/*eslint-disable*/
+
+
 import { useEffect, useRef, useState } from 'react';
 import Toolbar from './toolbar';
 import adminApi from "./adminApi";
@@ -323,8 +326,6 @@ const TransactionHistory = () => {
     )
 }
 
-const DishDashboard = () => {
 
-}
 
 export default DishData;

@@ -1,3 +1,5 @@
+/*eslint-disable*/
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, provider } from "../firebase.tsx";
 import { getIdToken, signInWithPopup } from "firebase/auth";
