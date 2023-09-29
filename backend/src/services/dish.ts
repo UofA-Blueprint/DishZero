@@ -4,22 +4,14 @@ import { Condition, Dish, DishStatus } from '../models/dish'
 import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 
-export const getDish = async (qid: number) => {
+export const getDish = async (qid: number): Promise<Dish | undefined | null> => {
     const snapshot = await db.collection('dishes').where('qid', '==', qid).get()
     if (snapshot.empty) {
         return null
     }
     let data = snapshot.docs[0].data()
-    return {
-        id: snapshot.docs[0].id,
-        qid: data.qid,
-        registered: data.registered,
-        type: data.type,
-        borrowed: data.borrowed,
-        timesBorrowed: data.timesBorrowed,
-        status: data.status,
-        userId: data.userId,
-    }
+    data.id = snapshot.docs[0].id
+    return data as Dish
 }
 
 export const getDishById = async (id: string): Promise<Dish | null | undefined> => {

@@ -33,7 +33,7 @@ const Header = ({ handleClose, title, style }) => {
 }
 
 const BottomTextInput = ({ onSubmit }) => {
-    let [input, setInput] = useState("");
+    const [input, setInput] = useState("");
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(input)
