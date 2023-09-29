@@ -97,7 +97,7 @@ export default () => {
     }
   }, []);
 
-  const {currentUser, sessionToken} = useAuth()
+  const {sessionToken} = useAuth()
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [dishNotFound, setDishNotFound] = useState(false);
