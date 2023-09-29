@@ -29,7 +29,7 @@ describe("AuthContext", () => {
       fetchMock.sandbox().post(`${apiAddress}/api/auth/login`, {
         status: 200,
         body: {
-          session: "test",
+          session: sessionToken,
         },
       });
       const { result } = renderHook(() => useAuth());
