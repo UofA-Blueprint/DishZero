@@ -97,7 +97,7 @@ export default () => {
     }
   }, []);
 
-  const {currentUser, sessionToken} = useAuth()
+  const {sessionToken} = useAuth()
   const [scanId, setScanId] = useState("");
   const [confirm, setConfirm] = useState(false);
   const [dishNotFound, setDishNotFound] = useState(false);
@@ -107,7 +107,6 @@ export default () => {
   });
 
   const navigate = useNavigate();
-  const [Buffer, setBuffer] = useState(false);
   const onScan = confirm
     ? null
     : (id: string) => {
@@ -122,9 +121,6 @@ export default () => {
       return false;
     }
     setConfirm(false);
-    const user = currentUser?.id || null;
-    console.log("USER: " + user);
-    console.log("scanid", scanId);
 
     axios
       .post(
@@ -134,7 +130,7 @@ export default () => {
           params: { qid: scanId },
         }
       )
-      .then(function (response) {
+      .then(function () {
         setBorrowDishResult({ show: true, success: true });
       })
       .catch(function (error) {

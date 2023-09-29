@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Typography, Box, Avatar } from '@mui/material';
 import {BallTriangle} from 'react-loader-spinner';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
@@ -6,7 +6,7 @@ import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 
@@ -15,14 +15,14 @@ const useQuery = () => new URLSearchParams(useLocation().search);
 export default function Login() {
   const { login } = useAuth()
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  
-  //Show spinner as soon as page is refreshed 
+
+  //Show spinner as soon as page is refreshed
   const [isLoading, setIsLoading] = useState(true);
   const {currentUser} = useAuth()
-  
+
   //const {transaction_id} = useParams();
   const query = useQuery();
-  const transaction_id = query.get("transaction_id");
+  const transaction_id = query.get("transaction_id");   // eslint-disable-line @typescript-eslint/no-unused-vars
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -34,7 +34,7 @@ export default function Login() {
     };
   }, []);
 
-  
+
 
   // fired on button click while the user is not signed in.
   // logs in the user and navigates to home screen if successfully logged in
@@ -90,7 +90,7 @@ export default function Login() {
         </Button>
       </Box>
     </Box>)
-  
+
 }
 
 const styles = {

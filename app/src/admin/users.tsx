@@ -2,7 +2,6 @@ import React from "react";
 import leaf_icon from "../assets/leaf.svg";
 import { BrowserView, MobileView } from "react-device-detect";
 import Toolbar from "./toolbar";
-import { } from "./styledUsers";
 import { StyledAdminPageLayout } from "./styledAdmin";
 import { mockUsers, User } from "./usersModels";
 import { Table } from "antd";
