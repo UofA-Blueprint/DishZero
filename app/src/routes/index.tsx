@@ -18,7 +18,7 @@ import { AuthProvider, useAuth } from "../contexts/AuthContext";
 const enum Role {
   admin = 'admin',
   volunteer = 'volunteer',
-  basic = 'basic'
+  customer = 'customer'
 }
 
 interface PermissionProps {
