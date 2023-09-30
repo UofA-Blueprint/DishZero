@@ -1,5 +1,6 @@
 import  { useEffect, useState } from "react";
 import { Button, Typography, Box, Avatar } from '@mui/material';
+import Cookies from 'js-cookie';
 import {BallTriangle} from 'react-loader-spinner';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
 import mobileLogo from "../assets/dishzero-logo-mobile.png";
