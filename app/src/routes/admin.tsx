@@ -108,12 +108,12 @@ function findDish(ID, dishesUsed) {
 function findOverdue(dishesUsed, transactionsUsed) {
   const transactions = transactionsUsed.filter(transaction => transaction.returned.timestamp == "");
   const timeToday = new Date();
-  var num = 0;
+  let num = 0;
   transactions.map(transaction => 
     {
-      var time = transaction.timestamp.slice(0,10);
+      let time = transaction.timestamp.slice(0,10);
       time = new Date(time);
-      var difference = (timeToday.getTime() - time.getTime()) / 86400000;
+      let difference = (timeToday.getTime() - time.getTime()) / 86400000;
       difference = parseInt(difference.toString());
       if (difference > 2) {
         num += 1;
@@ -125,12 +125,12 @@ function findOverdue(dishesUsed, transactionsUsed) {
 function findLost(dishesUsed, transactionsUsed) {
   const transactions = transactionsUsed.filter(transaction => transaction.returned.timestamp == "");
   const timeToday = new Date();
-  var num = 0;
+  let num = 0;
   transactions.map(transaction => 
     {
-      var time = transaction.timestamp.slice(0,10);
+      let time = transaction.timestamp.slice(0,10);
       time = new Date(time);
-      var difference = (timeToday.getTime() - time.getTime()) / 86400000;
+      let difference = (timeToday.getTime() - time.getTime()) / 86400000;
       difference = parseInt(difference.toString());
       if (difference >=30) {
         num += 1;
@@ -150,8 +150,8 @@ function createRows(dishesUsed, transactionsUsed) {
     else {
       dish = dish[0];
     }
-    let id = dish.qid;
-    let type = dish.type;
+    const id = dish.qid;
+    const type = dish.type;
     let email = '';
     if(transaction.user == undefined) {
       email = 'NULL';
@@ -159,10 +159,9 @@ function createRows(dishesUsed, transactionsUsed) {
     else {
       email = transaction.user.email;
     }
-    let lost = '';
-    var status = '';
+    let status = '';
     let overdue = '';
-    var timestamp;
+    let timestamp;
     if (transaction.returned.timestamp != '') {
       timestamp = transaction.returned.timestamp;
     }
@@ -170,9 +169,9 @@ function createRows(dishesUsed, transactionsUsed) {
       timestamp = transaction.timestamp;
     }
     if (transaction.returned.timestamp == "") {
-      var time = transaction.timestamp.slice(0,10);
+      let time = transaction.timestamp.slice(0,10);
       time = new Date(time);
-      var difference = (timeToday.getTime() - time.getTime()) / 86400000;
+      let difference = (timeToday.getTime() - time.getTime()) / 86400000;
       difference = parseInt(difference.toString());
       if (difference >= 30) {
         status = 'lost'
@@ -340,13 +339,13 @@ function Admin() {
   const lost = findLost(dishesUsed, transactionsUsed);
   const overdue = findOverdue(dishesUsed, transactionsUsed) - lost;
 
-  let dishNumbers = [numBorrowedDishes, returnedDishes, overdue, lost];
+  const dishNumbers = [numBorrowedDishes, returnedDishes, overdue, lost];
   let tableRows = createRows(dishesUsed, transactionsUsed);
   tableRows = sortRows(tableRows);
-  let row = Rows(tableRows, searchValue); 
-  let bar = dishStatus(dishNumbers);
-  let table = dishTable();
-  let add = addDish();
+  const row = Rows(tableRows, searchValue); 
+  const bar = dishStatus(dishNumbers);
+  const table = dishTable();
+  const add = addDish();
 
 
   return (
