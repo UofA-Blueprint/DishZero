@@ -17,9 +17,7 @@ const DishLog = ({ dishes }) => {
   return (
     <div id="dish-log" className="mt-3">
       {dishes.map((dish) => {
-        if (dish.returned.timestamp == "") {
-          return <DishCard dish={dish} token={sessionToken} key={dish.id} />;
-        }
+        return <DishCard dish={dish} token={sessionToken} key={dish.id} />;
       }) }
     </div>
   );
@@ -64,7 +62,7 @@ const NewUser = (dishesUsed) => {
 
 
 const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == "").length
+  const checkedOutDishes = dishesUsed.length
   return (  
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
