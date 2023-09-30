@@ -24,7 +24,7 @@ const adminApi = {
     serverAddress: process.env.REACT_APP_BACKEND_ADDRESS,
 
     getTransactions: async function(token: string) {
-        const response: any = await axios.get(
+        const response = await axios.get(
             `${this.serverAddress}/api/transactions?all=true`,
             {
                 headers: headers(token)
@@ -34,12 +34,12 @@ const adminApi = {
         ).catch(
             err => { console.log(`Failed to get transactions from database. ${err}.`); }
         );
-        const transactions = response.data.transactions;
+        const transactions = response?.data.transactions;
         return transactions;
     },
 
     getAllDishes: async function(token: string) {
-        const response: any = await axios.get(
+        const response = await axios.get(
             `${this.serverAddress}/api/dish?all=true`, 
             {
                 headers: headers(token)
@@ -49,12 +49,12 @@ const adminApi = {
         ).catch(
             err => { console.log(`Failed to get dishes from database. ${err}.`); }
         );
-        const dishes = response.data.dishes;
+        const dishes = response?.data.dishes;
         return dishes;
     },
 
     getUsers: async function(token: string) {
-        const response: any = await axios.get(
+        const response = await axios.get(
             `${this.serverAddress}/api/users`, 
             {
                 headers: headers(token)
@@ -64,7 +64,7 @@ const adminApi = {
         ).catch(
             err => { console.log(`Failed to get users from database. ${err}.`) }
         );
-        const users = response.data.users;
+        const users = response?.data.users;
         return users;
     },
 
@@ -167,7 +167,7 @@ const adminApi = {
             }
         ).then(
             res => {
-                console.log("Successfully modified user's role.");
+                console.log("Successfully modified user's role.", res);
             }
         ).catch(
             err => {
