@@ -172,7 +172,7 @@ const Sidebar = () => {
         </Box>
         <Box sx={styles.tabsFrame}>
             <Typography sx={styles.adminPanelText}>Admin panel</Typography>
-            <Tab route="/home">
+            <Tab route="/admin">
                 <HomeIcon sx={styles.tabIcon}/>
                 <Typography sx={styles.tabName}>Home</Typography>
             </Tab>
