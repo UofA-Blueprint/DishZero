@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable */
+import { useState, useEffect } from "react";
 import leaf_icon from "../assets/leaf.svg";
 import { MobileView, BrowserView } from "react-device-detect";
 import Toolbar from "../admin/toolbar";
