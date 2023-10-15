@@ -10,14 +10,15 @@ const SES_CONFIG = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 }
 
+const senderEmail = process.env.SENDER_EMAIL;
+
 const sesClient = new SESClient(SES_CONFIG)
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ses/classes/sendemailcommand.html
 export const sendEmail = async (recepientEmails: Array<string>, subject: string, body: string) => {
     const params = {
         Destination: {
-            ToAddresses: [...recepientEmails],
-            CcAddresses: [...recepientEmails], // need to decided whether cc or to, upto dishzero
+            BccAddresses: [...recepientEmails]
         },
         Message: {
             Body: {
@@ -31,7 +32,7 @@ export const sendEmail = async (recepientEmails: Array<string>, subject: string,
                 Data: subject,
             },
         },
-        Source: '', // verified sender email address
+        Source: senderEmail,
     }
 
     const command = new SendEmailCommand(params)

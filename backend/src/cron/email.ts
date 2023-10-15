@@ -6,6 +6,8 @@ import { db } from '../internal/firebase'
 import nodeConfig from 'config'
 import { getOverdueUserEmails } from '../services/transactions'
 import { getTemplate } from '../services/email'
+import Logger from '../utils/logger'
+import { getAllDishes } from '../services/dish'
 
 export enum EmailClient {
     AWS = 'aws',
@@ -29,8 +31,16 @@ export class EmailCron implements Cron {
         if (enabled) {
             this.job = cron.schedule(this.options.cronExpression, async () => {
                 if (this.client === EmailClient.AWS) {
-                    console.log('Sending email with AWS')
+                    Logger.info({
+                        message: 'Sending email with AWS'
+                    })
+
                     // get overdue email addresses
+                    let recepients = []
+                    const dishes = await getAllDishes()
+                    for (const dish of dishes) {
+                        
+                    }
                     // send the emails
                 } else {
                     console.log('Sending email with nodemailer')
