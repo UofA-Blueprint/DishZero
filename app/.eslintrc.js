@@ -7,6 +7,8 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   rules: {
-    'no-console': 'warn',
-  }
-}
+    "no-console": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "prettier/prettier": "warn",
+  },
+};
