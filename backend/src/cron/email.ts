@@ -4,10 +4,10 @@ import { SendEmailCommand } from '@aws-sdk/client-ses'
 import { sendEmail, sesClient } from '../internal/sesClient'
 import { db } from '../internal/firebase'
 import nodeConfig from 'config'
-import { getOverdueUserEmails } from '../services/transactions'
 import { getTemplate } from '../services/email'
 import Logger from '../utils/logger'
 import { getAllDishes } from '../services/dish'
+import { getUserById } from '../services/users'
 
 export enum EmailClient {
     AWS = 'aws',
@@ -32,16 +32,47 @@ export class EmailCron implements Cron {
             this.job = cron.schedule(this.options.cronExpression, async () => {
                 if (this.client === EmailClient.AWS) {
                     Logger.info({
-                        message: 'Sending email with AWS'
+                        message: 'Sending email with AWS',
                     })
 
                     // get overdue email addresses
-                    let recepients = []
+                    const oneHour = 1000 * 3600 // hours
+                    let recipients = []
                     const dishes = await getAllDishes()
                     for (const dish of dishes) {
-                        
+                        if (dish.borrowed && dish.userId && dish.borrowedAt) {
+                            const currentTime = new Date()
+                            const borrowedDate = new Date(dish.borrowedAt.toString())
+                            const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
+
+                            if (hoursSinceBorrow > 48) {
+                                const user = await getUserById(dish.userId)
+                                if (user?.email) {
+                                        recipients.push(user.email)
+                                }
+                            }
+                        }
                     }
-                    // send the emails
+
+                    recipients = [... new Set(recipients)]
+                    
+                    const template = await getTemplate()
+                    const subject = template.subject
+                    const body = template.body
+
+                    if (recipients.length > 0) {
+                        // send the emails
+                        console.log('Sending emails using AWS')
+                        Logger.info({
+                            message: 'sending emails',
+                            recipients,
+                        })
+                        // sendEmail(recipients, subject, body)
+                    } else {
+                        Logger.info({
+                            message: "no users have overdue dish"
+                        })
+                    }
                 } else {
                     console.log('Sending email with nodemailer')
                 }

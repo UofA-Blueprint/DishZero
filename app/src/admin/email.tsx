@@ -3,20 +3,12 @@ import leaf_icon from "../assets/leaf.svg";
 import { BrowserView, MobileView } from "react-device-detect";
 import Toolbar from "./toolbar";
 import {} from "./styledEmail";
-import { StyledAdminPageLayout } from "./styledAdmin";
 import {
   Alert,
   Avatar,
   Box,
   Button,
-  Checkbox,
-  Collapse,
-  Dialog,
   Fade,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  IconButton,
   TextField,
   Typography,
 } from "@mui/material";
@@ -56,7 +48,6 @@ function Email() {
       );
 
       if (!(response && response.status === 200)) {
-        console.log("data", response.data);
         alert(
           "Unable to get saved template! Make sure you enter all fields before saving."
         );
@@ -65,9 +56,8 @@ function Email() {
         const data = response.data;
         setContent(data.cron.body);
         setSubject(data.cron.subject);
-        const daysArr = (data.cron.expression as String).split(" ");
+        const daysArr = (data.cron.expression as string).split(" ");
         const daysExpr = daysArr[daysArr.length - 1] as string;
-        console.log(daysExpr);
         const exprMap = {
           MON: "monday",
           TUE: "tuesday",
@@ -77,7 +67,7 @@ function Email() {
           SAT: "saturday",
           SUN: "sunday",
         };
-        let days = {
+        const days = {
           monday: false,
           tuesday: false,
           wednesday: false,
@@ -86,12 +76,12 @@ function Email() {
           saturday: false,
           sunday: false,
         };
-        for (let day of daysExpr.split(",")) {
+        for (const day of daysExpr.split(",")) {
           days[exprMap[day]] = true;
         }
         setDays(days);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       alert(
         "Unable to get saved template! Make sure you enter all fields before saving."
@@ -185,7 +175,7 @@ function Email() {
 
         return;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       setErrorOpen(true);
       setTimeout(() => {
@@ -220,7 +210,7 @@ function Email() {
           setErrorOpen(false);
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log(error);
       setErrorOpen(true);
       setTimeout(() => {
