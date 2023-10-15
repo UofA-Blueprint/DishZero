@@ -78,9 +78,9 @@ export function AuthProvider({ children }) {
         console.log(data);
         // if it gets here then current user should be null
         setCurrentUser({
-          id: data.id,
-          role: data.role,
-          email: data.email,
+          id: data?.id,
+          role: data?.role,
+          email: data?.email,
         });
       } else {
         console.log("no token found or something");
