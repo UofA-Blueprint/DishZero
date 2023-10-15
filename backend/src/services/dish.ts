@@ -28,6 +28,7 @@ export const getDishById = async (id: string): Promise<Dish | null | undefined> 
         timesBorrowed: snapshot.data()?.timesBorrowed,
         status: snapshot.data()?.status,
         userId: snapshot.data()?.userId,
+        borrowedAt: snapshot.data()?.borrowedAt ? snapshot.data()?.borrowedAt : null
     }
 }
 
@@ -62,6 +63,7 @@ export const createDishInDatabase = async (dish: Dish) => {
     dish.timesBorrowed = 0
     dish.status = DishStatus.available
     dish.userId = null
+    dish.borrowedAt = null
 
     let createdDish = await db.collection('dishes').add(dish)
     Logger.info({
@@ -96,6 +98,7 @@ export async function getAllDishesSimple(): Promise<Array<Dish>> {
             timesBorrowed: data.timesBorrowed,
             status: data.status,
             userId: data.userId,
+            borrowedAt: data.borrowedAt ? data.borrowedAt : null
         })
     })
     Logger.info({
@@ -127,6 +130,8 @@ export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<A
             timesBorrowed: data.timesBorrowed,
             status: data.status,
             userId: data.userId,
+            borrowedAt: data.borrowedAt ? data.borrowedAt : null
+
         })
     })
     Logger.info({
@@ -159,6 +164,8 @@ export async function getAllDishes(): Promise<Array<Dish>> {
             status: data.status ? data.status : DishStatus.available,
             condition: data.condition ? data.condition : '',
             userId: data.userId ? data.userId : null,
+            borrowedAt: data.borrowedAt ? data.borrowedAt : null
+
         })
     })
     Logger.info({
@@ -191,6 +198,8 @@ export async function getUserDishes(userClaims: DecodedIdToken): Promise<Array<D
             status: data.status ? data.status : DishStatus.available,
             condition: data.condition ? data.condition : '',
             userId: data.user ? data.user : null,
+            borrowedAt: data.borrowedAt ? data.borrowedAt : null
+
         })
     })
     Logger.info({
@@ -240,6 +249,7 @@ export const updateBorrowedStatus = async (
     // when borrowing, set userId and increase timesBorrowed
     let timesBorrowed = borrowed ? dish.timesBorrowed + 1 : dish.timesBorrowed
     let userId = borrowed ? userClaims.uid : null
+    let borrowedAt = borrowed ? new Date().toISOString() : null
     let dishCondition
     if (condition) {
         dishCondition = condition
@@ -251,6 +261,7 @@ export const updateBorrowedStatus = async (
         borrowed,
         timesBorrowed,
         userId,
+        borrowedAt
     })
     Logger.info({
         module: 'dish.services',

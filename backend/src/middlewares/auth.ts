@@ -7,7 +7,7 @@ import Logger from '../utils/logger'
 import { getUserById } from '../services/users'
 dotenv.config()
 
-const API_KEY = process.env.API_KEY || 'test'
+const API_KEY = process.env.REACT_APP_API_KEY || 'test'
 export const SECRET_KEY: Secret = process.env.SECRET_KEY!
 
 // Define the custom request object

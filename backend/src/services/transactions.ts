@@ -10,7 +10,7 @@ export const getUserTransactions = async (userClaims: DecodedIdToken) => {
     let transactions = <Array<Transaction>>[]
     let transactionsQuerySnapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .get()
     transactionsQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
@@ -57,7 +57,7 @@ export const registerTransaction = async (transaction: Transaction) => {
 export const getLatestTransaction = async (userClaims: DecodedIdToken, qid: number) => {
     let transactionQuery = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .where('dish.qid', '==', qid)
         .where('returned.timestamp', '==', '')
         .get()
@@ -124,7 +124,7 @@ export const getLatestTransactionByTstampAndDishId = async (dishId: string) => {
 export const getLatestTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
     let snapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .where('dish.id', '==', dishId)
         .where('returned.timestamp', '==', '')
         .get()
