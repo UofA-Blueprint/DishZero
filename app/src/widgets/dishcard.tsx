@@ -8,7 +8,9 @@ export default ({dish,token}) => {
   const [dishAPI, setDishAPI] = useState([])
   const twoDaysInMs = 86400000 * 2
     useEffect(()=>{
-        axios.get(`/api/dish`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}, params:{"id":dish.dish}})
+        axios.get(`/api/dish`, {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":token}, 
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+        params:{"id":dish.dish}})
         .then(function (response) {
           setDishAPI(response.data.dish)
         })

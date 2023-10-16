@@ -64,7 +64,7 @@ const NewUser = (dishesUsed) => {
 
 
 const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == "").length
+  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
   return (
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
@@ -96,7 +96,7 @@ const GetDishes = (dishesUsed) =>{
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
-  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != "").length
+  const returnedDishes = dishesUsed?.filter(dish => dish.returned.timestamp != "").length
   return (
     <div style={{ padding: "24px" }}>
       <div id="impact" className="sub-header-3">
@@ -167,6 +167,7 @@ export default () => {
     axios
       .get(`/api/transactions`, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {
         setDishesUsed(response.data.transactions);

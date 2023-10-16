@@ -301,6 +301,7 @@ function Admin() {
     .get(`/api/dish`, {
       headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
       params: {all: true, transaction: true},
+      baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
     })
     .then(function (response) {
       setDishesUsed(response.data.dishes);
@@ -317,6 +318,7 @@ function Admin() {
       .get(`/api/transactions`, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
         params: {all: true},
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {
         setTransactionsUsed(response.data.transactions);
