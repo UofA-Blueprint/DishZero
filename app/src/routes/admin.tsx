@@ -110,7 +110,7 @@ function findOverdue(dishesUsed, transactionsUsed) {
   const transactions = transactionsUsed.filter(transaction => transaction.returned.timestamp == "");
   const timeToday = new Date();
   let num = 0;
-  transactions.map(transaction => 
+  transactions.map(transaction =>
     {
       let time = transaction.timestamp.slice(0,10);
       time = new Date(time);
@@ -127,7 +127,7 @@ function findLost(dishesUsed, transactionsUsed) {
   const transactions = transactionsUsed.filter(transaction => transaction.returned.timestamp == "");
   const timeToday = new Date();
   let num = 0;
-  transactions.map(transaction => 
+  transactions.map(transaction =>
     {
       let time = transaction.timestamp.slice(0,10);
       time = new Date(time);
@@ -264,7 +264,7 @@ function Rows(tableRows, search) {
         </ul>
       </nav>
     </div>
-    
+
     );
 }
 
@@ -298,7 +298,7 @@ function Admin() {
   //get dishes
   useEffect(() => {
     axios
-    .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {
+    .get(`/api/dish`, {
       headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
       params: {all: true, transaction: true},
     })
@@ -310,11 +310,11 @@ function Admin() {
       });
   }, []);
 
-  
+
   //get transactions
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/transactions`, {
+      .get(`/api/transactions`, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
         params: {all: true},
       })
@@ -343,7 +343,7 @@ function Admin() {
   const dishNumbers = [numBorrowedDishes, returnedDishes, overdue, lost];
   let tableRows = createRows(dishesUsed, transactionsUsed);
   tableRows = sortRows(tableRows);
-  const row = Rows(tableRows, searchValue); 
+  const row = Rows(tableRows, searchValue);
   const bar = dishStatus(dishNumbers);
   const table = dishTable();
   const add = addDish();
@@ -368,15 +368,15 @@ function Admin() {
             <p className="sub-header-2">Home</p>
             {bar}
             <p className="sub-header-2" style={{marginTop: 40}}>Recent transactions</p>
- 
+
             <div className="d-flex" style={{marginBottom: '16px'}}>
 
               {/* search Bar */}
-              
-              <input 
-                className="search-container d-flex" 
-                type="text" 
-                placeholder="Type text here..." 
+
+              <input
+                className="search-container d-flex"
+                type="text"
+                placeholder="Type text here..."
                 onChange={searchChange}
                 value={searchInput}
                 style={{marginRight: '8px'}}/>
@@ -384,7 +384,7 @@ function Admin() {
               <button className="search-b d-flex" onClick={handleClick}>
                 <p className='sub-header-3'>Search</p>
               </button>
-              
+
               <div className="d-flex justify-content-end" style={{width: '100%'}}>
                 {add}
               </div>

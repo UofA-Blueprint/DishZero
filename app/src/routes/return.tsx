@@ -226,7 +226,7 @@ const Return = () => {
     const [dishID, setDishID] = useState('')
     const { currentUser, sessionToken } = useAuth();
 
-    
+
 
     const navigate = useNavigate()
     const location = useLocation();
@@ -262,7 +262,7 @@ const Return = () => {
 
     const onSubmit = async (condition: string) => {
         console.log("peewoop") //Remove this
-        
+
         console.log("Session-token: ", sessionToken);
         let dishID;
 
@@ -282,7 +282,7 @@ const Return = () => {
         setIsLoading(true);
 
        await axios
-      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {
+      .get(`/api/dish`, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
         params: {qid: condition}
       })
@@ -295,21 +295,21 @@ const Return = () => {
         console.log(error);
       });
 
-      //let icon = eval(dishType + "Icon") Trying to create a dynamic variable which does work but does not properly reference the imported image variable. 
+      //let icon = eval(dishType + "Icon") Trying to create a dynamic variable which does work but does not properly reference the imported image variable.
       //How are we gonna handle other dish types?
-      //setDishIcon(icon); 
-          
+      //setDishIcon(icon);
 
-        
 
-        
 
-        await axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/return`, {
-           
+
+
+
+        await axios.post(`/api/dish/return`, {
+
             "returned": {
               "condition": "alright",
             }
-         
+
         },
         {headers:{"x-api-key":`${process.env.REACT_APP_API_KEY}`,"session-token":sessionToken, 'Content-Type': 'application/json'},
          params: {qid: condition},
@@ -327,8 +327,8 @@ const Return = () => {
             setError(error.response.data.message);
             setIsLoading(false);
             setPopUp(true);
-            
-        })        
+
+        })
     }
 
     const reportToggle = () => {
@@ -338,11 +338,11 @@ const Return = () => {
 
       if(reportPopUp){
         axios.post(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/condition?id=${dishID}`, {
-           
-         
+
+
             "condition": `${reportValue}`
-          
-       
+
+
       }, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken, 'Content-Type': 'application/json' },
       }).then(function (response) {
@@ -354,22 +354,22 @@ const Return = () => {
           // handle error
           console.log(error.response.data.message);
           setError(error.response.data.message);
-      })        
+      })
       }
 
       setReportPopUp(!reportPopUp)
-      
+
 
     }
 
-    
+
     return(
-        
-          
+
+
             <div style={{height: '100%', width: '100%', flex: 1, alignItems: 'center', justifyContent: 'center'}}>
               {(isLoading) ? <></> : <AppHeader title = {'Return Dishes'} className = {"headerDiv"} /> }
               {(isLoading) ?
-              
+
                 <Box sx={isMobile ? stylesConst.rootMobileLoader : stylesConst.rootDesktop}>
                   <BallTriangle
                       height={100}
@@ -381,7 +381,7 @@ const Return = () => {
                     />
                 </Box> : <></>}
                 {
-                    (reportPopUp) ? 
+                    (reportPopUp) ?
                     <Box sx={{...stylesConst.boxContainer, zIndex: 10000, width: 300, height: 500, border: 3, flexDirection: 'column', borderColor: "black", color: "white", justifyContent: 'space-evenly', alignItems: 'center', position: 'absolute', top: 150, left: 60}}>
                       <Typography sx = {{color: "black", fontSize: 30}}>Report</Typography>
                       <Avatar src={dishType == "plate" ? plateIcon : mugIcon} sx = {{width: 75, height: 75}}></Avatar>
@@ -398,25 +398,25 @@ const Return = () => {
                     </FormGroup>
                     <Button variant="contained" onClick={reportToggle} sx = {{color : "white", backgroundColor: "red"}}>Report</Button>
 
-                      
-          
+
+
                     </Box> : <></>
                   }
-              {(popUp) ? 
+              {(popUp) ?
                 <Box sx={stylesConst.boxContainer}>
-                  
+
                     <Avatar
                       src={dishType === 'plate' ? plateIcon : mugIcon}
                       sx={{marginRight: 2.5}}
                       alt="Sign In Button Logo"
                     />
                     <div style={stylesConst.divContainer}>
-                      
+
                       {
-                        (error) ? 
+                        (error) ?
                         <div>
                           <Typography sx={stylesConst.errorText}>
-                            {error} 
+                            {error}
                           </Typography >
                           <Typography sx={stylesConst.errorText}>
                             Failed to return
@@ -427,7 +427,7 @@ const Return = () => {
                             Successfully returned
                           </Typography >
                           <img style={{ paddingRight: 16 }} src={ReportIcon} alt="" onClick={reportToggle}/>
-                          
+
                         </div>
                       }
                       <Typography variant="h6" sx={stylesConst.text}>
@@ -438,7 +438,7 @@ const Return = () => {
               <CameraInput setLoading={setIsLoading} style = {{height: '100%'}} onSubmit={onSubmit}/>
               <BottomTextInput disabled = {isLoading} onSubmit = {onSubmit}/>
             </div>
-          
+
     )
 }
 
@@ -463,9 +463,9 @@ const stylesConst = {
   },
 
   divContainer: {
-    
+
     flexDirection: 'column'
-   
+
   },
 
   errorText:{
