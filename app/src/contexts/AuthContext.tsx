@@ -63,24 +63,25 @@ export function AuthProvider({ children }) {
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/users/session`,
+        `/api/users/session`,
         {
+          baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
           headers: {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
-        }
+        },
       );
 
       const data = response.data.user;
-      if (response && response.status === 200) {
+      if (response && response?.status === 200) {
         console.log("setting current user");
         console.log(data);
         // if it gets here then current user should be null
         setCurrentUser({
-          id: data.id,
-          role: data.role,
-          email: data.email,
+          id: data?.id,
+          role: data?.role,
+          email: data?.email,
         });
       } else {
         console.log("no token found or something");
@@ -89,7 +90,7 @@ export function AuthProvider({ children }) {
     } catch (error: any) {
       console.error("Failed to call authentication. e ");
       console.error(error);
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         console.log("user unauthorised");
         logout();
       }
@@ -115,12 +116,13 @@ export function AuthProvider({ children }) {
       }
 
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login/`,
+        `/api/auth/login/`,
         { idToken: idToken },
         {
           headers: {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
           },
+          baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
         }
       );
 
@@ -147,9 +149,10 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     const res = await axios.post(
-      `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/logout/`,
+      `/api/auth/logout/`,
       {},
       {
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
         headers: {
           "x-api-key": `${process.env.REACT_APP_API_KEY}`,
           "session-token": sessionToken
