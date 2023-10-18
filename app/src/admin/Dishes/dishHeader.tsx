@@ -4,7 +4,6 @@ import { Box, Button, IconButton, InputAdornment, TextField, Typography, styled 
 import { useState } from 'react'
 import AddNewDishDialog from './addNewDish'
 import { Dish } from '../constants'
-import { GridRowId } from '@mui/x-data-grid'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const StyledOutlinedButton = styled(Button)(({ theme }) => ({
