@@ -6,7 +6,6 @@ import ReturnRoute from './return'
 import Admin from './admin'
 import { Sidebar } from '../widgets/sidebar'
 import { Error404 } from './misc'
-import Dishes from '../admin/Dishes/dishes'
 import Email from '../admin/email'
 import Users from '../admin/users'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
@@ -111,11 +110,11 @@ const router = createBrowserRouter([
                     // TODO: put admin related children here
                     {
                         path: '/admin',
-                        element: <Admin />,
+                        element: <Admin path={''} />,
                     },
                     {
                         path: '/admin/dishes',
-                        element: <Dishes />,
+                        element: <Admin path={'dishes'} />,
                     },
                     {
                         path: '/admin/users',

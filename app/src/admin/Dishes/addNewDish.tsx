@@ -12,7 +12,7 @@ import {
     Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { StyledContainedButton, StyledOutlinedButton } from './dishHeader'
+import { StyledContainedButton, StyledOutlinedButton } from './constants'
 
 interface Props {
     open: boolean
