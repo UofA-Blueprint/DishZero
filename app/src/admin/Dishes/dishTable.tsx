@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Simulate } from 'react-dom/test-utils'
 import load = Simulate.load
-import { Dish, DishStatus, DishType } from '../constants'
+import { Dish, DishStatus, DishStatusColors, DishType, DishTypeColors } from '../constants'
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
 import { DataGrid, GridColDef, DataGridProps, GridRowId } from '@mui/x-data-grid'
@@ -10,6 +10,7 @@ import { useDemoData } from '@mui/x-data-grid-generator'
 import { styled } from '@mui/material/styles'
 import NoDishesOverlay from './NoDishesOverlay'
 import CustomToolbar from './customToolbar'
+import { Chip } from '@mui/material'
 
 export const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     '& .MuiDataGrid-columnHeaders': {
@@ -64,6 +65,22 @@ export default function AdminDishTable({ rows, setRows }: Props) {
             width: 200,
             type: 'singleSelect',
             valueOptions: Object.values(DishType) as string[],
+            renderCell(params) {
+                return (
+                    <>
+                        {params && (
+                            <Chip
+                                variant="outlined"
+                                sx={{
+                                    color: `${DishTypeColors[params.formattedValue] ?? 'inherit'}`,
+                                    border: `2px solid ${DishTypeColors[params.formattedValue] ?? 'inherit'}`,
+                                }}
+                                label={params.formattedValue}
+                            />
+                        )}
+                    </>
+                )
+            },
         },
         {
             field: 'status',
@@ -71,18 +88,41 @@ export default function AdminDishTable({ rows, setRows }: Props) {
             width: 200,
             editable: true,
             type: 'singleSelect',
-
             valueOptions: Object.values(DishStatus) as string[],
+            renderCell(params) {
+                return (
+                    <>
+                        {params && (
+                            <Chip
+                                variant="outlined"
+                                sx={{
+                                    color: `${DishStatusColors[params.formattedValue] ?? 'inherit'}`,
+                                    border: `2px solid ${DishStatusColors[params.formattedValue] ?? 'inherit'}`,
+                                }}
+                                label={params.formattedValue}
+                            />
+                        )}
+                    </>
+                )
+            },
         },
-        { field: 'overdue', headerName: 'Overdue', width: 200 },
+        {
+            field: 'overdue',
+            headerName: 'Overdue',
+            width: 200,
+            renderCell(params) {
+                return <>{params.row['status'] == DishStatus.OVERDUE && <>{params.formattedValue}</>}</>
+            },
+        },
         { field: 'timesBorrowed', headerName: 'Times Borrowed', width: 200 },
         {
             field: 'dateAdded',
             headerName: 'Date Added',
             width: 200,
-            valueFormatter: ({ value }: { value: Date }) => {
+            valueFormatter({ value }: { value: Date }) {
                 return value.toDateString()
             },
+            type: 'date',
         },
     ]
 

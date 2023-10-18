@@ -14,12 +14,25 @@ export enum DishType {
 }
 // export const DishTypeArray = ['Mug', 'Dish']
 
+export const DishTypeColors = {
+    Mug: '#496EA5',
+    Dish: '#496EA5',
+}
+
 export enum DishStatus {
     BORROWED = 'Borrowed',
     RETURNED = 'Returned',
     LOST = 'Lost',
     OVERDUE = 'Overdue',
     BROKEN = 'Broken',
+}
+
+export const DishStatusColors = {
+    Borrowed: '#68B49A',
+    Returned: '#29604D',
+    Lost: '#BF4949',
+    Overdue: '#BF4949',
+    Broken: '#BF4949',
 }
 // export const DishStatusArray = ['Borrowed', 'Returned', 'Lost', 'Overdue', 'Broken']
 
@@ -37,7 +50,7 @@ export const dishes: Dish[] = [
     {
         dishId: 123456786,
         dishType: DishType.DISH,
-        status: DishStatus.BORROWED,
+        status: DishStatus.RETURNED,
         // dishType: 'Dish',
         // status: 'Borrowed',
         overdue: 2,
@@ -47,7 +60,7 @@ export const dishes: Dish[] = [
     {
         dishId: 123456787,
         dishType: DishType.DISH,
-        status: DishStatus.BORROWED,
+        status: DishStatus.LOST,
         // dishType: 'Dish',
         // status: 'Borrowed',
         overdue: 0,
@@ -57,7 +70,7 @@ export const dishes: Dish[] = [
     {
         dishId: 123456788,
         dishType: DishType.MUG,
-        status: DishStatus.BORROWED,
+        status: DishStatus.OVERDUE,
         // dishType: 'Mug',
         // status: 'Borrowed',
         overdue: 0,
@@ -67,7 +80,7 @@ export const dishes: Dish[] = [
     {
         dishId: 123456789,
         dishType: DishType.DISH,
-        status: DishStatus.BORROWED,
+        status: DishStatus.BROKEN,
         // dishType: 'Dish',
         // status: 'Borrowed',
         overdue: 0,
