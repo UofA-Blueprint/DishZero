@@ -1,8 +1,10 @@
+/*eslint-disable*/
 import { Add, IosShare, Search, Clear } from '@mui/icons-material'
 import { Box, Button, IconButton, InputAdornment, TextField, Typography, styled } from '@mui/material'
 import { useState } from 'react'
 import AddNewDishDialog from './addNewDish'
 import { Dish } from '../constants'
+import { GridRowId } from '@mui/x-data-grid'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const StyledOutlinedButton = styled(Button)(({ theme }) => ({
@@ -69,7 +71,7 @@ export default function AdminDishHeader({ allRows, setRows }: Props) {
                 alignItems={'center'}>
                 <Box display="flex" alignItems={'center'}>
                     <TextField
-                        placeholder="Search dish..."
+                        placeholder="Search data..."
                         size="small"
                         sx={{
                             color: '#C2C2C2',
@@ -106,7 +108,12 @@ export default function AdminDishHeader({ allRows, setRows }: Props) {
                     <StyledOutlinedButton>Search</StyledOutlinedButton>
                 </Box>
                 <Box display="flex" alignItems={'center'}>
-                    <StyledOutlinedButton startIcon={<IosShare></IosShare>}>Export Data</StyledOutlinedButton>
+                    {/* <StyledOutlinedButton
+                        startIcon={<IosShare></IosShare>}
+                        onClick={exportData}
+                        disabled={selectedRows.length === 0}>
+                        Export {allRows.length === selectedRows.length ? 'All' : `${selectedRows.length}`} Rows
+                    </StyledOutlinedButton> */}
                     <StyledContainedButton variant="contained" startIcon={<Add></Add>} onClick={() => setOpen(true)}>
                         Add new dish
                     </StyledContainedButton>

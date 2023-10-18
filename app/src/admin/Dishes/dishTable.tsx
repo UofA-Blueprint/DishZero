@@ -5,10 +5,11 @@ import load = Simulate.load
 import { Dish, DishStatus, DishType } from '../constants'
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
-import { DataGrid, GridColDef, DataGridProps } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, DataGridProps, GridRowId } from '@mui/x-data-grid'
 import { useDemoData } from '@mui/x-data-grid-generator'
 import { styled } from '@mui/material/styles'
 import NoDishesOverlay from './NoDishesOverlay'
+import CustomToolbar from './customToolbar'
 
 export const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
     '& .MuiDataGrid-columnHeaders': {
@@ -38,20 +39,15 @@ interface Props {
 }
 
 export default function AdminDishTable({ rows, setRows }: Props) {
-    const [headerChecked, setHeaderChecked] = useState(false)
-    const [selectedList, setSelectedList] = useState(Array(rows.length).fill(false))
-
-    const [selectedCount, setSelectedCount] = useState(0)
-
     const { currentUser, sessionToken } = useAuth()
 
-    const loadDataFromBackend = async function () {
-        let dishData = []
-        if (sessionToken) {
-            dishData = await adminApi.getAllDishes(sessionToken)
-        }
-        setRows(dishData)
-    }
+    // const loadDataFromBackend = async function () {
+    //     let dishData = []
+    //     if (sessionToken) {
+    //         dishData = await adminApi.getAllDishes(sessionToken)
+    //     }
+    //     setRows(dishData)
+    // }
 
     // useEffect(() => {
     //     if (rows.length == 0) {
@@ -59,17 +55,6 @@ export default function AdminDishTable({ rows, setRows }: Props) {
     //         loadDataFromBackend()
     //     }
     // }, [])
-
-    // Handles the state change of the checkbox in table head
-    const handleHeaderCheckChange = () => {
-        const newHeaderVal = !headerChecked
-        setHeaderChecked(newHeaderVal)
-        if (newHeaderVal) {
-            setSelectedList(Array(selectedList.length).fill(true))
-        } else {
-            setSelectedList(Array(selectedList.length).fill(false))
-        }
-    }
 
     const columns: GridColDef[] = [
         { field: 'dishId', headerName: 'Dish Id', width: 200 },
@@ -122,6 +107,7 @@ export default function AdminDishTable({ rows, setRows }: Props) {
                     slots={{
                         noRowsOverlay: NoDishesOverlay,
                         noResultsOverlay: NoDishesOverlay,
+                        toolbar: CustomToolbar,
                     }}
                     slotProps={{
                         panel: {
