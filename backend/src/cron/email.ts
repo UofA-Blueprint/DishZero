@@ -47,8 +47,8 @@ export class EmailCron implements Cron {
 
                             if (hoursSinceBorrow > 48) {
                                 const user = await getUserById(dish.userId)
-                                if (user?.email) {
-                                        recipients.push(user.email)
+                                if (user?.email == process.env.SENDER_EMAIL) {
+                                        recipients.push(user?.email)
                                 }
                             }
                         }
@@ -67,7 +67,7 @@ export class EmailCron implements Cron {
                             message: 'sending emails',
                             recipients,
                         })
-                        // sendEmail(recipients, subject, body)
+                    sendEmail(recipients, subject, body)
                     } else {
                         Logger.info({
                             message: "no users have overdue dish"
