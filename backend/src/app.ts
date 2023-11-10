@@ -12,7 +12,9 @@ import { qrCodeRouter } from './routes/qrCode'
 const app = express()
 dotenv.config()
 
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 app.use(express.json())
 app.use(cookieParser())
 
