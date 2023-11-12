@@ -20,12 +20,14 @@ export default ({dish,token}) => {
       },[])
 
 
-    const icon = dishAPI['type'] == 'mug' ? mug : container
+    // const icon = dishAPI['type'] == 'mug' ? mug : container
+    const icon = dishAPI && dishAPI['type'] === 'mug' ? mug : container;
+
 
     const dishCheckOut = new Date(dish.timestamp)
     const dishDue = new Date(dishCheckOut.getTime() + twoDaysInMs)
     return (
-        <div className="dish-card mb-3">
+        <div className="dish-card mb-3" data-testid = "dish-card">
             <div className="type-icon">
               <img src={icon}></img>
             </div>

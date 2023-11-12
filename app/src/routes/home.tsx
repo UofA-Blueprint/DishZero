@@ -14,6 +14,9 @@ import MobileBackground from '../assets/leaf-mobile-background.png';
 
 const DishLog = ({ dishes }) => {
   const { sessionToken } = useAuth();
+  if(!dishes){
+    dishes = []
+  }
   return (
     <div id="dish-log" className="mt-3">
       {dishes.map((dish) => {
@@ -192,6 +195,7 @@ export default () => {
     return(
       <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
       <BallTriangle
+          data-testid="ball-triangle-loading"
           height={100}
           width={100}
           radius={5}
