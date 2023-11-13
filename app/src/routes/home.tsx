@@ -11,6 +11,7 @@ import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import {BallTriangle} from 'react-loader-spinner';
 import MobileBackground from '../assets/leaf-mobile-background.png';
+import { check } from "prettier";
 
 const DishLog = ({ dishes }) => {
   const { sessionToken } = useAuth();
@@ -74,6 +75,7 @@ const GetDishes = (dishesUsed) =>{
           <p className="sub-header-3">My Dishes</p>
           <p className="details-2 mt-1">{checkedOutDishes} in use</p>
         </div>
+        
         { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
           <div className="d-flex flex-column">
             <div className="mt-5 d-flex justify-content-center">
@@ -163,7 +165,6 @@ export default () => {
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); //eslint-disable-line @typescript-eslint/no-unused-vars
-  console.log("test")
   let content;
   // Fetch dishes transaction for the user
   useEffect(() => {
