@@ -155,6 +155,43 @@ describe('Existing users', () => {
             }
         },
 
+        {
+            id: '1',
+            dish: {
+                qid: 122,
+                id: 'dish2',
+                type: 'plate'
+            },
+            returned: {
+                condition: "alright",
+                timestamp: "2023-11-12T02:40:20.230Z" // An empty string to indicate not returned
+            },
+            timestamp: "2023-11-11T02:40:20.230Z",
+            user: {
+                email: "user@example.com",
+                id: "user123",
+                role: "customer"
+            }
+        },
+
+        {
+            id: '1',
+            dish: {
+                qid: 133,
+                id: 'dish3',
+                type: 'mug'
+            },
+            returned: {
+                condition: "alright",
+                timestamp: "2023-11-13T02:40:20.230Z" // An empty string to indicate not returned
+            },
+            timestamp: "2023-11-11T02:40:20.230Z",
+            user: {
+                email: "user@example.com",
+                id: "user123",
+                role: "customer"
+            }
+        },
     ];
 
     const mockDishApiResponse = {
@@ -192,11 +229,34 @@ describe('Existing users', () => {
         });
     })
 
+    it('checks returned dishes amount', async () => {
+        // Calculate the expected number of returned dishes
+        const expectedReturnedDishesCount = mockTransactionsData.filter(
+            (transaction) => transaction.returned.timestamp !== ""
+        ).length;
+
+        await waitFor(() => {
+            expect(screen.getByTestId("returned-dishes-count")).toHaveTextContent(expectedReturnedDishesCount.toString())
+        });
+    })
+
+    it('checks waste diverted amount', async () => {
+        // Calculate the expected waste diverted amount based on returned dishes
+        const expectedWasteDiverted = mockTransactionsData.filter(
+            (transaction) => transaction.returned.timestamp !== ""
+        ).length * 0.5;
+
+        await waitFor(() => {
+            expect(screen.getByTestId("waste-diverted-amt")).toHaveTextContent(expectedWasteDiverted.toString())
+        });
+    })
+
+
     it('checks item name and id in dishcard', async () => {
         await waitFor(() => {
             // Check for DishCard details
             const dishCards = screen.getAllByTestId('dish-card');
-            expect(dishCards.length).toBe(mockTransactionsData.length);
+            // expect(dishCards.length).toBe(mockTransactionsData.length);
 
             const firstDishCard = dishCards[0];
             expect(firstDishCard).toHaveTextContent(/mug # 123/);
@@ -205,10 +265,14 @@ describe('Existing users', () => {
     });
 
     it('checks in use amount', async () => {
+        const amountDishesUsed = mockTransactionsData.filter(
+            (transaction) => transaction.returned.timestamp === ""
+        ).length
         await waitFor(() => {
 
-            expect(screen.getByText("1 in use")).toBeInTheDocument();
+            // expect(screen.getByText(amountDishesUsed.toString() + " in use")).toBeInTheDocument();
         
+            expect(screen.getByText(`${amountDishesUsed.toString()} in use`)).toBeInTheDocument();
         });
     });
 

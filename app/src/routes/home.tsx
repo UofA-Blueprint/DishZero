@@ -109,12 +109,12 @@ const ExistingUser = (dishesUsed) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{returnedDishes}</p>
+            <p className="header mb-0" data-testid="returned-dishes-count">{returnedDishes}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{returnedDishes * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <div className="d-flex"><p className="header mb-0" data-testid="waste-diverted-amt">{returnedDishes * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
             <p className="sub-header-3 mb-1">Waste Diverted</p>
           </div>
         </div>
