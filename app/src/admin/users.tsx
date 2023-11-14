@@ -277,6 +277,10 @@ const MainFrame = (props: MainframeProps) => {
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.data.length) : 0;
 
+    if (!props.rows.data) {
+        props.rows.data = []; // Ensure that it's always an array
+      }
+
     const [ data, setData ] = useState(
         stableSort(props.rows.data, getComparator(order, orderBy)).slice(
             page * rowsPerPage,
@@ -353,11 +357,12 @@ const MainFrame = (props: MainframeProps) => {
                                             data.map((row, index) => {
                                                 const labelId = `enhanced-table-checkbox-${index}`;
                                                 return (
-                                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
+                                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }} >
                                                         <TableCell
                                                             component="th"
                                                             id={labelId}
                                                             scope="row"
+                                                            data-testid={`row-${row.emailAddress}`}
                                                             padding="normal"
                                                         >
                                                             {row.emailAddress}
@@ -374,6 +379,7 @@ const MainFrame = (props: MainframeProps) => {
                                                                                 id="demo-simple-select"
                                                                                 value={row.role}
                                                                                 label="Role"
+                                                                                data-testid={`select-role-${row.emailAddress}`}
                                                                                 defaultValue=""
                                                                                 displayEmpty
                                                                                 inputProps={{ 'aria-label': 'Without label' }}
@@ -385,7 +391,7 @@ const MainFrame = (props: MainframeProps) => {
                                                                             </Select>
                                                                         </FormControl>
                                                                     </Box>
-                                                                : <Typography sx={styles.myRole}>{row.role}</Typography>
+                                                                : <Typography data-testid={`role-display-${row.emailAddress}`} sx={styles.myRole}>{row.role}</Typography>
                                                             }
                                                         </TableCell>
                                                     </TableRow>
@@ -605,6 +611,7 @@ export default function Users() {
                                         height={100}
                                         width={100}
                                         radius={5}
+                                        data-testid = "ball-triangle-loading"
                                         color="#4fa94d"
                                         ariaLabel="ball-triangle-loading"
                                         visible={true}
