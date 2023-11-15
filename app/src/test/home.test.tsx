@@ -1,4 +1,4 @@
-import { render, act, screen, waitFor } from "@testing-library/react";
+import { render, act, screen, waitFor, within } from "@testing-library/react";
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import '@testing-library/jest-dom';
@@ -24,17 +24,101 @@ jest.mock('../contexts/AuthContext', () => ({
     })
 }));
 
+test("Renders homepage for new users without crashing", async () => {
+    // Mock implementation for useAuth
+    useAuthMock.mockImplementation(() => ({
+        currentUser: {
+            id: 'mocked-user-id',
+            role: 'customer',
+            email: 'mocked-email@ualberta.ca'
+        },
+        sessionToken: 'mocked-session-token',
+        login: jest.fn(),
+        logout: jest.fn(),
+    }));
+
+    mockedAxios.get.mockResolvedValue({
+        data: {
+            transactions: [
+                // Empty transaction for new user
+            ]
+        }
+    });
+
+    render(
+        <Router>
+            <Homepage />
+        </Router>
+    )
+
+    await waitFor(() => {
+        expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+        expect(screen.getByText("How It Works")).toBeInTheDocument();
+        expect(screen.getByText("Our Impact")).toBeInTheDocument();
+        expect(screen.getByText("You don't have any dishes borrowed at the moment. Start borrowing to make an impact!")).toBeInTheDocument();
+    });
+});
+
+test("Renders homepage for existing users without crashing", async () => {
+    // Mock implementation for useAuth
+    useAuthMock.mockImplementation(() => ({
+        currentUser: {
+            id: 'mocked-user-id',
+            role: 'customer',
+            email: 'mocked-email@ualberta.ca'
+        },
+        sessionToken: 'mocked-session-token',
+        login: jest.fn(),
+        logout: jest.fn(),
+    }));
+
+    mockedAxios.get.mockResolvedValue({
+        data: {
+            transactions: [
+            {
+                id: '1',
+                dish: {
+                    qid: 123,
+                    id: 'dish1',
+                    type: 'mug'
+                },
+                returned: {
+                    condition: "alright",
+                    timestamp: "" // An empty string to indicate not returned
+                },
+                timestamp: "2023-11-11T02:40:20.230Z",
+                user: {
+                    email: "user@example.com",
+                    id: "user123",
+                    role: "customer"
+                }
+            },
+        ]}
+    });
+
+    render(
+        <Router>
+            <Homepage />
+        </Router>
+    )
+
+    await waitFor(() => {
+        expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+        expect(screen.getByText("My Impact")).toBeInTheDocument();
+        expect(screen.getByText("Dishes Used")).toBeInTheDocument();
+        expect(screen.getByText("Waste Diverted")).toBeInTheDocument();
+    });
+});
+
 describe('New users', () => {
     beforeEach(async () => {
         jest.clearAllMocks();
-
-        mockedAxios.get.mockResolvedValue({
-            data: {
-                transactions: [
-                    // Empty transaction for new user
-                ]
-            }
-        });
 
         // Mock implementation for useAuth
         useAuthMock.mockImplementation(() => ({
@@ -47,6 +131,14 @@ describe('New users', () => {
             login: jest.fn(),
             logout: jest.fn(),
         }));
+
+        mockedAxios.get.mockResolvedValue({
+            data: {
+                transactions: [
+                    // Empty transaction for new user
+                ]
+            }
+        });
 
         await act(async () => {
             render(
@@ -61,18 +153,11 @@ describe('New users', () => {
         useAuthMock.mockRestore();
     })
 
-    it('renders homepage for new user', async () => {
+    it('Redirects user to first external link', async () => {
         await waitFor(() => {
             expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
         });
 
-        await waitFor(() => {
-            expect(screen.getByText("You don't have any dishes borrowed at the moment. Start borrowing to make an impact!")).toBeInTheDocument();
-        });
-        
-    });
-
-    it('redirects user to first external link', async () => {
         // Find the first image link
         const imageLink = screen.getAllByAltText('External Link')[0];
         
@@ -86,7 +171,11 @@ describe('New users', () => {
         userEvent.click(imageLink);
     });
 
-    it('redirects user to second external link', async () => {
+    it('Redirects user to second external link', async () => {
+        await waitFor(() => {
+            expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+        });
+
         // Find the second image link
         const imageLink = screen.getAllByAltText('External Link')[1];
         
@@ -97,39 +186,36 @@ describe('New users', () => {
         userEvent.click(imageLink);
     });
 
-    it('clicks on borrow button', async () => {
+    it('Clicks on borrow button', async () => {
+        await waitFor(() => {
+            expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+        });
+        
         // Find the Borrow button
         const borrowButton = screen.getByText('Borrow');
 
         // Check if the borrow button is in a ReactRouterLink and navigates to the correct path
         const borrowLink = borrowButton.closest('a');
-        
-        if (borrowLink) {
-            expect(borrowLink.getAttribute('href')).toBe('/borrow');
-        } else {
-            throw new Error('Borrow link not found');
-        }
+        expect(borrowLink?.getAttribute('href')).toBe('/borrow');
 
         // Simulate a click on the borrow button
         userEvent.click(borrowButton);
-        
     });
 
-    it('clicks on scan button', async () => {
+    it('Clicks on scan button', async () => {
+        await waitFor(() => {
+            expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+        });
+
         // Find the scan image by alt text
         const scanImage = screen.getByAltText('scan icon');
 
         // Check if the scan image is in a ReactRouterLink and navigates to the correct path
         const scanLink = scanImage.closest('a');
-        
-        if (scanLink) {
-            expect(scanLink.getAttribute('href')).toBe('/borrow');
-        } else {
-            throw new Error('Scan link not found');
-        }
+        expect(scanLink?.getAttribute('href')).toBe('/borrow');
 
-        // Simulate a click on the borrow button
-        userEvent.click(scanLink);
+        // Simulate a click on the scan button
+        userEvent.click(scanImage);
     });
 
 });
@@ -156,7 +242,7 @@ describe('Existing users', () => {
         },
 
         {
-            id: '1',
+            id: '2',
             dish: {
                 qid: 122,
                 id: 'dish2',
@@ -164,7 +250,7 @@ describe('Existing users', () => {
             },
             returned: {
                 condition: "alright",
-                timestamp: "2023-11-12T02:40:20.230Z" // An empty string to indicate not returned
+                timestamp: "2023-11-12T02:40:20.230Z"
             },
             timestamp: "2023-11-11T02:40:20.230Z",
             user: {
@@ -175,7 +261,7 @@ describe('Existing users', () => {
         },
 
         {
-            id: '1',
+            id: '3',
             dish: {
                 qid: 133,
                 id: 'dish3',
@@ -183,7 +269,7 @@ describe('Existing users', () => {
             },
             returned: {
                 condition: "alright",
-                timestamp: "2023-11-13T02:40:20.230Z" // An empty string to indicate not returned
+                timestamp: "2023-11-13T02:40:20.230Z"
             },
             timestamp: "2023-11-11T02:40:20.230Z",
             user: {
@@ -192,16 +278,27 @@ describe('Existing users', () => {
                 role: "customer"
             }
         },
-    ];
 
-    const mockDishApiResponse = {
-        data: {
+        {
+            id: '4',
             dish: {
-                qid: 123,
-                type: "mug"
+                qid: 900,
+                id: 'dish4',
+                type: 'plate'
+            },
+            returned: {
+                condition: "alright",
+                timestamp: ""
+            },
+            timestamp: "2023-11-11T02:40:20.230Z",
+            user: {
+                email: "user@example.com",
+                id: "user123",
+                role: "customer"
             }
-        }
-    };
+        },
+
+    ];
 
     beforeEach(async () => {
         jest.clearAllMocks();
@@ -211,8 +308,17 @@ describe('Existing users', () => {
             data: { transactions: mockTransactionsData }
         });
 
-        // Mock the API call for dish details in the DishCard component
-        mockedAxios.get.mockResolvedValueOnce(mockDishApiResponse);
+        // Mocking the axios.get call for each unreturned dish based on their qid
+        mockTransactionsData.filter(transaction => transaction.returned.timestamp === "").forEach((transaction) => {
+            mockedAxios.get.mockResolvedValueOnce({
+                data: {
+                    dish: {
+                        qid: transaction.dish.qid,
+                        type: transaction.dish.type
+                    }
+                }
+            });
+        });
         
         await act(async () => {
             render(
@@ -223,83 +329,64 @@ describe('Existing users', () => {
         });
     });
 
-    it('renders homepage for existing user', async () => {
-        await waitFor(() => {
-            expect(screen.getByText("My Impact")).toBeInTheDocument();
-        });
-    })
-
-    it('checks returned dishes amount', async () => {
+    it('Checks returned dishes and waste diverted statistics', async () => {
         // Calculate the expected number of returned dishes
         const expectedReturnedDishesCount = mockTransactionsData.filter(
             (transaction) => transaction.returned.timestamp !== ""
         ).length;
 
+        // Calculate the expected waste diverted amount based on returned dishes
+        const expectedWasteDiverted = expectedReturnedDishesCount * 0.5;
+
+        await waitFor(() => {
+            expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+        });
+
         await waitFor(() => {
             expect(screen.getByTestId("returned-dishes-count")).toHaveTextContent(expectedReturnedDishesCount.toString())
-        });
-    })
-
-    it('checks waste diverted amount', async () => {
-        // Calculate the expected waste diverted amount based on returned dishes
-        const expectedWasteDiverted = mockTransactionsData.filter(
-            (transaction) => transaction.returned.timestamp !== ""
-        ).length * 0.5;
-
-        await waitFor(() => {
             expect(screen.getByTestId("waste-diverted-amt")).toHaveTextContent(expectedWasteDiverted.toString())
         });
     })
 
-
-    it('checks item name and id in dishcard', async () => {
-        await waitFor(() => {
-            // Check for DishCard details
-            const dishCards = screen.getAllByTestId('dish-card');
-            // expect(dishCards.length).toBe(mockTransactionsData.length);
-
-            const firstDishCard = dishCards[0];
-            expect(firstDishCard).toHaveTextContent(/mug # 123/);
-
-        });
-    });
-
-    it('checks in use amount', async () => {
+    it('Checks if in-use amount matches number of currently borrowed dishes', async () => {
         const amountDishesUsed = mockTransactionsData.filter(
             (transaction) => transaction.returned.timestamp === ""
         ).length
-        await waitFor(() => {
 
-            // expect(screen.getByText(amountDishesUsed.toString() + " in use")).toBeInTheDocument();
-        
+        await waitFor(() => {
+            expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
+        });
+
+        await waitFor(() => {
             expect(screen.getByText(`${amountDishesUsed.toString()} in use`)).toBeInTheDocument();
         });
     });
 
-    it('checks dishcard icon', async () => {
-        await waitFor(() => {
+    it('Checks dishcard details', async () => {
+        const dishCards = screen.getAllByTestId('dish-card');
 
-            expect(screen.getByAltText('Mug Icon')).toBeInTheDocument();
-
-        });
-    });
-
-    it('checks return by date', async () => {
-        await waitFor(() => {
-            const firstTransaction = mockTransactionsData[0];
-            const borrowDate = new Date(firstTransaction.timestamp);
-            const expectedReturnDate = new Date(borrowDate.getTime() + 86400000 * 2)
-
-            // Format the date as it should appear in the DishCard text content
+        // Only checking unreturned dishes
+        const unreturnedTransactions = mockTransactionsData.filter(t => t.returned.timestamp === "");
+        
+        // Verify each DishCard has the correct content
+        unreturnedTransactions.forEach((transaction, index) => {
+            const dishCard = dishCards[index]
+            const expectedName = new RegExp(`${transaction.dish.type} # ${transaction.dish.qid}`);
+            expect(dishCard).toHaveTextContent(expectedName);
+            
+            // Check the icon displayed in the DishCard
+            const expectedIconAltText = transaction.dish.type === 'mug' ? 'Mug Icon' : 'Container Icon';
+            const icon = within(dishCard).getByAltText(expectedIconAltText);
+            expect(icon).toBeInTheDocument();
+            
+            // Check if return by date is 48 hours after borrow date
+            const borrowDate = new Date(transaction.timestamp);
+            const expectedReturnDate = new Date(borrowDate.getTime() + 86400000 * 2);
             const expectedDateString = expectedReturnDate.toLocaleDateString("en-US", {
                 year: 'numeric', month: '2-digit', day: '2-digit'
             });
-            const textToFind = new RegExp(`Return before\\s*${expectedDateString}`);
-
-            const dishCards = screen.getAllByTestId('dish-card')
-            const firstDishCard = dishCards[0]
-            expect(firstDishCard).toHaveTextContent(textToFind)
-        
+            const textToFind = `Return before ${expectedDateString}`;
+            expect(dishCard).toHaveTextContent(textToFind);
         });
     });
 });
