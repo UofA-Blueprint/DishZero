@@ -43,6 +43,8 @@ import adminApi from "./adminApi";
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////
+
+//Headers of table aka MainFrame
 interface HeadCell {
     id: 'emailAddress' | 'inUse' | 'overdue' | 'role';
     label: string;
@@ -82,6 +84,7 @@ const headCells: readonly HeadCell[] = [
     }
 ];
 
+//model of data in table
 interface Data {
     userId: string;
     emailAddress: string;
@@ -163,6 +166,7 @@ const Tab = ({ children, route }) => {
     );
 }
 
+//Custom Sidebar
 const Sidebar = () => {
     return (
       <Box sx={styles.sidebar}>
@@ -248,6 +252,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
+//Main table displayed on page
 const MainFrame = (props: MainframeProps) => {
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data>('inUse');
@@ -424,6 +429,7 @@ const MainFrame = (props: MainframeProps) => {
     );
 };
 
+//Filter roles displayed on table
 function RoleFilterDialog(props: RoleFilterDialogProps) {
     const open = props.open;
     const handleClose = props.handleClose;
@@ -475,6 +481,8 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////// Main component //////////////////////////////
+
+//Main User component
 export default function Users() {
     const [ isLoading, setIsLoading ] = useState(true);
     const [ rows, setRows ] = useState<Rows>({
@@ -558,6 +566,7 @@ export default function Users() {
         }
     }, [role]);
 
+    //When role of user is changed, modify frontend and call modifyRole to change role in database
     function handleRoleUpdate(newRole: string, emailAddress: string) {
         // update user's role's state
         const updatedData = rows.data.map((row) => {
