@@ -16,7 +16,9 @@ import Logger from './utils/logger'
 const app = express()
 dotenv.config()
 
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 app.use(express.json())
 app.use(cookieParser())
 

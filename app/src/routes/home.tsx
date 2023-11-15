@@ -64,8 +64,8 @@ const NewUser = (dishesUsed) => {
 
 
 const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed.filter(dish => dish.returned.timestamp == "").length
-  return (  
+  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
+  return (
     <div id="dishes" style={{marginTop: '24px'}}>
         <div className="d-flex justify-content-between">
           <p className="sub-header-3">My Dishes</p>
@@ -91,12 +91,12 @@ const GetDishes = (dishesUsed) =>{
           </div>
         }
       </div>
-     
+
       )}
 
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
-  const returnedDishes = dishesUsed.filter(dish => dish.returned.timestamp != "").length  
+  const returnedDishes = dishesUsed?.filter(dish => dish.returned.timestamp != "").length
   return (
     <div style={{ padding: "24px" }}>
       <div id="impact" className="sub-header-3">
@@ -155,7 +155,7 @@ const Footer = () => {
 };
 
 export default () => {
-  //Show spinner as soon as page is refreshed 
+  //Show spinner as soon as page is refreshed
   const [isLoading, setIsLoading] = useState(true);
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
@@ -165,8 +165,9 @@ export default () => {
   // Fetch dishes transaction for the user
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/transactions`, {
+      .get(`/api/transactions`, {
         headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {
         setDishesUsed(response.data.transactions);
