@@ -13,6 +13,7 @@ import {BallTriangle} from 'react-loader-spinner';
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import { check } from "prettier";
 
+// Display DishCard for unreturned dishes
 const DishLog = ({ dishes }) => {
   const { sessionToken } = useAuth();
   if(!dishes){
@@ -30,6 +31,39 @@ const DishLog = ({ dishes }) => {
 };
 
 
+// Get user dishes status to be displayed in the homepage
+const GetDishes = (dishesUsed) =>{
+  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
+  return (
+    <div id="dishes" style={{marginTop: '24px'}}>
+        <div className="d-flex justify-content-between">
+          <p className="sub-header-3">My Dishes</p>
+          <p className="details-2 mt-1">{checkedOutDishes} in use</p>
+        </div>
+        
+        { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
+          <div className="d-flex flex-column">
+            <div className="mt-5 d-flex justify-content-center">
+              <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
+              <img src={leaf_green} style={{transform:'rotate(-45deg)', marginTop:'-16px'}} />
+              <img src={leaf_green} />
+            </div>
+            <div className="d-flex justify-content-center mt-3">
+              <p className="details-1 text-center" style={{maxWidth:'244px'}}>
+                You don't have any dishes borrowed at the moment. Start borrowing to make an impact!
+              </p>
+            </div>
+            <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
+              <ReactRouterLink to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
+                <p className="sub-header-3 text-center m-2">Borrow</p>
+              </ReactRouterLink>
+            </a>
+          </div>
+        }
+    </div>
+)}
+
+// Display homepage for new users
 const NewUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed);
   return (
@@ -67,38 +101,7 @@ const NewUser = (dishesUsed) => {
 };
 
 
-const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
-  return (
-    <div id="dishes" style={{marginTop: '24px'}}>
-        <div className="d-flex justify-content-between">
-          <p className="sub-header-3">My Dishes</p>
-          <p className="details-2 mt-1">{checkedOutDishes} in use</p>
-        </div>
-        
-        { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
-          <div className="d-flex flex-column">
-            <div className="mt-5 d-flex justify-content-center">
-              <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
-              <img src={leaf_green} style={{transform:'rotate(-45deg)', marginTop:'-16px'}} />
-              <img src={leaf_green} />
-            </div>
-            <div className="d-flex justify-content-center mt-3">
-              <p className="details-1 text-center" style={{maxWidth:'244px'}}>
-                You don't have any dishes borrowed at the moment. Start borrowing to make an impact!
-              </p>
-            </div>
-            <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
-              <ReactRouterLink to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
-                <p className="sub-header-3 text-center m-2">Borrow</p>
-              </ReactRouterLink>
-            </a>
-          </div>
-        }
-      </div>
-
-      )}
-
+// Display homepage for existing users
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
   const returnedDishes = dishesUsed?.filter(dish => dish.returned.timestamp != "").length
