@@ -23,7 +23,7 @@ const Confirm = ({ show, onSubmit, onCancel, id }) => {
         <p style={{ textAlign: "center" }}>ID: {id}</p>
       </Modal.Body>
       <Modal.Footer className="justify-content-center">
-        <Button variant="secondary" onClick={onSubmit}>
+        <Button data-testid = 'borrow-btn' variant="secondary" onClick={onSubmit}>
           Borrow
         </Button>
       </Modal.Footer>

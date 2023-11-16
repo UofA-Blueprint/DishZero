@@ -59,7 +59,7 @@ const BottomTextInput = ({ onSubmit }) => {
 
                         <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
 
-                        <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button">
+                        <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button" data-testid ='enter-btn'>
                             Enter
                         </Button>
 
