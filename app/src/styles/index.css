@@ -118,3 +118,9 @@ code {
 p::first-letter {
   text-transform:capitalize;
 }
+
+@media (max-width: 360px) {
+  .sub-header-3 {
+    font-size: 15px;
+  }
+}
