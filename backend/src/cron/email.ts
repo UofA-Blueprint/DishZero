@@ -34,45 +34,45 @@ export class EmailCron implements Cron {
                     Logger.info({
                         message: 'Sending email with AWS',
                     })
-
-                    // get overdue email addresses
-                    const oneHour = 1000 * 3600 // hours
-                    let recipients = []
-                    const dishes = await getAllDishes()
-                    for (const dish of dishes) {
-                        if (dish.borrowed && dish.userId && dish.borrowedAt) {
-                            const currentTime = new Date()
-                            const borrowedDate = new Date(dish.borrowedAt.toString())
-                            const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
-
-                            if (hoursSinceBorrow > 48) {
-                                const user = await getUserById(dish.userId)
-                                if (user?.email == process.env.SENDER_EMAIL) {
-                                        recipients.push(user?.email)
-                                }
-                            }
-                        }
-                    }
-
-                    recipients = [... new Set(recipients)]
                     
-                    const template = await getTemplate()
-                    const subject = template.subject
-                    const body = template.body
+                    // get overdue email addresses
+                    // const oneHour = 1000 * 3600 // hours
+                    // let recipients = []
+                    // const dishes = await getAllDishes()
+                    // for (const dish of dishes) {
+                    //     if (dish.borrowed && dish.userId && dish.borrowedAt) {
+                    //         const currentTime = new Date()
+                    //         const borrowedDate = new Date(dish.borrowedAt.toString())
+                    //         const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
 
-                    if (recipients.length > 0) {
-                        // send the emails
-                        console.log('Sending emails using AWS')
-                        Logger.info({
-                            message: 'sending emails',
-                            recipients,
-                        })
-                    sendEmail(recipients, subject, body)
-                    } else {
-                        Logger.info({
-                            message: "no users have overdue dish"
-                        })
-                    }
+                    //         if (hoursSinceBorrow > 48) {
+                    //             const user = await getUserById(dish.userId)
+                    //             if (user?.email == process.env.SENDER_EMAIL) {
+                    //                     recipients.push(user?.email)
+                    //             }
+                    //         }
+                    //     }
+                    // }
+
+                    // recipients = [... new Set(recipients)]
+                    
+                    // const template = await getTemplate()
+                    // const subject = template.subject
+                    // const body = template.body
+
+                    // if (recipients.length > 0) {
+                    //     // send the emails
+                    //     console.log('Sending emails using AWS')
+                    //     Logger.info({
+                    //         message: 'sending emails',
+                    //         recipients,
+                    //     })
+                    // // sendEmail(recipients, subject, body)
+                    // } else {
+                    //     Logger.info({
+                    //         message: "no users have overdue dish"
+                    //     })
+                    // }
                 } else {
                     console.log('Sending email with nodemailer')
                 }
@@ -109,3 +109,4 @@ export const getEmailCron = () => {
 export const setEmailCron = (cron: EmailCron) => {
     emailCron = cron
 }
+

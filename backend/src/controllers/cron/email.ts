@@ -254,3 +254,9 @@ export const enableEmailCron = async (enabled: boolean) => {
         enabled: enabled,
     })
 }
+
+export const stopEmailCron = async (enabled: boolean) => {
+    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
+        enabled: enabled,
+    })
+}
