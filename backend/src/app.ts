@@ -48,7 +48,6 @@ const handleCron = async () => {
     if (cron && cron?.enabled) {
         Logger.info('Initializing cron jobs')
         initializeEmailCron({ cronExpression: cron.expression}, EmailClient.AWS)
-        console.log(getEmailCron())
     }
 }
 

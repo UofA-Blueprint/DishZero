@@ -283,11 +283,7 @@ export const startEmailCron = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    let cron = getEmailCron()
-    if (cron) {
-        cron.stop()
-        setEmailCron(null)
-    }
+    await stopCron()
 
     const data = await fetchEmailCron()
 
@@ -296,16 +292,16 @@ export const startEmailCron = async (req: Request, res: Response) => {
     }
 
     initializeEmailCron({cronExpression: data.expression}, EmailClient.AWS)
-    
+
     await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
-        enabled: false,
+        enabled: true,
     })
 
     Logger.info({
-        message: "Stopped email cron"
+        message: "Started email cron"
     })
 
-    return res.status(200).json({message: "stopped email cron"})
+    return res.status(200).json({message: "started email cron"})
 }
 export const fetchEmailCron = async () => {
     let snapshot = await db.collection(nodeConfig.get('collections.cron')).doc('email').get()
@@ -322,3 +318,10 @@ export const enableEmailCron = async (enabled: boolean) => {
     })
 }
 
+export const stopCron = async () => {
+    let cron = getEmailCron()
+    if (cron) {
+        cron.stop()
+        setEmailCron(null)
+    }
+}
