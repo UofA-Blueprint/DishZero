@@ -14,7 +14,7 @@ export enum EmailClient {
     Nodemailer = 'nodemailer',
 }
 
-let emailCron: Cron | undefined
+let emailCron: Cron | null
 
 export class EmailCron implements Cron {
     private job: cron.ScheduledTask | undefined
@@ -100,13 +100,17 @@ export const isEmailCronEnabled = async () => {
 export const initializeEmailCron = async (options: CronOptions, client: EmailClient) => {
     emailCron = new EmailCron(options, client)
     emailCron.start()
+    Logger.info({
+        message: "starting email cron",
+        cron: emailCron
+    })
 }
 
 export const getEmailCron = () => {
     return emailCron
 }
 
-export const setEmailCron = (cron: EmailCron) => {
+export const setEmailCron = (cron: EmailCron | null) => {
     emailCron = cron
 }
 

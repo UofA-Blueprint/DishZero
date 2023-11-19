@@ -5,6 +5,8 @@ import Logger from '../../utils/logger'
 import { db } from '../../internal/firebase'
 import nodeConfig from 'config'
 import { validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
+import { EmailClient, getEmailCron, initializeEmailCron, setEmailCron } from '../../cron/email'
+import cron from 'node-cron';
 
 let moduleName = 'controllers.email'
 
@@ -240,6 +242,71 @@ export const updateEmailCronExpression = async (req: Request, res: Response) => 
     return res.status(200).json({ days })
 
 }
+
+export const stopEmailCron = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            message: 'User is not admin',
+            moduleName,
+            function: 'updateEmail',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let cron = getEmailCron()
+    if (cron) {
+        cron.stop()
+        setEmailCron(null)
+    }
+    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
+        enabled: false,
+    })
+
+    Logger.info({
+        message: "Stopped email cron"
+    })
+
+    return res.status(200).json({message: "stopped email cron"})
+}
+
+export const startEmailCron = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            message: 'User is not admin',
+            moduleName,
+            function: 'updateEmail',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let cron = getEmailCron()
+    if (cron) {
+        cron.stop()
+        setEmailCron(null)
+    }
+
+    const data = await fetchEmailCron()
+
+    if (!data) {
+        return res.status(500).json({message: "no cron data found"})
+    }
+
+    initializeEmailCron({cronExpression: data.expression}, EmailClient.AWS)
+    
+    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
+        enabled: false,
+    })
+
+    Logger.info({
+        message: "Stopped email cron"
+    })
+
+    return res.status(200).json({message: "stopped email cron"})
+}
 export const fetchEmailCron = async () => {
     let snapshot = await db.collection(nodeConfig.get('collections.cron')).doc('email').get()
     if (!snapshot.exists) {
@@ -255,8 +322,3 @@ export const enableEmailCron = async (enabled: boolean) => {
     })
 }
 
-export const stopEmailCron = async (enabled: boolean) => {
-    await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
-        enabled: enabled,
-    })
-}
