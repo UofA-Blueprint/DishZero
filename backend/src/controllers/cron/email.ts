@@ -5,7 +5,7 @@ import Logger from '../../utils/logger'
 import { db } from '../../internal/firebase'
 import nodeConfig from 'config'
 import { validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
-import { EmailClient, getEmailCron, initializeEmailCron, setEmailCron } from '../../cron/email'
+import { EmailClient, getEmailCron, initializeEmailCron, isEmailCronEnabled, setEmailCron } from '../../cron/email'
 import cron from 'node-cron';
 
 let moduleName = 'controllers.email'
@@ -239,6 +239,13 @@ export const updateEmailCronExpression = async (req: Request, res: Response) => 
         moduleName,
         function: 'updateCronExpression',
     })
+
+    const enabled = await isEmailCronEnabled()
+    if (enabled) {
+        stopCron()
+        initializeEmailCron({cronExpression: cronExpression}, EmailClient.AWS)
+    }
+
     return res.status(200).json({ days })
 
 }
@@ -255,11 +262,8 @@ export const stopEmailCron = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    let cron = getEmailCron()
-    if (cron) {
-        cron.stop()
-        setEmailCron(null)
-    }
+    stopCron()
+
     await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
         enabled: false,
     })
@@ -283,7 +287,7 @@ export const startEmailCron = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    await stopCron()
+    stopCron()
 
     const data = await fetchEmailCron()
 
@@ -318,7 +322,7 @@ export const enableEmailCron = async (enabled: boolean) => {
     })
 }
 
-export const stopCron = async () => {
+export const stopCron = () => {
     let cron = getEmailCron()
     if (cron) {
         cron.stop()
