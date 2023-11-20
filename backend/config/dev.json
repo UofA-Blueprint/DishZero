@@ -29,7 +29,7 @@
     "cron": {
         "enabled": true,
         "default": {
-            "email": "*/10 * * * * *"
+            "email": "*/5 * * * * *"
         }
     },
     "aws": {

@@ -35,44 +35,44 @@ export class EmailCron implements Cron {
                         message: 'Sending email with AWS',
                     })
                     
+                    const template = await getTemplate()
+                    const subject = template.subject
+                    const body = template.body
+
                     // get overdue email addresses
-                    // const oneHour = 1000 * 3600 // hours
-                    // let recipients = []
-                    // const dishes = await getAllDishes()
-                    // for (const dish of dishes) {
-                    //     if (dish.borrowed && dish.userId && dish.borrowedAt) {
-                    //         const currentTime = new Date()
-                    //         const borrowedDate = new Date(dish.borrowedAt.toString())
-                    //         const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
+                    const oneHour = 1000 * 3600 // hours
+                    let recipients = <Array<string>>[]
+                    const dishes = await getAllDishes()
 
-                    //         if (hoursSinceBorrow > 48) {
-                    //             const user = await getUserById(dish.userId)
-                    //             if (user?.email == process.env.SENDER_EMAIL) {
-                    //                     recipients.push(user?.email)
-                    //             }
-                    //         }
-                    //     }
-                    // }
+                    for (const dish of dishes) {
+                        if (dish.borrowed && dish.userId && dish.borrowedAt) {
+                            const currentTime = new Date()
+                            const borrowedDate = new Date(dish.borrowedAt.toString())
+                            const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
 
-                    // recipients = [... new Set(recipients)]
-                    
-                    // const template = await getTemplate()
-                    // const subject = template.subject
-                    // const body = template.body
+                            if (hoursSinceBorrow > 48) {
+                                const user = await getUserById(dish.userId)
 
-                    // if (recipients.length > 0) {
-                    //     // send the emails
-                    //     console.log('Sending emails using AWS')
-                    //     Logger.info({
-                    //         message: 'sending emails',
-                    //         recipients,
-                    //     })
-                    // // sendEmail(recipients, subject, body)
-                    // } else {
-                    //     Logger.info({
-                    //         message: "no users have overdue dish"
-                    //     })
-                    // }
+                                if (user?.email && !recipients.includes(user?.email)) {
+                                    sendEmail([user?.email], subject, body)
+                                    recipients.push(user?.email)
+                                }
+                            }
+                        }
+                    }
+
+                    if (recipients.length > 0) {
+                        // send the emails
+                        console.log('Sent emails using AWS')
+                        Logger.info({
+                            message: 'Sent emails',
+                            recipients,
+                        })
+                    } else {
+                        Logger.info({
+                            message: "no users have overdue dish"
+                        })
+                    }
                 } else {
                     console.log('Sending email with nodemailer')
                 }
