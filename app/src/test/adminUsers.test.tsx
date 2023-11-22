@@ -258,13 +258,11 @@ describe('Search Functionality', () => {
     
       // Wait for the search results to update
       await waitFor(() => {
-        expect(screen.getByText('hello@ualberta.ca')).toBeInTheDocument();
-        // Make sure other users are not displayed
-        mockUsers.forEach(user => {
-          if (!user.emailAddress.includes('hello')) {
+      const currentUserEmail = 'hello@ualberta.ca'
+        expect(screen.getByText(currentUserEmail)).toBeInTheDocument();
+        const otherUsers = users.filter(user => user.emailAddress !== currentUserEmail);
+        otherUsers.forEach(user => {
             expect(screen.queryByText(user.emailAddress)).not.toBeInTheDocument();
-          }
-        });
       });
     useAuthMock.mockRestore();
   });
