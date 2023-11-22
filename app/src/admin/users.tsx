@@ -286,10 +286,6 @@ const MainFrame: React.FC<MainframeProps> = ({
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.data.length) : 0;
 
-    if (!props.rows.data) {
-        props.rows.data = []; // Ensure that it's always an array
-      }
-
     const [ data, setData ] = useState(
         stableSort(props.rows.data, getComparator(order, orderBy)).slice(
             page * rowsPerPage,
