@@ -193,7 +193,6 @@ describe('Table/Mainframe Check', () => {
     expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
   });
 
-  // Use findByText to find the headers of each of the 4 columns
   expect(await screen.findByText('Email Address')).toBeInTheDocument();
   expect(await screen.findByText('In Use')).toBeInTheDocument();
   expect(await screen.findByText('Overdue')).toBeInTheDocument();
