@@ -189,7 +189,6 @@ describe('Table/Mainframe Check', () => {
       );
     });
 
-  //wait for page to be done loading  
   await waitFor(() => {
     expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
   });
