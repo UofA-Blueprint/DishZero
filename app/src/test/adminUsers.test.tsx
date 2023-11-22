@@ -144,7 +144,7 @@ const mockModifyRole = {
 
 
 beforeEach(async () => {
-    jest.clearAllMocks(); // Clears any previous mocking behavior before each test
+    jest.clearAllMocks(); 
 
     //mocking all adminApi functions which are called in the flow of the admin users page
     jest.mock('../admin/adminApi', () => ({
