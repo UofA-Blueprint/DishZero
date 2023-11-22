@@ -385,7 +385,6 @@ describe('Admin Users Role Update', () => {
 
     await waitFor(() => expect(screen.getByText(mockUsers[0].emailAddress)).toBeInTheDocument());
 
-    //expect the current user's details to be on the users page
     expect(screen.getByText('mocked-email@ualberta.ca')).toBeInTheDocument();
 
     const emailToChange = 'mocked-email@ualberta.ca';
