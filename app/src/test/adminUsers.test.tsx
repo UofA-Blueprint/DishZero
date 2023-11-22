@@ -210,13 +210,11 @@ describe('Table/Mainframe Check', () => {
       );
     });
   
-    //wait for page to be done loading  
     await waitFor(() => {
       expect(screen.queryByTestId('ball-triangle-loading')).not.toBeInTheDocument();
       
     });
 
-    // Assert that the user data is displayed
     mockDishesStatusData.forEach(async (data) => {
       expect(await screen.findByText(data.emailAddress)).toBeInTheDocument();
       expect(await screen.findByText(data.inUse)).toBeInTheDocument();
@@ -224,7 +222,6 @@ describe('Table/Mainframe Check', () => {
       expect(await screen.findByText(data.role)).toBeInTheDocument();
     });
 
-    // Clean up mocks
     useAuthMock.mockRestore();
   });
 });
