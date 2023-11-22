@@ -253,7 +253,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 //Main table displayed on page
-const MainFrame = (props: MainframeProps) => {
+const MainFrame: React.FC<MainframeProps> = ({
+  handleRoleFilterOpen, 
+  handleRoleUpdate, 
+  rows = []
+}) => {
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data>('inUse');
     const [page, setPage] = useState(0);
