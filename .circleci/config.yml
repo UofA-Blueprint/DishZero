@@ -6,13 +6,19 @@ references:
   # the key used to pull npm dependencies from the cache
   cache-key: &cache-key 'dishzero-{{checksum "package-lock.json"}}'
 
+commands:
+  restore_npm:
+    steps:
+      - restore_cache:
+          key: *cache-key
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
+  # install NPM dependencies
   dependencies:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:18.18.1
     steps:
       - checkout
       - restore_cache:
