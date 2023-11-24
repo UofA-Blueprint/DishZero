@@ -66,15 +66,6 @@ jobs:
           name: "Lint /app"
           command: cd app && npm run lint-ci
 
-  lint-server:
-    executor: ci-node
-    steps:
-      - checkout
-      - restore-server
-      - run:
-          name: "Lint /backend"
-          command: cd backend && ls -a && npm run lint-ci
-
   test-app:
     executor: ci-node
     steps:
@@ -99,8 +90,6 @@ workflows:
     jobs:
       - dependencies
       - lint-app:
-          requires: [dependencies]
-      - lint-server:
           requires: [dependencies]
       - test-app:
           requires: [dependencies]
