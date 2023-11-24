@@ -13,7 +13,7 @@ commands:
   restore-all:
     steps:
       - restore_cache:
-          keys: [*cache-key, "dishzero-v1-"]
+          keys: [*cache-key]
 
 
 executors:
