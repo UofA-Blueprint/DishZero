@@ -3,7 +3,7 @@
 version: 2.1
 
 references:
-  cache-key: &cache-key dishzero-v1-{{ checksum "package-lock.json" }}-{{ checksum "app/package-lock.json" }}
+  cache-key: &cache-key dishzero-v2-{{ checksum "package-lock.json" }}-{{ checksum "app/package-lock.json" }}
 
 commands:
   debug:
