@@ -44,7 +44,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint --fix .",
     "lint-ci": "eslint --quiet",
-    "test-ci": "react-scripts test --coverage --reporters=default --reporters=jest-junit"
+    "test-ci": "jest --runInBand --coverage --reporters=default --reporters=jest-junit"
   },
   "eslintConfig": {
     "extends": [

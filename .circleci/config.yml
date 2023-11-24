@@ -76,7 +76,9 @@ jobs:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
           name: "Run tests"
-          command: cd app && npm run test
+          command: cd app && npm run test-ci
+      - run:
+          command: ls -a
       - store_artifacts:
           path: app/test-results/
       - store_test_results:
