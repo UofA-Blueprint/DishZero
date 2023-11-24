@@ -31,7 +31,7 @@ jobs:
           key: *cache-key
       - run:
           name: "Install frontend dependencies"
-          command: cd app && npm install
+          command: cd app && npm install --include dev
       - save_cache:
           paths:
             - app/node_modules
