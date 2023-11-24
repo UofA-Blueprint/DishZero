@@ -3,14 +3,20 @@
 version: 2.1
 
 references:
-  # the key used to pull npm dependencies from the cache
-  cache-key: &cache-key 'dishzero-npm-{{checksum "app/package-lock.json"}}'
+  # the key used to pull FRONTEND npm dependencies from the cache
+  app-cache-key: &app-cache-key 'dishzero-app-{{checksum "app/package-lock.json"}}'
+  server-cache-key: &server-cache-key 'dishzero-server-{{checksum "backend/package-lock.json"}}'
 
 commands:
-  restore_npm:
+  restore-app:
     steps:
       - restore_cache:
-          key: *cache-key
+          key: *app-cache-key
+
+  restore-server:
+    steps:
+      - restore_cache:
+          key: *server-cache-key
 
 executors:
   ci-node:
@@ -27,22 +33,29 @@ jobs:
     executor: ci-node
     steps:
       - checkout
-      - restore_cache:
-          key: *cache-key
+      - restore-app
       - run:
           name: "Install frontend dependencies"
           command: cd app && npm install --include dev
       - save_cache:
           paths:
             - app/node_modules
-          key: *cache-key
+          key: *app-cache-key
+      - restore-server
+      - run:
+          name: "Install server dependencies"
+          command: cd backend && npm install --include dev
+      - save_cache:
+          paths:
+            - backend/node_modules
+          key: *server-cache-key
 
   # run eslint
   lint:
     executor: ci-node
     steps:
       - checkout
-      - restore_npm
+      - restore-app
       - run:
           name: "Lint /app"
           command: cd app && npm run lint-ci
