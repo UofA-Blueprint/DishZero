@@ -25,7 +25,7 @@ executors:
       docker:
         - image: cimg/node:18.17.0
       resource_class: medium
-      working_directory: /mnt/ramdisk
+      working_directory: /app
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
@@ -33,14 +33,14 @@ jobs:
   debug:
     executor: ci-app
     steps:
-      - checkout-app
+      - checkout
       - debug
 
   # install NPM dependencies
   dependencies:
     executor: ci-app
     steps:
-      - checkout-app
+      - checkout
       - restore-all
       - debug
       - run:
@@ -55,7 +55,7 @@ jobs:
   lint-app:
     executor: ci-app
     steps:
-      - checkout-app
+      - checkout
       - restore-all
       - debug
       - run:
@@ -65,7 +65,7 @@ jobs:
   test-app:
     executor: ci-app
     steps:
-      - checkout-app
+      - checkout
       - restore-all
       - debug
       - run:
