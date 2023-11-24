@@ -2,25 +2,32 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+references:
+  # the key used to pull npm dependencies from the cache
+  cache-key: &cache-key 'dishzero-{{checksum "package-lock.json"}}'
+
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/configuration-reference/#executor-job
+  dependencies:
     docker:
       - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
       - checkout
+      - restore_cache:
+          key: *cache-key
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: "Install NPM"
+          command: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: *cache-key
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-and-test:
     jobs:
-      - say-hello
+      - dependencies
