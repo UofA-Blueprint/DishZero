@@ -45,9 +45,9 @@ jobs:
       - debug
       - run:
           name: "Install frontend dependencies"
-          command: npm install --include dev --prefix app
+          command: npm install --include dev --prefix app --loglevel verbose
       - save_cache:
-          paths: ["app/node_modules"]
+          paths: ["app/node_modules", "node_modules"]
           key: *cache-key
 
 
