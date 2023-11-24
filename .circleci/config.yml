@@ -18,6 +18,13 @@ commands:
       - restore_cache:
           key: *server-cache-key
 
+  restore-all:
+    steps:
+      - restore_cache:
+          key: *app-cache-key
+      - restore_cache:
+          key: *server-cache-key
+
 executors:
   ci-node:
       docker:
@@ -33,7 +40,7 @@ jobs:
     executor: ci-node
     steps:
       - checkout
-      - restore-app
+      - restore-all
       - run:
           name: "Install frontend dependencies"
           command: cd app && npm install --include dev
@@ -41,7 +48,6 @@ jobs:
           paths:
             - app/node_modules
           key: *app-cache-key
-      - restore-server
       - run:
           name: "Install server dependencies"
           command: cd backend && npm install --include dev
@@ -50,8 +56,8 @@ jobs:
             - backend/node_modules
           key: *server-cache-key
 
-  # run eslint
-  lint:
+  # run eslint on frontend
+  lint-app:
     executor: ci-node
     steps:
       - checkout
@@ -60,6 +66,15 @@ jobs:
           name: "Lint /app"
           command: cd app && npm run lint-ci
 
+  lint-server:
+    executor: ci-node
+    steps:
+      - checkout
+      - restore-server
+      - run:
+          name: "Lint /backend"
+          command: cd backend && npm run lint-ci
+
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -67,5 +82,7 @@ workflows:
   build-and-test:
     jobs:
       - dependencies
-      - lint:
+      - lint-app:
+          requires: [dependencies]
+      - lint-server:
           requires: [dependencies]
