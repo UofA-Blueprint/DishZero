@@ -3,13 +3,13 @@
 version: 2.1
 
 references:
-  cache-key: &cache-key 'dishzero-v1-{{checksum "package-lock.json"}}-{{checksum "app/package-lock.json"}}'
+  cache-key: &cache-key dishzero-v1-{{ checksum "package-lock.json" }}-{{ checksum "app/package-lock.json" }}
 
 commands:
   debug:
     steps:
       - run:
-          command: pwd && ls -a
+          command: cd app && ls -a
   restore-all:
     steps:
       - restore_cache:
@@ -38,7 +38,6 @@ jobs:
     steps:
       - checkout
       - restore-all
-      - debug
       - run:
           name: "Install dependencies"
           command: npm install --include dev && npm install --include dev --prefix app --loglevel verbose
@@ -53,7 +52,6 @@ jobs:
     steps:
       - checkout
       - restore-all
-      - debug
       - run:
           name: "Lint /app"
           command: npm run lint-ci --prefix app
@@ -63,13 +61,13 @@ jobs:
     steps:
       - checkout
       - restore-all
-      - debug
       - run:
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
           name: "Run tests"
           command: npm run test-ci --prefix app
+      - debug
       - run:
           command: ls -a
       - store_artifacts:
