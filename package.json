@@ -10,13 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@mui/material": "^5.13.6",
-    "concurrently": "^8.0.1",
-    "netlify-cli": "^13.2.2",
-    "react-device-detect": "^2.2.3",
-    "react-scripts": "^5.0.1",
-    "webpack-node-externals": "^3.0.0"
+    "netlify-cli": "14.0.0",
+    "react-scripts": "5.0.1",
+    "webpack-node-externals": "3.0.0"
   }
 }

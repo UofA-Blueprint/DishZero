@@ -20,7 +20,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "noImplicitAny": false,
-    "allowImportingTsExtensions":true
   },
   "include": [
     "src"
