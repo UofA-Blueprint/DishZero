@@ -2,5 +2,5 @@
   "transform": {
       "^.+\\.tsx?$": "ts-jest"
   },
-  "test-environment": "jsdom"
+  "testEnvironment": "jsdom"
 }
