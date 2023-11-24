@@ -77,17 +77,17 @@ jobs:
 
   test-app:
     executor: ci-node
-    environment:
-      JEST_JUNIT_OUTPUT_DIR: ./test-results/
-      JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
     steps:
       - checkout
       - restore-app
       - run:
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./test-results/
+            JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
           name: "Run tests"
           command: cd app && npm run test
       - store_test_results:
-          path: ./test-results/
+          path: app/test-results/
 
 
 # Orchestrate jobs using workflows
