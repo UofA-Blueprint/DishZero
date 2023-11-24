@@ -6,6 +6,14 @@ references:
   cache-key: &cache-key 'dishzero-npm:{{checksum "app/package-lock.json"}}'
 
 commands:
+  debug:
+    steps:
+      - run:
+          command: pwd && ls -a
+  checkout-app:
+    steps:
+      - checkout:
+          path: /app
   restore-all:
     steps:
       - restore_cache:
@@ -17,7 +25,7 @@ executors:
       docker:
         - image: cimg/node:18.17.0
       resource_class: medium
-      working_directory: /mnt/ramdisk/app
+      working_directory: /mnt/ramdisk
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
@@ -25,16 +33,16 @@ jobs:
   debug:
     executor: ci-app
     steps:
-      - checkout
-      - run:
-          command: pwd && ls -a
+      - checkout-app
+      - debug
 
   # install NPM dependencies
   dependencies:
     executor: ci-app
     steps:
-      - checkout
+      - checkout-app
       - restore-all
+      - debug
       - run:
           name: "Install frontend dependencies"
           command: npm install --include dev
@@ -47,8 +55,9 @@ jobs:
   lint-app:
     executor: ci-app
     steps:
-      - checkout
+      - checkout-app
       - restore-all
+      - debug
       - run:
           name: "Lint /app"
           command: npm run lint-ci
@@ -56,8 +65,9 @@ jobs:
   test-app:
     executor: ci-app
     steps:
-      - checkout
+      - checkout-app
       - restore-all
+      - debug
       - run:
           environment:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
@@ -77,7 +87,6 @@ jobs:
 workflows:
   build-and-test:
     jobs:
-      - debug
       - dependencies
       - lint-app:
           requires: [dependencies]
