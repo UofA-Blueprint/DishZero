@@ -3,7 +3,7 @@
 version: 2.1
 
 references:
-  cache-key: &cache-key 'dishzero-npm:{{checksum "app/package-lock.json"}}'
+  cache-key: &cache-key 'blueprint-dishzero-{{checksum "app/package-lock.json"}}'
 
 commands:
   debug:

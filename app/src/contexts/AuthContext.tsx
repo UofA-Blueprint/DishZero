@@ -1,7 +1,7 @@
 /*eslint-disable*/
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, provider } from "../firebase.tsx";
+import { auth, provider } from "../firebase";
 import { getIdToken, signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import Cookies from "js-cookie";
