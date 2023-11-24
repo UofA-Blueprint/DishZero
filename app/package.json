@@ -43,7 +43,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --fix .",
-    "lint-ci": "eslint --quiet"
+    "lint-ci": "eslint --quiet",
+    "test-ci": "react-scripts test --coverage --reporters=default --reporters=jest-junit"
   },
   "eslintConfig": {
     "extends": [
@@ -84,6 +85,7 @@
     "fork-ts-checker-webpack-plugin": "^6.5.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "jest-junit": "^16.0.0",
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
     "typescript": "^4.8.4"
