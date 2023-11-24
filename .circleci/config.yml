@@ -3,21 +3,17 @@
 version: 2.1
 
 references:
-  cache-key: &cache-key 'blueprint-dishzero-{{checksum "app/package-lock.json"}}'
+  cache-key: &cache-key 'dishzero-v1-{{checksum "package-lock.json"}}-{{checksum "app/package-lock.json"}}'
 
 commands:
   debug:
     steps:
       - run:
           command: pwd && ls -a
-  checkout-app:
-    steps:
-      - checkout:
-          path: /app
   restore-all:
     steps:
       - restore_cache:
-          key: *cache-key
+          keys: [*cache-key, "dishzero-v1-"]
 
 
 executors:
@@ -44,10 +40,10 @@ jobs:
       - restore-all
       - debug
       - run:
-          name: "Install frontend dependencies"
-          command: npm install --include dev --prefix app --loglevel verbose
+          name: "Install dependencies"
+          command: npm install --include dev && npm install --include dev --prefix app --loglevel verbose
       - save_cache:
-          paths: ["app/node_modules", "node_modules"]
+          paths: ["app/node_modules", "./node_modules"]
           key: *cache-key
 
 
