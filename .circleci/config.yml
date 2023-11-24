@@ -3,8 +3,7 @@
 version: 2.1
 
 references:
-  # the key used to pull FRONTEND npm dependencies from the cache
-  cache-key: &cache-key 'dishzero-npm-{{checksum "package-lock.json"}}-{{checksum "app/package-lock.json"}}'
+  cache-key: &cache-key 'dishzero-npm:{{checksum "app/package-lock.json"}}'
 
 commands:
   restore-all:
@@ -14,44 +13,48 @@ commands:
 
 
 executors:
-  ci-node:
+  ci-app:
       docker:
         - image: cimg/node:18.17.0
       resource_class: medium
-      working_directory: /mnt/ramdisk
+      working_directory: /mnt/ramdisk/app
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
+  debug:
+    executor: ci-app
+    steps:
+      - checkout
+      - run:
+          command: pwd && ls -a
+
   # install NPM dependencies
   dependencies:
-    executor: ci-node
+    executor: ci-app
     steps:
       - checkout
       - restore-all
       - run:
-          name: "Install base dependencies"
-          command: npm install --include dev
-      - run:
           name: "Install frontend dependencies"
-          command: cd app && npm install --include dev
+          command: npm install --include dev
       - save_cache:
-          paths: ["node_modules", "app/node_modules"]
+          paths: ["node_modules"]
           key: *cache-key
 
 
   # run eslint on frontend
   lint-app:
-    executor: ci-node
+    executor: ci-app
     steps:
       - checkout
       - restore-all
       - run:
           name: "Lint /app"
-          command: cd app && npm run lint-ci
+          command: npm run lint-ci
 
   test-app:
-    executor: ci-node
+    executor: ci-app
     steps:
       - checkout
       - restore-all
@@ -60,13 +63,13 @@ jobs:
             JEST_JUNIT_OUTPUT_DIR: ./test-results/
             JEST_JUNIT_ADD_FILE_ATTRIBUTE: "true"
           name: "Run tests"
-          command: cd app && npm run test --coverage --reporters=default --reporters=jest-junit
+          command: npm run test --coverage --reporters=default --reporters=jest-junit
       - run:
           command: ls -a
       - store_artifacts:
-          path: app/test-results/
+          path: /test-results/
       - store_test_results:
-          path: app/test-results/
+          path: /test-results/
 
 
 # Orchestrate jobs using workflows
@@ -74,6 +77,7 @@ jobs:
 workflows:
   build-and-test:
     jobs:
+      - debug
       - dependencies
       - lint-app:
           requires: [dependencies]
