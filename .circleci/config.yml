@@ -75,6 +75,15 @@ jobs:
           name: "Lint /backend"
           command: cd backend && npm run lint-ci
 
+  test-app:
+    executor: ci-node
+    steps:
+      - checkout
+      - restore-app
+      - run:
+          name: "Run tests"
+          command: cd app && npm run test
+
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
@@ -85,4 +94,6 @@ workflows:
       - lint-app:
           requires: [dependencies]
       - lint-server:
+          requires: [dependencies]
+      - test-app:
           requires: [dependencies]
