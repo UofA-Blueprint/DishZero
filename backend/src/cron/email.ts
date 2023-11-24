@@ -38,6 +38,7 @@ export class EmailCron implements Cron {
                     const template = await getTemplate()
                     const subject = template.subject
                     const body = template.body
+                    const senderEmail = template.senderEmail
 
                     // get overdue email addresses
                     const oneHour = 1000 * 3600 // hours
@@ -54,7 +55,7 @@ export class EmailCron implements Cron {
                                 const user = await getUserById(dish.userId)
 
                                 if (user?.email && !recipients.includes(user?.email)) {
-                                    sendEmail([user?.email], subject, body)
+                                    sendEmail([user?.email], subject, body, senderEmail)
                                     recipients.push(user?.email)
                                 }
                             }

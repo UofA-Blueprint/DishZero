@@ -7,6 +7,7 @@ export const getTemplate = async () => {
     const data = snapshot.data()
     return {
         subject : data?.subject,
-        body: data?.body
+        body: data?.body,
+        senderEmail: data?.senderEmail
     }
 }

@@ -5,17 +5,13 @@ const REGION: string = nodeConfig.get('aws.region') || 'us-west-2'
 
 const SES_CONFIG = {
     apiVersion: '2010-12-01',
-    region: REGION,
-    accessKeyid: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: REGION
 }
-
-const senderEmail = process.env.SENDER_EMAIL;
 
 const sesClient = new SESClient(SES_CONFIG)
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ses/classes/sendemailcommand.html
-export const sendEmail = async (recepientEmails: Array<string>, subject: string, body: string) => {
+export const sendEmail = async (recepientEmails: Array<string>, subject: string, body: string, senderEmail: string) => {
     const params = {
         Destination: {
             BccAddresses: [...recepientEmails]
