@@ -2,6 +2,9 @@
 # See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
+orbs:
+  node: circleci/node@5.1.0
+
 references:
   cache-key: &cache-key dishzero-v2-{{ checksum "package-lock.json" }}-{{ checksum "app/package-lock.json" }}
 
@@ -13,7 +16,7 @@ commands:
   restore-all:
     steps:
       - restore_cache:
-          keys: [*cache-key, "dishzero-v1-"]
+          keys: [*cache-key]
 
 
 executors:
@@ -38,12 +41,9 @@ jobs:
     steps:
       - checkout
       - restore-all
-      - run:
-          name: "Install dependencies"
-          command: npm ci --include dev && npm ci --include dev --prefix app
-      - save_cache:
-          paths: ["app/node_modules", "./node_modules"]
-          key: *cache-key
+      - node/install-packages
+      - node/install-packages:
+          app-dir: ./app
 
 
   # run eslint on frontend
