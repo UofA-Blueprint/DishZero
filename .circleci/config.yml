@@ -4,7 +4,7 @@ version: 2.1
 
 references:
   # the key used to pull npm dependencies from the cache
-  cache-key: &cache-key 'dishzero-{{checksum "package-lock.json"}}'
+  cache-key: &cache-key 'dishzero-npm-{{checksum "app/package-lock.json"}}'
 
 commands:
   restore_npm:
