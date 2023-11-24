@@ -13,7 +13,7 @@ commands:
   restore-all:
     steps:
       - restore_cache:
-          keys: [*cache-key]
+          keys: [*cache-key, "dishzero-v1-"]
 
 
 executors:
@@ -40,7 +40,7 @@ jobs:
       - restore-all
       - run:
           name: "Install dependencies"
-          command: npm ci --include dev && npm ci --include dev --prefix app
+          command: npm ci --include dev
       - save_cache:
           paths: ["app/node_modules", "./node_modules"]
           key: *cache-key
