@@ -12,13 +12,19 @@ commands:
       - restore_cache:
           key: *cache-key
 
+executors:
+  ci-node:
+      docker:
+        - image: cimg/node:18.17.0
+      resource_class: medium
+      working_directory: /mnt/ramdisk
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/configuration-reference/#jobs
 jobs:
   # install NPM dependencies
   dependencies:
-    docker:
-      - image: cimg/node:18.18.1
+    executor: ci-node
     steps:
       - checkout
       - restore_cache:
@@ -31,9 +37,22 @@ jobs:
             - node_modules
           key: *cache-key
 
+  # run eslint
+  lint:
+    executor: ci-node
+    steps:
+      - checkout
+      - restore_npm
+      - run:
+          name: "Lint /app"
+          command: cd app && npm run lint-ci
+
+
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
   build-and-test:
     jobs:
       - dependencies
+      - lint:
+          requires: [dependencies]
