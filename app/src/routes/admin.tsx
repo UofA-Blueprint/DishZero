@@ -17,22 +17,22 @@ function dishStatus(dishNumbers: number[]) {
 
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}}>{dishNumbers[0]}</p>
+        <p className="header" style={{marginTop: 10}} data-testid="in-use">{dishNumbers[0]}</p>
         <p className="sub-header-4">Currently in use</p>
       </div>
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}}>{dishNumbers[1]}</p>
+        <p className="header" style={{marginTop: 10}} data-testid="returned">{dishNumbers[1]}</p>
         <p className="sub-header-4">Available</p>
       </div>
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}}>{dishNumbers[2]}</p>
-        <p className="sub-header-4">Overdue</p>
+        <p className="header" style={{marginTop: 10}} data-testid="overdue-count">{dishNumbers[2]}</p>
+        <p className="sub-header-4" data-testid="overdue-text">Overdue</p>
       </div>
       <div className="admin-container" style={{position: 'relative'}}>
         <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}}>{dishNumbers[3]}</p>
+        <p className="header" style={{marginTop: 10}} data-testid="lost-count">{dishNumbers[3]}</p>
         <p className="sub-header-4">Dishes Lost</p>
       </div>
 
@@ -87,8 +87,8 @@ function dishTable() {
       <p style={{position: "absolute", marginLeft: '4%'}}>Dish ID</p>
       <p style={{position: "absolute", marginLeft: '22%'}}>Dish type</p>
       <p style={{position: "absolute", marginLeft: '41%'}}>Dish Status</p>
-      <p style={{position: "absolute", marginLeft: '65%'}}>Overdue</p>
-      <p style={{position: "absolute", marginLeft: '84%'}}>Email</p>
+      <p style={{position: "absolute", marginLeft: '65%'}} data-testid="overdue-table">Overdue</p>
+      <p style={{position: "absolute", marginLeft: '84%'}} data-testid="email-table">Email</p>
     </div>
   );
 }
@@ -143,6 +143,7 @@ function findLost(dishesUsed, transactionsUsed) {
 function createRows(dishesUsed, transactionsUsed) {
   const list: any[] = [];
   const timeToday = new Date();
+  // console.log(transactionsUsed)
   transactionsUsed.map(transaction => {
     let dish = findDish(transaction.dish, dishesUsed);
     if (dish == null) {
@@ -193,6 +194,10 @@ function createRows(dishesUsed, transactionsUsed) {
     list.push(row);
   });
   return list;
+  // return list.map(row => ({
+  //   ...row,
+  //   'data-testid': `table-row-${row.id}`
+  // }));
 }
 
 function Rows(tableRows, search) {
@@ -235,11 +240,11 @@ function Rows(tableRows, search) {
       <div>
       {records.map(row =>
         <div className="row-container d-flex" style={{position: 'relative'}}>
-          <p style={{position: "absolute", marginLeft: '4%'}}>{row.id}</p>
-          <div style={{position: "absolute", marginLeft: '22%'}}>{dishTag(row.type)}</div>
-          <p style={{position: "absolute", marginLeft: '41%'}}>{dishTag(row.status)}</p>
-          <p style={{position: "absolute", marginLeft: '65%'}}>{row.overdue}</p>
-          <p style={{position: "absolute", marginLeft: '84%'}}>{row.email}</p>
+          <p style={{position: "absolute", marginLeft: '4%'}} data-testid="table-row-id">{row.id}</p>
+          <div style={{position: "absolute", marginLeft: '22%'}} data-testid="table-row-type">{dishTag(row.type)}</div>
+          <p style={{position: "absolute", marginLeft: '41%'}} data-testid="table-row-status">{dishTag(row.status)}</p>
+          <p style={{position: "absolute", marginLeft: '65%'}} data-testid="table-row-overdue">{row.overdue}</p>
+          <p style={{position: "absolute", marginLeft: '84%'}} data-testid="table-row-email">{row.email}</p>
         </div>
       )}
       </div>
@@ -305,6 +310,7 @@ function Admin() {
     })
     .then(function (response) {
       setDishesUsed(response.data.dishes);
+      console.log(response.data.dishes)
       })
       .catch(function (error) {
         console.log(error);
@@ -321,6 +327,7 @@ function Admin() {
         baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {
+        console.log(response.data.transactions)
         setTransactionsUsed(response.data.transactions);
       })
       .catch(function (error) {
