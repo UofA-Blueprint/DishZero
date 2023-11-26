@@ -43,6 +43,8 @@ import adminApi from "./adminApi";
 //////////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Declarations ////////////////////////////
+
+//Headers of table aka MainFrame
 interface HeadCell {
     id: 'emailAddress' | 'inUse' | 'overdue' | 'role';
     label: string;
@@ -82,6 +84,7 @@ const headCells: readonly HeadCell[] = [
     }
 ];
 
+//model of data in table
 interface Data {
     userId: string;
     emailAddress: string;
@@ -102,7 +105,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = 'asc' | 'desc';
 
-function getComparator<Key extends keyof T>(
+function getComparator<T, Key extends keyof T>(
   order: Order,
   orderBy: Key,
 ): (
@@ -163,6 +166,7 @@ const Tab = ({ children, route }) => {
     );
 }
 
+//Custom Sidebar
 const Sidebar = () => {
     return (
       <Box sx={styles.sidebar}>
@@ -248,6 +252,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     );
 }
 
+//Main table displayed on page
 const MainFrame = (props: MainframeProps) => {
     const [order, setOrder] = useState<Order>('asc');
     const [orderBy, setOrderBy] = useState<keyof Data>('inUse');
@@ -276,6 +281,11 @@ const MainFrame = (props: MainframeProps) => {
     };
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - props.rows.data.length) : 0;
+
+    if (!props.rows.data) {
+        props.rows.data = []; // Ensure that it's always an array
+      }
+
 
     const [ data, setData ] = useState(
         stableSort(props.rows.data, getComparator(order, orderBy)).slice(
@@ -353,11 +363,12 @@ const MainFrame = (props: MainframeProps) => {
                                             data.map((row, index) => {
                                                 const labelId = `enhanced-table-checkbox-${index}`;
                                                 return (
-                                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }}>
+                                                    <TableRow hover role="checkbox" tabIndex={-1} key={row.emailAddress} sx={{ cursor: 'pointer' }} >
                                                         <TableCell
                                                             component="th"
                                                             id={labelId}
                                                             scope="row"
+                                                            data-testid={`row-${row.emailAddress}`}
                                                             padding="normal"
                                                         >
                                                             {row.emailAddress}
@@ -374,6 +385,7 @@ const MainFrame = (props: MainframeProps) => {
                                                                                 id="demo-simple-select"
                                                                                 value={row.role}
                                                                                 label="Role"
+                                                                                data-testid={`select-role-${row.emailAddress}`}
                                                                                 defaultValue=""
                                                                                 displayEmpty
                                                                                 inputProps={{ 'aria-label': 'Without label' }}
@@ -385,7 +397,7 @@ const MainFrame = (props: MainframeProps) => {
                                                                             </Select>
                                                                         </FormControl>
                                                                     </Box>
-                                                                : <Typography sx={styles.myRole}>{row.role}</Typography>
+                                                                : <Typography data-testid={`role-display-${row.emailAddress}`} sx={styles.myRole}>{row.role}</Typography>
                                                             }
                                                         </TableCell>
                                                     </TableRow>
@@ -418,6 +430,7 @@ const MainFrame = (props: MainframeProps) => {
     );
 };
 
+//Filter roles displayed on table
 function RoleFilterDialog(props: RoleFilterDialogProps) {
     const open = props.open;
     const handleClose = props.handleClose;
@@ -469,6 +482,8 @@ function RoleFilterDialog(props: RoleFilterDialogProps) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////// Main component //////////////////////////////
+
+//Main User component
 export default function Users() {
     const [ isLoading, setIsLoading ] = useState(true);
     const [ rows, setRows ] = useState<Rows>({
@@ -552,6 +567,7 @@ export default function Users() {
         }
     }, [role]);
 
+    //When role of user is changed, modify frontend and call modifyRole to change role in database
     function handleRoleUpdate(newRole: string, emailAddress: string) {
         // update user's role's state
         const updatedData = rows.data.map((row) => {
@@ -605,6 +621,7 @@ export default function Users() {
                                         height={100}
                                         width={100}
                                         radius={5}
+                                        data-testid = "ball-triangle-loading"
                                         color="#4fa94d"
                                         ariaLabel="ball-triangle-loading"
                                         visible={true}

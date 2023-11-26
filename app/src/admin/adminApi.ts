@@ -46,9 +46,11 @@ const adminApi = {
             }
         ).then(
             res => { return res; }
+
         ).catch(
             err => { console.log(`Failed to get dishes from database. ${err}.`); }
         );
+        
         const dishes = response?.data.dishes;
         return dishes;
     },
@@ -64,6 +66,7 @@ const adminApi = {
         ).catch(
             err => { console.log(`Failed to get users from database. ${err}.`) }
         );
+        
         const users = response?.data.users;
         return users;
     },
@@ -177,6 +180,7 @@ const adminApi = {
             }
         ).then(
             res => {
+                
                 console.log("Successfully modified user's role.", res);
             }
         ).catch(
