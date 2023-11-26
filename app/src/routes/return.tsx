@@ -97,7 +97,7 @@ const Return = () => {
     return (
       <Box
         sx={stylesConst.boxContainer}
-        className="start-50 position-fixed translate-middle"
+        className="position-fixed translate-middle slide-in-popup animate"
       >
         <Avatar
           src={avatarIcon}
