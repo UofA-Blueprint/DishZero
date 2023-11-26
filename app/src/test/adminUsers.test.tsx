@@ -260,14 +260,14 @@ describe('Search Functionality', () => {
       await waitFor(() => {
       const currentUserEmail = 'hello@ualberta.ca'
         expect(screen.getByText(currentUserEmail)).toBeInTheDocument();
-        const otherUsers = users.filter(user => user.emailAddress !== currentUserEmail);
+        const otherUsers = mockUsers.filter(user => user.emailAddress !== currentUserEmail);
         otherUsers.forEach(user => {
             expect(screen.queryByText(user.emailAddress)).not.toBeInTheDocument();
       });
     useAuthMock.mockRestore();
   });
 });
-  
+})
 
 
 describe('Admin Users Role Update', () => {
