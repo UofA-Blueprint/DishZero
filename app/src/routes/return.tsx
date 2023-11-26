@@ -6,8 +6,8 @@ import React from "react";
 //import DishAPI from "../features/api"
 import "../styles/QRScanner.css";
 //import { Button, Modal } from 'react-bootstrap'
-//import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-//import { faExclamation } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "js-cookie";
 import { AppHeader } from "../widgets/appHeader";
 import Scanner from "../widgets/scanner";
@@ -23,204 +23,17 @@ import {
   Checkbox,
   RadioGroup,
   Radio,
+  IconButton,
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { BallTriangle } from "react-loader-spinner";
 import plateIcon from "../assets/dish_icon_contained.svg";
 import mugIcon from "../assets/mug_icon_contained.svg";
 import MobileBackground from "../assets/leaf-mobile-background.png";
-import ReportIcon from "../assets/report.png";
+import ReportIcon from "../assets/megaphone.svg";
 import ErrorIcon from "../assets/error_icon.svg";
+import CloseIcon from "../assets/X_icon.svg";
 import axios from "axios";
-/*const Report = ({ show, onSubmit, onCancel, id }) => {
-    const conditions = ["Small Chip/Crack", "Large chunk", "Shattered"]
-    const [selectedCondition, setSelectedCondition] = useState("");
-    const onConditionChange = e => {
-        setSelectedCondition(e.target.value);
-    }
-
-  const submitCondition = () => {
-    setSelectedCondition("");
-    onSubmit(selectedCondition);
-  };
-
-  const closeReport = () => {
-    setSelectedCondition("");
-    onCancel();
-  };
-
-  return show ? (
-    <Modal
-      backdrop={false}
-      onHide={closeReport}
-      show={show}
-      className="modal-sm report-modal"
-      contentClassName="report-modal-height"
-      centered
-    >
-      <Modal.Header closeButton className="report-modal-header">
-        <div className="report-modal-title">Report</div>
-      </Modal.Header>
-      <Modal.Body className="report-modal-body text-center">
-        <div className="large-graphic" />
-        <div style={{ marginTop: "5px" }}>ID: {id}</div>
-        <div style={{ marginTop: "20px", display: "block" }}>
-          <div className="text-left">
-            <input
-              type="radio"
-              onChange={onConditionChange}
-              value={conditions[0]}
-              name="condition"
-            />{" "}
-            {conditions[0]} <br />
-          </div>
-          <div>
-            <input
-              type="radio"
-              onChange={onConditionChange}
-              value={conditions[1]}
-              name="condition"
-            />{" "}
-            {conditions[1]} <br />
-          </div>
-          <div>
-            <input
-              type="radio"
-              onChange={onConditionChange}
-              value={conditions[2]}
-              name="condition"
-            />{" "}
-            {conditions[2]}
-          </div>
-        </div>
-      </Modal.Body>
-      <Modal.Footer className="report-modal-footer justify-content-center">
-        <Button
-          disabled={selectedCondition === "" ? true : false}
-          variant="secondary"
-          onClick={submitCondition}
-        >
-          Submit
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  ) : null;
-};
-
-const Notification = ({ show, type, onClick, id }) => {
-  return show ? (
-    <div className="position-absolute bottom-0 notif">
-      <div className="graphic" />
-      <div className="text-group">
-        <div style={{ fontSize: "14px", fontWeight: 400 }}>
-          Successfully {type}
-        </div>
-    ) : null;
-}
-*/
-/*export delt () => {
-    const [scanId, setScanId] = useState("")
-    const [showNotif, setShowNotif] = useState(false);
-    const [popUp, setPopUp] = useState(false);
-    const [notifType, setNotifType] = useState("returned");
-
-  const { sessionToken } = useAuth();
-  const navigate = useNavigate();
-
-  const onScan = async (id: string) => {
-    setScanId(id);
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/return?qid=${id}`,
-        {
-          returned: {
-            broken: false,
-            lost: false,
-          },
-        },
-        {
-          headers: {
-            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-            "session-cookie": sessionToken,
-          },
-        }
-      );
-
-      if (response && response.status === 200) {
-        if (showNotif) setShowNotif(false);
-        setNotifType("returned");
-        setShowNotif(true);
-      } else {
-        console.log("failed to return dish, response not okay");
-        console.log(response);
-      }
-    } catch (error: any) {
-      console.log("failed to return dish");
-      console.log(error);
-    }
-  };
-
-  const onCancel = popUp
-    ? () => {
-        setPopUp(false);
-      }
-    : null;
-
-  const onClick = () => {
-    setPopUp(true);
-  };
-
-  const onSubmit = async (condition: string) => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/condition?qid=${scanId}`,
-        { condition },
-        {
-          headers: {
-            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-            "session-token": sessionToken,
-          },
-        }
-      );
-      if (response && response.status === 200 && response.statusText === "OK") {
-        setPopUp(false);
-        if (showNotif) {
-          setShowNotif(false);
-        }
-        setNotifType("reported");
-        setShowNotif(true);
-      } else {
-        console.log("failed to update dish condition, response not okay");
-        console.log(response);
-      }
-    } catch (error: any) {
-      console.log("failed to update dish conditon");
-      console.log(error);
-    }
-  };
-
-    return (
-        <>
-            <Scanner
-                mode="Scan Dishes"
-                onScan={onScan}
-                onClose={() => navigate("/home")}
-            />
-            <Notification
-                show={showNotif}
-                type={notifType}
-                onClick={onClick}
-                id={scanId}
-            />
-            <Report
-                show={popUp}
-                onSubmit={onSubmit}
-                onCancel={onCancel}
-                id={scanId}
-            />
-        </>
-    )
-}*/
 
 const Return = () => {
   const [scanId, setScanId] = useState("");
@@ -272,30 +85,33 @@ const Return = () => {
     setPopUp(true);
   };
 
-  
-  const PopUpModal = ({dishType, error, reportToggle, qid, isMobile}) => {
+  const PopUpModal = ({ dishType, error, reportToggle, qid, isMobile }) => {
     let avatarIcon;
-    if (error){
-      avatarIcon = ErrorIcon
-    }
-    else if(dishType=="plate"){
-      avatarIcon = plateIcon
+    if (error) {
+      avatarIcon = ErrorIcon;
+    } else if (dishType == "plate") {
+      avatarIcon = plateIcon;
     } else {
       avatarIcon = mugIcon;
     }
     return (
-      <Box sx={stylesConst.boxContainer} className="start-50 position-fixed translate-middle">
+      <Box
+        sx={stylesConst.boxContainer}
+        className="start-50 position-fixed translate-middle"
+      >
         <Avatar
           src={avatarIcon}
           variant="square"
-          sx={{width: 60, height: 60, marginRight: 2.5 }}
+          sx={{ width: 60, height: 60, marginRight: 2.5 }}
           // sx={{ marginRight: 2.5 }}
           alt="Sign In Button Logo"
         />
         <div style={stylesConst.divContainer}>
           {error ? (
             <div>
-              <Typography sx={stylesConst.errorText}>Failed to return</Typography>
+              <Typography sx={stylesConst.errorText}>
+                Failed to return
+              </Typography>
               <Typography sx={stylesConst.errorText}>{error}</Typography>
             </div>
           ) : (
@@ -303,21 +119,35 @@ const Return = () => {
               <Typography sx={stylesConst.successText}>
                 Successfully returned
               </Typography>
-              <img
+              {/* <img
                 style={{ paddingRight: 16 }}
                 src={ReportIcon}
                 alt=""
                 onClick={reportToggle}
-              />
+              /> */}
             </div>
           )}
           <Typography variant="h6" sx={stylesConst.text}>
             {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
           </Typography>
-          
-          {error?(
-            <Typography sx={stylesConst.errorCaption}>Please scan and try again</Typography>
-          ):(<></>)}
+
+          {error ? (
+            <Typography sx={stylesConst.errorCaption}>
+              Please scan and try again
+            </Typography>
+          ) : (
+            <></>
+          )}
+        </div>
+        <div style={{ marginLeft: "auto" }}>
+              
+            <Button onClick={reportToggle} variant="contained" color="error" sx={{minWidth:'unset',borderRadius: '100px', aspectRatio: '1'}} >
+            <Avatar
+              src={ReportIcon}
+              sx={{ width: 25, height: 25, margin: "0" }}
+              variant="square"
+            ></Avatar>
+          </Button>
         </div>
       </Box>
     );
@@ -325,81 +155,95 @@ const Return = () => {
   const ReportModal = () => {
     return (
       <Box
+        className="position-absolute top-50 start-50 translate-middle shadow-lg"
+        sx={{
+          ...stylesConst.boxContainer,
+          zIndex: 10000,
+          height: 500,
+          maxWidth: "300px",
+          flexDirection: "column",
+          borderColor: "black",
+          color: "white",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <IconButton
+          aria-label="delete"
+          onClick={() => setReportPopUp(!reportPopUp)}
+          sx={{ position: "absolute", padding: "15px", right: 20, top: 20 }}
+        >
+          <Avatar
+            src={CloseIcon}
+            sx={{ width: 25, height: 25 }}
+            variant="square"
+          ></Avatar>
+        </IconButton>
+        <Typography sx={{ color: "black", fontSize: 30 }}>Report</Typography>
+        <Avatar
+          src={dishType == "plate" ? plateIcon : mugIcon}
+          sx={{ width: 75, height: 75 }}
+          variant="square"
+        ></Avatar>
+        <FormGroup>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue="alright"
+            name="radio-buttons-group"
+          >
+            <FormControlLabel
+              value="small_crack_chip"
+              control={
+                <Radio
+                  onClick={() => {
+                    setReportValue("small_crack_chip");
+                  }}
+                />
+              }
+              sx={{ color: "black" }}
+              label="Small crack/chip"
+            />
+            <FormControlLabel
+              value="large_crack_chunk"
+              control={
+                <Radio
+                  onClick={() => {
+                    setReportValue("large_crack_chunk");
+                  }}
+                />
+              }
+              sx={{ color: "black" }}
+              label="Large crack/chunk missing"
+            />
+            <FormControlLabel
+              value="shattered"
+              control={
+                <Radio
+                  onClick={() => {
+                    setReportValue("shattered");
+                  }}
+                />
+              }
+              sx={{ color: "black" }}
+              label="Shattered"
+            />
+          </RadioGroup>
+        </FormGroup>
+        <Button
+          variant="contained"
+          onClick={reportToggle}
+          size="large"
           sx={{
-            ...stylesConst.boxContainer,
-            zIndex: 10000,
-            width: 300,
-            height: 500,
-            border: 3,
-            flexDirection: "column",
-            borderColor: "black",
             color: "white",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-            position: "absolute",
-            top: 150,
-            left: 60,
+            backgroundColor: "#BF4949",
+            width: "150px",
+            borderRadius: "100px",
           }}
         >
-          <Typography sx={{ color: "black", fontSize: 30 }}>Report</Typography>
-          <Avatar
-            src={dishType == "plate" ? plateIcon : mugIcon}
-            sx={{ width: 75, height: 75 }}
-          ></Avatar>
-          <FormGroup>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="alright"
-              name="radio-buttons-group"
-            >
-              <FormControlLabel
-                value="small_crack_chip"
-                control={
-                  <Radio
-                    onClick={() => {
-                      setReportValue("small_crack_chip");
-                    }}
-                  />
-                }
-                sx={{ color: "black" }}
-                label="Small crack/chip"
-              />
-              <FormControlLabel
-                value="large_crack_chunk"
-                control={
-                  <Radio
-                    onClick={() => {
-                      setReportValue("large_crack_chunk");
-                    }}
-                  />
-                }
-                sx={{ color: "black" }}
-                label="Large crack/chunk missing"
-              />
-              <FormControlLabel
-                value="shattered"
-                control={
-                  <Radio
-                    onClick={() => {
-                      setReportValue("shattered");
-                    }}
-                  />
-                }
-                sx={{ color: "black" }}
-                label="Shattered"
-              />
-            </RadioGroup>
-          </FormGroup>
-          <Button
-            variant="contained"
-            onClick={reportToggle}
-            sx={{ color: "white", backgroundColor: "red" }}
-          >
-            Report
-          </Button>
-        </Box>
-    )
-  }
+          Report
+        </Button>
+      </Box>
+    );
+  };
   const onSubmit = async (condition: string) => {
     console.log("peewoop"); //Remove this
 
@@ -515,13 +359,13 @@ const Return = () => {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor:"#464646"
+        backgroundColor: "#464646",
       }}
     >
       {/* {isLoading ? ( */}
-        {/* <></> */}
+      {/* <></> */}
       {/* // ) : ( */}
-        <AppHeader title={"Return Dishes"} className={"headerDiv"} />
+      <AppHeader title={"Return Dishes"} className={"headerDiv"} />
       {/* // )} */}
       {/* {isLoading ? (
         <Box
@@ -546,7 +390,7 @@ const Return = () => {
       ) : (
         <></>
       )}
-      {popUp || true ? (
+      {popUp ? (
         <>
           <PopUpModal
             dishType={dishType}
@@ -561,7 +405,7 @@ const Return = () => {
       )}
       <CameraInput
         setLoading={setIsLoading}
-        isMobile = {isMobile}
+        isMobile={isMobile}
         isLoading={isLoading}
         style={{ height: "100%" }}
         onSubmit={onSubmit}
@@ -607,7 +451,7 @@ const stylesConst = {
   errorCaption: {
     fontSize: "13px",
 
-    color: '#757575'
+    color: "#757575",
   },
   successText: {
     fontSize: "10px",
