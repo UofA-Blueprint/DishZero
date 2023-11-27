@@ -9,7 +9,8 @@ import { Container, Button, InputGroup } from 'react-bootstrap';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faSearch
+    faSearch,
+    faPaperPlane
 } from "@fortawesome/free-solid-svg-icons";
 
 
@@ -25,19 +26,18 @@ const BottomTextInput = (props) => {
         return false;
     }
     return (
-        
-        <div className="start-0 position-fixed bottom-0 w-100 p-2" style={{backgroundColor: "rgb(58,58,58)" }} >
+        <div className="start-50 position-fixed bottom-0 p-2 translate-middle" style={{width:"95%"}}>
             <div>
-
                 <Form onSubmit={handleSubmit}>
-
-                    <InputGroup className="mb-1">
-
+                    <InputGroup className="mb-1 qr-search-container shadow-sm">
+                        <InputGroup.Text className="search-icon">
+                            <FontAwesomeIcon icon={faSearch} />                            
+                        </InputGroup.Text>
 
                         <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
 
-                        <Button onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button">
-                            Enter
+                        <Button variant="outline-secondary" id="button-addon2" onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button">
+                            <FontAwesomeIcon icon={faPaperPlane} fontSize={"1.4em"}/>                            
                         </Button>
 
                     </InputGroup >
