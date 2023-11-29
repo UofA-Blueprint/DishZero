@@ -1,5 +1,7 @@
+/*eslint-disable*/
+
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, provider } from "../firebase.tsx";
+import { auth, provider } from "../firebase";
 import { getIdToken, signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -13,7 +15,7 @@ type User = {
 
 type AuthContextValue = {
   currentUser: User | null;
-  sessionToken: string | null;
+  sessionToken: string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -21,9 +23,9 @@ type AuthContextValue = {
 // default values to avoid type errors
 const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
-  sessionToken: null,
-  login: async () => {},
-  logout: async () => {},
+  sessionToken: '',
+  login: async () => { console.log("placeholder"); },
+  logout: async () => { console.log("placeholder"); },
 });
 
 export function useAuth() {
@@ -32,7 +34,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [sessionToken, setSessionToken] = useState<string | null>(() => {
+  const [sessionToken, setSessionToken] = useState<string>(() => {
     const cookie = Cookies.get("session-token");
     return cookie ? cookie : null;
   });
@@ -56,38 +58,34 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    console.log("running update cookie");
-    console.log("user is", currentUser);
-
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/users/session`,
+        `/api/users/session`,
         {
+          baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
           headers: {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-            "session-token": sessionToken,
+            "session-token": sessionToken!,
           },
-        }
+        },
       );
 
       const data = response.data.user;
       if (response && response.status === 200) {
-        console.log("setting current user");
-        console.log(data);
         // if it gets here then current user should be null
         setCurrentUser({
-          id: data.id,
-          role: data.role,
-          email: data.email,
+          id: data?.id,
+          role: data?.role,
+          email: data?.email,
         });
       } else {
         console.log("no token found or something");
         logout();
       }
     } catch (error: any) {
-      console.error("Failed to call authentication. e ");
+      console.error("Failed to call authentication.");
       console.error(error);
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         console.log("user unauthorised");
         logout();
       }
@@ -101,8 +99,6 @@ export function AuthProvider({ children }) {
   async function login() {
     try {
       const credentials = await signInWithPopup(auth, provider);
-      console.log("credentials ", credentials);
-      console.log("firebase user", credentials.user);
       const idToken = await getIdToken(credentials.user);
 
       if (!credentials.user.email?.match("@ualberta.ca")) {
@@ -113,18 +109,18 @@ export function AuthProvider({ children }) {
       }
 
       const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/login/`,
+        `/api/auth/login/`,
         { idToken: idToken },
         {
           headers: {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
           },
+          baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
         }
       );
 
       const { data } = res;
-      console.log("data is", data);
-      console.log("session is", data.session);
+      // TODO remove later
       setSessionToken(data.session);
       Cookies.set("session-token", data.session);
       const newUser = data?.user;
@@ -133,7 +129,6 @@ export function AuthProvider({ children }) {
           ...data.user,
         });
       }
-      console.log("logged in");
 
       navigate("/home");
     } catch (error: any) {
@@ -145,18 +140,18 @@ export function AuthProvider({ children }) {
 
   async function logout() {
     const res = await axios.post(
-      `${process.env.REACT_APP_BACKEND_ADDRESS}/api/auth/logout/`,
+      `/api/auth/logout/`,
       {},
       {
+        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
         headers: {
           "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-          "session-token": sessionToken
+          "session-token": sessionToken!
         },
       }
     );
     auth.signOut();
-    console.log('logout response', res);
-    setSessionToken(null);
+    setSessionToken('');
     setCurrentUser(null);
     Cookies.remove("session-token");
     navigate("/login");

@@ -10,13 +10,16 @@ import cookieParser from 'cookie-parser'
 import { qrCodeRouter } from './routes/qrCode'
 import nodeConfig from 'config'
 import { cronRouter } from './routes/cron'
-import { EmailClient, initializeEmailCron } from './cron/email'
+import { EmailClient, getEmailCron, initializeEmailCron, isEmailCronEnabled } from './cron/email'
 import Logger from './utils/logger'
+import { fetchEmailCron } from './controllers/cron/email'
 
 const app = express()
 dotenv.config()
 
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 app.use(express.json())
 app.use(cookieParser())
 
@@ -37,10 +40,15 @@ if (environment === 'prod') {
     )
 }
 
-// Initialize all the cron jobs
-if (nodeConfig.get('cron.enabled')) {
-    Logger.info('Initializing cron jobs')
-    initializeEmailCron({ cronExpression: nodeConfig.get('cron.default.email') }, EmailClient.AWS)
+
+// Initialize cron jobs if enabled in firebase
+const handleCron = async () => {
+    // initializeEmailCron({ cronExpression: "0 0 12 * * MON,THU"}, EmailClient.AWS)
+    const cron = await fetchEmailCron()
+    if (cron && cron?.enabled) {
+        Logger.info('Initializing cron jobs')
+        initializeEmailCron({ cronExpression: cron.expression}, EmailClient.AWS)
+    }
 }
 
 app.get('/health', (_: Request, res: Response) => {
@@ -53,5 +61,7 @@ app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/qrcode', qrCodeRouter)
 app.use('/api/cron', cronRouter)
+
+handleCron()
 
 export { app }

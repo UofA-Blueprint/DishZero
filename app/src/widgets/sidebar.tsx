@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { slide as Menu } from "react-burger-menu";
 import "../styles/sidebar.css";
 import { Link } from "@mui/material";
+import React from 'react';
 import how_it_works_icon from "../assets/how_it_works.png";
 import logout_icon from "../assets/logout.svg";
 import our_impact_icon from "../assets/our_impact.png";
@@ -27,6 +28,8 @@ export const Sidebar = () => {
       setVolunteer(true);
     }
   }, [currentUser]);
+
+  
 
   return (
     <Menu>
@@ -85,4 +88,3 @@ export const Sidebar = () => {
     </Menu>
   );
 };
-

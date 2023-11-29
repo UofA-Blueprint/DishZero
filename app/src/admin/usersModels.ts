@@ -3,7 +3,7 @@ export interface User {
     inUse: number
     overdue: number // TODO: should this be a date?
     role: string
-};
+}
 
 export const mockUsers: Array<User> = [
     {

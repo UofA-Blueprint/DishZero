@@ -3,19 +3,21 @@ import { Transaction } from '../models/transaction'
 import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 import nodeConfig from 'config'
+import { getUserById } from './users'
+import { User } from '../models/user'
 
 export const getUserTransactions = async (userClaims: DecodedIdToken) => {
     let transactions = <Array<Transaction>>[]
     let transactionsQuerySnapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .get()
     transactionsQuerySnapshot.docs.forEach((doc) => {
         let data = doc.data()
         transactions.push({
             id: doc.id,
             dish: data.dish ? data.dish.id : null,
-            userId: data.user,
+            user: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp : null,
         })
@@ -31,7 +33,7 @@ export const getAllTransactions = async () => {
         transactions.push({
             id: doc.id,
             dish: data.dish ? data.dish.id : null,
-            userId: data.user,
+            user: data.user,
             returned: data.returned ? data.returned : {},
             timestamp: data.timestamp ? data.timestamp : null,
         })
@@ -55,7 +57,7 @@ export const registerTransaction = async (transaction: Transaction) => {
 export const getLatestTransaction = async (userClaims: DecodedIdToken, qid: number) => {
     let transactionQuery = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .where('dish.qid', '==', qid)
         .where('returned.timestamp', '==', '')
         .get()
@@ -122,7 +124,7 @@ export const getLatestTransactionByTstampAndDishId = async (dishId: string) => {
 export const getLatestTransactionBydishId = async (userClaims: DecodedIdToken, dishId: string) => {
     let snapshot = await db
         .collection(nodeConfig.get('collections.transactions'))
-        .where('userId', '==', userClaims.uid)
+        .where('user.id', '==', userClaims.uid)
         .where('dish.id', '==', dishId)
         .where('returned.timestamp', '==', '')
         .get()

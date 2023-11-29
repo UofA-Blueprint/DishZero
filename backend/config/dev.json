@@ -24,13 +24,12 @@
         "dishes": "dishes",
         "users": "users",
         "qrcodes": "qr-codes",
-        "cron": "cron",
-        "email": "email"
+        "cron": "cron"
     },
     "cron": {
         "enabled": true,
         "default": {
-            "email": "*/30 * * * * *"
+            "email": "*/5 * * * * *"
         }
     },
     "aws": {

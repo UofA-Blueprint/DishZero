@@ -1,9 +1,13 @@
+/*eslint-disable*/
+
+
 import { useEffect, useRef, useState } from 'react';
 import Toolbar from './toolbar';
 import adminApi from "./adminApi";
 import { Simulate } from "react-dom/test-utils";
 import load = Simulate.load;
 import { StyledDishDataLayout } from './styledDishes';
+import { useAuth } from '../contexts/AuthContext';
 
 const AdminDishTableRow = ({ dish, selectedHandler, index, selectedList }) => {
     return (
@@ -35,6 +39,7 @@ const DishData = ({ origDishList }) => {
     const [dishFilterClick, setDishFilterClick] = useState(false);
     const [dishStatusFilter, setDishStatusFilter] = useState({ "All": false, "InUse": false, "Returned": false, "Overdue": false });
     const [dishStatusClick, setDishStatusClick] = useState(false);
+    const { currentUser, sessionToken } = useAuth();
     /// filter function
     const GetfilteredDish = (filter, dishes) => {
         return dishes.filter((dish) => {
@@ -47,8 +52,8 @@ const DishData = ({ origDishList }) => {
         })
     }
     const CreateFilter = () => {
-        var dishType = [""]
-        var dishStatus = [""]
+        let dishType = [""]
+        let dishStatus = [""]
         if (dishTypeFilter.Mug) {
             dishType.push("Mug");
         }
@@ -77,7 +82,10 @@ const DishData = ({ origDishList }) => {
     }
 
     const loadDataFromBackend = async function () {
-        let dishData = await adminApi.getAllDishes();
+        let dishData = [];
+        if (sessionToken) {
+            dishData = await adminApi.getAllDishes(sessionToken);
+        }
         setDishList(dishData);
         resetStateVars(dishData);
     }
@@ -156,7 +164,6 @@ const DishData = ({ origDishList }) => {
         if (i >= newSelItems.length) { return; }
         newSelItems[i] = !newSelItems[i];
         setSelectedList(newSelItems);
-        console.log(`Len: ${selectedList.length}; ${selectedList[i]}`);
     }
 
     // Handles the state change of the checkbox in table head
@@ -323,8 +330,6 @@ const TransactionHistory = () => {
     )
 }
 
-const DishDashboard = () => {
 
-}
 
 export default DishData;

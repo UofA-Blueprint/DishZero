@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import  React, { useEffect, useState } from "react";
 import { Button, Typography, Box, Avatar } from '@mui/material';
 import {BallTriangle} from 'react-loader-spinner';
 import desktopLogo from "../assets/dishzero-logo-desktop.png";
@@ -6,11 +6,9 @@ import mobileLogo from "../assets/dishzero-logo-mobile.png";
 import signInButtonLogo from "../assets/sign-in-button-logo.png";
 import MobileBackground from '../assets/leaf-mobile-background.png';
 import 'typeface-poppins';
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 
-const useQuery = () => new URLSearchParams(useLocation().search);
 
 export default function Login() {
   const { login } = useAuth()
@@ -21,8 +19,7 @@ export default function Login() {
   const {currentUser} = useAuth()
   
   //const {transaction_id} = useParams();
-  const query = useQuery();
-  const transaction_id = query.get("transaction_id");
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
