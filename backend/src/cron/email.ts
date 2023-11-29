@@ -55,7 +55,7 @@ export class EmailCron implements Cron {
                                 const user = await getUserById(dish.userId)
 
                                 if (user?.email && !recipients.includes(user?.email)) {
-                                    // sendEmail([user?.email], subject, body, senderEmail)
+                                    sendEmail([user?.email], subject, body, senderEmail)
                                     recipients.push(user?.email)
                                 }
                             }
