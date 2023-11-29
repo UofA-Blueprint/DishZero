@@ -176,6 +176,7 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
     const template = req.body.template
     const subject = template?.subject
     const body = template?.body
+    const senderEmail = template?.senderEmail
     if (!template || !subject || !body) {
         Logger.error({
             moduleName,
@@ -186,6 +187,7 @@ export const updateEmailTemplate = async (req: Request, res: Response) => {
     }
 
     await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
+        senderEmail,
         subject,
         body,
     })
@@ -210,6 +212,9 @@ export const updateEmailCronExpression = async (req: Request, res: Response) => 
         return res.status(403).json({ error: 'forbidden' })
     }
     
+    const exprTime = req.body.exprTime.split(":")
+    const hours = parseInt(exprTime[0])
+    const minutes = parseInt(exprTime[1])
     const days = req.body.days
     const daysArr =  ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     if (!validateUpdateEmailBody(days, daysArr)) {
@@ -221,7 +226,7 @@ export const updateEmailCronExpression = async (req: Request, res: Response) => 
         return res.status(400).json({ error: 'bad_request' })
     }
 
-    let cronExpression = "0 0 12 * * " // 12 am for the set days, can change later to change time too
+    let cronExpression = `0 ${minutes} ${hours} * * `
     let setDays = []
     for (let day of daysArr) {
         if (days[day]) {

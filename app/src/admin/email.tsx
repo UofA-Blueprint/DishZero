@@ -14,10 +14,13 @@ import {
 } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import axios from "axios";
+
 function Email() {
   const { sessionToken } = useAuth();
+  const [sender, setSender] = useState<string>("");
   const [subject, setSubject] = useState<string>("");
   const [content, setContent] = useState<string>("");
+  const [exprTime, setExprTime] = useState<string>("");
   const [days, setDays] = useState({
     monday: false,
     tuesday: false,
@@ -54,10 +57,16 @@ function Email() {
         return;
       } else {
         const data = response.data;
+        setSender(data.cron.senderEmail);
         setContent(data.cron.body);
         setSubject(data.cron.subject);
-        const daysArr = (data.cron.expression as string).split(" ");
-        const daysExpr = daysArr[daysArr.length - 1] as string;
+        const exprArr = (data.cron.expression as string).split(" ");
+        let hours = exprArr[2];
+        if (hours.length == 1) hours = "0" + hours;
+        let minutes = exprArr[1];
+        if (minutes.length == 1) minutes = "0" + minutes;
+        setExprTime(`${hours}:${minutes}`);
+        const daysExpr = exprArr[exprArr.length - 1] as string;
         const exprMap = {
           MON: "monday",
           TUE: "tuesday",
@@ -121,13 +130,13 @@ function Email() {
           sx={{
             display: "flex",
             justifyContent: "center",
-            position: 'fixed',
-            width: '100%',
+            position: "fixed",
+            width: "100%",
             left: 100,
             right: 0,
           }}
         >
-          <Alert sx={{ width: "50%"}}>Changes saved.</Alert>
+          <Alert sx={{ width: "50%" }}>Changes saved.</Alert>
         </Box>
       </Fade>
     );
@@ -140,13 +149,15 @@ function Email() {
           sx={{
             display: "flex",
             justifyContent: "center",
-            position: 'fixed',
-            width: '100%',
+            position: "fixed",
+            width: "100%",
             left: 100,
             right: 0,
           }}
         >
-          <Alert severity="error" sx={{ width: "50%"}}>Error. Please try again.</Alert>
+          <Alert severity="error" sx={{ width: "50%" }}>
+            Error. Please try again.
+          </Alert>
         </Box>
       </Fade>
     );
@@ -158,6 +169,7 @@ function Email() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/api/cron/email/template`,
         {
           template: {
+            senderEmail: sender,
             subject: subject,
             body: content,
           },
@@ -189,6 +201,7 @@ function Email() {
         `${process.env.REACT_APP_BACKEND_ADDRESS}/api/cron/email/expression`,
         {
           days,
+          exprTime,
         },
         {
           headers: {
@@ -220,6 +233,7 @@ function Email() {
   }
 
   function resetInputValues() {
+    setSender("");
     setSubject("");
     setContent("");
     setDays({
@@ -273,6 +287,41 @@ function Email() {
               Configure Overdue Email
             </Typography>
 
+            {/* sender email */}
+            <Box
+              sx={{
+                display: "flex",
+                flexGrow: 1,
+                marginTop: "40px",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  weight: "500",
+                  fontWeight: "bold",
+                }}
+              >
+                Sender
+              </Typography>
+
+              <TextField
+                id="outlined-basic"
+                variant="outlined"
+                value={sender}
+                placeholder="Type subject here..."
+                onChange={(e) => {
+                  setSender(e.target.value);
+                }}
+                size="small"
+                sx={{
+                  marginLeft: "125px",
+                  width: "80%",
+                }}
+              />
+            </Box>
+
             {/* subject */}
             <Box
               sx={{
@@ -302,7 +351,7 @@ function Email() {
                 }}
                 size="small"
                 sx={{
-                  marginLeft: "120px",
+                  marginLeft: "122px",
                   width: "80%",
                 }}
               />
@@ -342,6 +391,42 @@ function Email() {
                 multiline
                 rows={12}
               />
+            </Box>
+
+            {/* time */}
+            <Box
+              sx={{
+                display: "flex",
+                flexGrow: 1,
+                marginTop: "40px",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontSize: "20px",
+                  weight: "500",
+                  fontWeight: "bold",
+                }}
+              >
+                Time
+              </Typography>
+
+              <Box
+                sx={{
+                  marginLeft: "150px",
+                }}
+              >
+                <input
+                  type="time"
+                  id="time-input"
+                  value={exprTime}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setExprTime(e.target.value);
+                  }}
+                />
+              </Box>
             </Box>
 
             {/* checkboxes and button */}

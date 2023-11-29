@@ -15,7 +15,7 @@ type User = {
 
 type AuthContextValue = {
   currentUser: User | null;
-  sessionToken: string | null;
+  sessionToken: string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -23,7 +23,7 @@ type AuthContextValue = {
 // default values to avoid type errors
 const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
-  sessionToken: null,
+  sessionToken: '',
   login: async () => { console.log("placeholder"); },
   logout: async () => { console.log("placeholder"); },
 });
@@ -34,7 +34,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [sessionToken, setSessionToken] = useState<string | null>(() => {
+  const [sessionToken, setSessionToken] = useState<string>(() => {
     const cookie = Cookies.get("session-token");
     return cookie ? cookie : null;
   });
@@ -151,7 +151,7 @@ export function AuthProvider({ children }) {
       }
     );
     auth.signOut();
-    setSessionToken(null);
+    setSessionToken('');
     setCurrentUser(null);
     Cookies.remove("session-token");
     navigate("/login");
