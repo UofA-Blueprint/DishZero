@@ -47,12 +47,12 @@ function Email() {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
-        }
+        },
       );
 
       if (!(response && response.status === 200)) {
         alert(
-          "Unable to get saved template! Make sure you enter all fields before saving."
+          "Unable to get saved template! Make sure you enter all fields before saving.",
         );
         return;
       } else {
@@ -91,9 +91,8 @@ function Email() {
         setDays(days);
       }
     } catch (error: unknown) {
-      console.log(error);
       alert(
-        "Unable to get saved template! Make sure you enter all fields before saving."
+        "Unable to get saved template! Make sure you enter all fields before saving.",
       );
       return;
     }
@@ -182,14 +181,12 @@ function Email() {
           setSuccessOpen(false);
         }, 2000);
       } else {
-        console.log("data", response.data);
         setErrorOpen(true);
         setTimeout(() => {
           setErrorOpen(false);
         }, 2000);
       }
     } catch (error: unknown) {
-      console.log(error); 
       setErrorOpen(true);
       setTimeout(() => {
         setErrorOpen(false);
@@ -216,14 +213,12 @@ function Email() {
           setSuccessOpen(false);
         }, 2000);
       } else {
-        console.log("data", response.data);
         setErrorOpen(true);
         setTimeout(() => {
           setErrorOpen(false);
         }, 2000);
       }
     } catch (error: unknown) {
-      console.log(error); 
       setErrorOpen(true);
       setTimeout(() => {
         setErrorOpen(false);
@@ -246,16 +241,17 @@ function Email() {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
-        }
+        },
       );
 
       if (!(response && response.status === 200)) {
-        console.log("data", response.data);
-
+        setErrorOpen(true);
+        setTimeout(() => {
+          setErrorOpen(false);
+        }, 2000);
         return;
       }
     } catch (error: unknown) {
-      console.log(error);
       setErrorOpen(true);
       setTimeout(() => {
         setErrorOpen(false);
@@ -275,7 +271,7 @@ function Email() {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
             "session-token": sessionToken,
           },
-        }
+        },
       );
 
       if (response && response.status === 200) {
@@ -284,14 +280,12 @@ function Email() {
           setSuccessOpen(false);
         }, 2000);
       } else {
-        console.log("data", response.data);
         setErrorOpen(true);
         setTimeout(() => {
           setErrorOpen(false);
         }, 2000);
       }
     } catch (error: unknown) {
-      console.log(error);
       setErrorOpen(true);
       setTimeout(() => {
         setErrorOpen(false);
