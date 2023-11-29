@@ -5,7 +5,9 @@
   --secondary-blue: #B0D1D8;
   --secondary-green: #29604D;
 }
-
+/* html, body, #root{
+  height: 100%;
+} */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

@@ -1,7 +1,7 @@
 /*eslint-disable*/
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, provider } from "../firebase.tsx";
+import { auth, provider } from "../firebase";
 import { getIdToken, signInWithPopup } from "firebase/auth";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
           baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
           headers: {
             "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-            "session-token": sessionToken,
+            "session-token": sessionToken!,
           },
         },
       );
@@ -146,7 +146,7 @@ export function AuthProvider({ children }) {
         baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
         headers: {
           "x-api-key": `${process.env.REACT_APP_API_KEY}`,
-          "session-token": sessionToken
+          "session-token": sessionToken!
         },
       }
     );
