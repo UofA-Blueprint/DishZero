@@ -163,6 +163,73 @@ function Email() {
     );
   }
 
+  async function startCronJob() {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/cron/email/start`,
+        {},
+        {
+          headers: {
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
+            "session-token": sessionToken,
+          },
+        },
+      );
+
+      if (response && response.status === 200) {
+        setSuccessOpen(true);
+        setTimeout(() => {
+          setSuccessOpen(false);
+        }, 2000);
+      } else {
+        console.log("data", response.data);
+        setErrorOpen(true);
+        setTimeout(() => {
+          setErrorOpen(false);
+        }, 2000);
+      }
+    } catch (error: unknown) {
+      console.log(error); 
+      setErrorOpen(true);
+      setTimeout(() => {
+        setErrorOpen(false);
+      }, 2000);
+    }
+  }
+
+  async function stopCronJob() {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_ADDRESS}/api/cron/email/stop`,
+        {},
+        {
+          headers: {
+            "x-api-key": `${process.env.REACT_APP_API_KEY}`,
+            "session-token": sessionToken,
+          },
+        },
+      );
+
+      if (response && response.status === 200) {
+        setSuccessOpen(true);
+        setTimeout(() => {
+          setSuccessOpen(false);
+        }, 2000);
+      } else {
+        console.log("data", response.data);
+        setErrorOpen(true);
+        setTimeout(() => {
+          setErrorOpen(false);
+        }, 2000);
+      }
+    } catch (error: unknown) {
+      console.log(error); 
+      setErrorOpen(true);
+      setTimeout(() => {
+        setErrorOpen(false);
+      }, 2000);
+    }
+  }
   async function saveTemplate() {
     try {
       const response = await axios.post(
@@ -497,6 +564,50 @@ function Email() {
                   Save Changes
                 </Button>
               </Box>
+            </Box>
+
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginRight: "120px",
+                marginTop: "50px",
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={startCronJob}
+                sx={{
+                  ":hover": {
+                    background: "#68B49A",
+                  },
+                  background: "#68B49A",
+                  color: "white",
+                  borderRadius: "30px",
+                  width: "200px",
+                  marginLeft: "20px",
+                }}
+              >
+                Start Emails
+              </Button>
+
+              <Button
+                variant="contained"
+                onClick={stopCronJob}
+                sx={{
+                  ":hover": {
+                    background: "#68B49A",
+                  },
+                  background: "#68B49A",
+                  color: "white",
+                  borderRadius: "30px",
+                  width: "200px",
+                  marginLeft: "20px",
+                }}
+              >
+                Stop Emails
+              </Button>
             </Box>
           </Box>
         </Box>
