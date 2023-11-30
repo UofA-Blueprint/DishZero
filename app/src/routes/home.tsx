@@ -166,7 +166,7 @@ export default () => {
   useEffect(() => {
     axios
       .get(`/api/transactions`, {
-        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
         baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {

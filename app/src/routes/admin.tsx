@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import leaf_icon from "../assets/leaf.svg";
 import { MobileView, BrowserView } from "react-device-detect";
 import Toolbar from "../admin/toolbar";
@@ -304,7 +304,7 @@ function Admin() {
   useEffect(() => {
     axios
     .get(`/api/dish`, {
-      headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+      headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
       params: {all: true, transaction: true},
       baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
     })
@@ -322,7 +322,7 @@ function Admin() {
   useEffect(() => {
     axios
       .get(`/api/transactions`, {
-        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken },
+        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
         params: {all: true},
         baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
