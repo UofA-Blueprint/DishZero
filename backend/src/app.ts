@@ -11,14 +11,19 @@ import { qrCodeRouter } from './routes/qrCode'
 
 const app = express()
 dotenv.config()
-
-app.use(cors({
-    origin: 'https://app.dishzero.ca'
-}))
+const corsOptions = {
+    origin: 'https://app.dishzero.ca', // This is your front-end origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Include OPTIONS for preflight requests
+    allowedHeaders: 'Content-Type,Authorization,x-api-key,session-token', // Include custom headers
+    credentials: true, // This is important because you are sending a session token in your request
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions));
 app.use(express.json())
 app.use(cookieParser())
 
-app.options('*', cors());
+
 
 let environment = process.env.NODE_ENV
 
