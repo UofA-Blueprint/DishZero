@@ -8,10 +8,7 @@ import leaf_white from "../assets/leaf-white.svg";
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
-
-
 function dishStatus(dishNumbers: number[]) {
-
   return(
     <div className="d-flex">
 
@@ -35,9 +32,7 @@ function dishStatus(dishNumbers: number[]) {
         <p className="header" style={{marginTop: 10}} data-testid="lost-count">{dishNumbers[3]}</p>
         <p className="sub-header-4">Dishes Lost</p>
       </div>
-
   </div>
-
   );
 }
 
@@ -93,8 +88,6 @@ function dishTable() {
   );
 }
 
-
-
 function findDish(ID, dishesUsed) {
   if (ID == null) {
     return('')
@@ -143,7 +136,6 @@ function findLost(dishesUsed, transactionsUsed) {
 function createRows(dishesUsed, transactionsUsed) {
   const list: any[] = [];
   const timeToday = new Date();
-  // console.log(transactionsUsed)
   transactionsUsed.map(transaction => {
     let dish = findDish(transaction.dish, dishesUsed);
     if (dish == null) {
@@ -152,7 +144,7 @@ function createRows(dishesUsed, transactionsUsed) {
     else {
       dish = dish[0];
     }
-    const id = dish.qid;
+    const id = dish.qid; // this is a number
     const type = dish.type;
     let email = '';
     if(transaction.user == undefined) {
@@ -194,10 +186,6 @@ function createRows(dishesUsed, transactionsUsed) {
     list.push(row);
   });
   return list;
-  // return list.map(row => ({
-  //   ...row,
-  //   'data-testid': `table-row-${row.id}`
-  // }));
 }
 
 function Rows(tableRows, search) {
@@ -240,11 +228,11 @@ function Rows(tableRows, search) {
       <div>
       {records.map(row =>
         <div className="row-container d-flex" style={{position: 'relative'}}>
-          <p style={{position: "absolute", marginLeft: '4%'}} data-testid="table-row-id">{row.id}</p>
-          <div style={{position: "absolute", marginLeft: '22%'}} data-testid="table-row-type">{dishTag(row.type)}</div>
-          <p style={{position: "absolute", marginLeft: '41%'}} data-testid="table-row-status">{dishTag(row.status)}</p>
-          <p style={{position: "absolute", marginLeft: '65%'}} data-testid="table-row-overdue">{row.overdue}</p>
-          <p style={{position: "absolute", marginLeft: '84%'}} data-testid="table-row-email">{row.email}</p>
+          <p style={{position: "absolute", marginLeft: '4%'}} data-testid={`row-${row.id}`}>{row.id}</p>
+          <div style={{position: "absolute", marginLeft: '22%'}} data-testid={`row-${row.type}`}>{dishTag(row.type)}</div>
+          <p style={{position: "absolute", marginLeft: '41%'}} data-testid={`row-${row.status}`}>{dishTag(row.status)}</p>
+          <p style={{position: "absolute", marginLeft: '65%'}} data-testid={`row-${row.overdue}`}>{row.overdue}</p>
+          <p style={{position: "absolute", marginLeft: '84%'}} data-testid={`row-${row.email}`}>{row.email}</p>
         </div>
       )}
       </div>
@@ -310,7 +298,6 @@ function Admin() {
     })
     .then(function (response) {
       setDishesUsed(response.data.dishes);
-      console.log(response.data.dishes)
       })
       .catch(function (error) {
         console.log(error);
@@ -327,7 +314,6 @@ function Admin() {
         baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
       })
       .then(function (response) {
-        console.log(response.data.transactions)
         setTransactionsUsed(response.data.transactions);
       })
       .catch(function (error) {

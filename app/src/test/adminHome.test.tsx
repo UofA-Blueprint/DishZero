@@ -29,8 +29,8 @@ const mockDishesData = [
         borrowed: true,
         borrowedAt: "2023-11-11T02:40:20.230Z",
         condition: "alright",
-        id: "1234567",
-        qid: 1234567,
+        id: "dish1",
+        qid: 123,
         registered: "2023-07-22T20:19:47.144Z",
         status: "available",
         timesBorrowed: 3,
@@ -42,8 +42,8 @@ const mockDishesData = [
         borrowed: false,
         borrowedAt: null,
         condition: "alright",
-        id: "23990",
-        qid: 23990,
+        id: "dish2",
+        qid: 23,
         registered: "2023-07-22T20:19:50.144Z",
         status: "available",
         timesBorrowed: 7,
@@ -55,8 +55,8 @@ const mockDishesData = [
         borrowed: true,
         borrowedAt: "2023-11-16T02:40:20.230Z",
         condition: "alright",
-        id: "309876",
-        qid: 309876,
+        id: "dish3",
+        qid: 30,
         registered: "2023-07-22T20:19:50.144Z",
         status: "available",
         timesBorrowed: 2,
@@ -68,8 +68,8 @@ const mockDishesData = [
         borrowed: true,
         borrowedAt: "2023-11-21T02:40:20.230Z",
         condition: "alright",
-        id: "42345",
-        qid: 42345,
+        id: "dish2",
+        qid: 23,
         registered: "2023-07-22T20:19:50.144Z",
         status: "available",
         timesBorrowed: 9,
@@ -81,8 +81,8 @@ const mockDishesData = [
         borrowed: true,
         borrowedAt: "2022-11-21T02:40:20.230Z",
         condition: "alright",
-        id: "511190",
-        qid: 511190,
+        id: "dish4",
+        qid: 51,
         registered: "2020-07-22T20:19:50.144Z",
         status: "available",
         timesBorrowed: 1,
@@ -94,7 +94,7 @@ const mockDishesData = [
 const mockTransactionsData = [
     {
         dish: "dish1",
-        id: '1234567',
+        id: '123',
         returned: {
             condition: "alright",
             timestamp: "" // An empty string to indicate not returned
@@ -109,7 +109,7 @@ const mockTransactionsData = [
 
     {
         dish: "dish2",
-        id: '23990',
+        id: '23',
         returned: {
             condition: "large_crack_chunk",
             timestamp: "2023-09-26T23:44:52.548Z"
@@ -124,7 +124,7 @@ const mockTransactionsData = [
 
     {
         dish: "dish3",
-        id: '309876',
+        id: '30',
         returned: {
             condition: "alright",
             timestamp: "" // An empty string to indicate not returned
@@ -139,7 +139,7 @@ const mockTransactionsData = [
 
     {
         dish: "dish2",
-        id: '42345',
+        id: '23',
         returned: {
             condition: "large_crack_chunk",
             timestamp: ""
@@ -154,7 +154,7 @@ const mockTransactionsData = [
 
     {
         dish: "dish4",
-        id: '511190',
+        id: '51',
         returned: {
             condition: "alright",
             timestamp: ""
@@ -183,20 +183,14 @@ beforeEach(async () => {
         login: jest.fn(),
         logout: jest.fn(),
     }));
-
-    // mockedAxios.get.mockResolvedValue({
-    //     data: {
-    //         transactions: mockTransactionsData
-    //     }
     
-  
-
     mockedAxios.get.mockResolvedValue({
         data: {
           dishes: mockDishesData,
           transactions: mockTransactionsData
         }
       });
+
 });
 
 test("Renders homepage without crashing", async () => {
@@ -255,29 +249,6 @@ describe('Dish Status', () => {
         expect(screen.getByTestId("overdue-text")).toBeInTheDocument();
     });
 
-    // Check the numbers displayed on the screen
-    // const overdueDishes = mockTransactionsData.filter(transaction => transaction.returned.timestamp == "");
-    // Calculate the expected number of overdue dishes
-    // const timeNow = new Date();
-    // const twoDaysInMs = 2 * 24 * 60 * 60 * 1000; // Two days in milliseconds
-    // const overdueDishesCount = mockTransactionsData.reduce((count, transaction) => {
-    //     if (transaction.returned.timestamp === "") {
-    //     const borrowTime = new Date(transaction.timestamp).getTime();
-    //     const timeElapsed = timeNow.getTime() - borrowTime;
-    //     if (timeElapsed > twoDaysInMs) {
-    //         return count + 1;
-    //     }
-    //     }
-    //     return count;
-    // }, 0);
-
-    // await waitFor(() => {
-    //     // expect(screen.getByTestId("in-use")).toHaveTextContent(inUseDishes.toString())
-    //     // expect(screen.getByTestId("returned")).toHaveTextContent(availableDishes.toString())
-    //     const overdueDishesElement = screen.getByTestId("overdue-count");
-    //     expect(overdueDishesElement).toHaveTextContent(overdueDishesCount.toString());
-    // });
-
     // Calculate the number of overdue dishes (more than 2 days but less than 30 days)
     const timeToday = new Date();
     const overdueDishes = mockTransactionsData.filter(transaction => {
@@ -319,10 +290,7 @@ describe('Dish Status', () => {
     await waitFor(() => {
         expect(screen.getByTestId("lost-count")).toHaveTextContent(dishesLost.toString());
     });
-
     });
-
-
 });
 
 describe("Table Functionalities", () => {
@@ -347,7 +315,7 @@ describe("Table Functionalities", () => {
       useAuthMock.mockRestore();
     });
 
-    it('fetches and displays user data', async () => {
+    it('fetches and displays transactions data', async () => {
         await act(async () => {
             render(
               <Router>
@@ -355,27 +323,55 @@ describe("Table Functionalities", () => {
               </Router>
             );
         });
-      
 
-            for (const dish of mockDishesData) {
-                const correspondingTransaction = mockTransactionsData.find(transaction => transaction.id === dish.id);
-                // console.log(correspondingTransaction)
+        for (const dish of mockDishesData) {
+            const correspondingTransaction = mockTransactionsData.find(transaction => transaction.dish === dish.id);
 
-                if (correspondingTransaction) {
-                    // Wait for the element to appear in the document
-                    // await waitFor(() => {
-                    //     expect(screen.getByTestId("table-row-email")).toHaveTextContent(correspondingTransaction.user.email);
-                    // });
-                    expect(await screen.findByText(correspondingTransaction.user.email)).toBeInTheDocument();
-        
-                    // Additional checks for dish and transaction details
-                    // ...
-                } else {
-                    // No corresponding transaction found
-                    console.error(`No corresponding transaction found for dish with id ${dish.id}`);
-                }
+            // Verify the columns
+            const idElements = await screen.findAllByTestId(`row-${dish.qid}`);
+            const rowEmails = await screen.findAllByTestId(`row-${correspondingTransaction?.user.email}`)
+            const dishTypes = await screen.findAllByTestId(`row-${dish.type}`);
+
+            for (const idElement of idElements) {
+                expect(idElement.textContent).toBe(correspondingTransaction?.id);
             }
-            useAuthMock.mockRestore();
-//   });
+            for (const email of rowEmails) {
+                expect(email.textContent).toBe(correspondingTransaction?.user.email);
+            }
+            for (const dishType of dishTypes) {
+                expect(dishType.textContent).toBe(dish.type);
+            }
+
+        }
+      
+        useAuthMock.mockRestore();
+
+    })
+
+    it('search functionality', async () => {
+        await act(async () => {
+            render(
+              <Router>
+                <Admin />
+              </Router>
+            );
+        });
+
+         // Simulate typing into the search bar
+        const searchInput = screen.getByPlaceholderText('Type text here...');
+        fireEvent.change(searchInput, { target: { value: mockTransactionsData[0].id } });
+
+        // Simulate click on the search button
+        const searchButton = screen.getByText('Search');
+        fireEvent.click(searchButton);
+
+        // Assert that the table contains the expected data
+        const expectedData = screen.getByText(mockTransactionsData[0].user.email);
+        expect(expectedData).toBeInTheDocument();
+        
+      
+        useAuthMock.mockRestore();
   
-})});
+    })
+
+});
