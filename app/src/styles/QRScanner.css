@@ -5,28 +5,27 @@
   height: 100%;
   top: 0;
   left: 0;
-  transform: translateY(0);;
+  transform: translateY(0);
   transition: transform 0.2s cubic-bezier(0.445, 0.05, 0.55, 0.95);
-  border: 1px solid black
+  border: 1px solid black;
 }
-.scanner-main.hidden{
+.scanner-main.hidden {
   /* display: none; */
   transform: translateY(100%);
-
 }
-.qr-scanner-wrapper{
+.qr-scanner-wrapper {
   /* min-width: 30rem; */
   height: 75% !important;
   position: absolute;
   top: 15vh;
   bottom: 0px;
-  left:0px;
+  left: 0px;
   right: 0px;
   flex-direction: column;
-  /*background-color: grey;*/
+  background-color: #464646;
 }
 .scanner-wrapper {
-  background-color: rgb(254,255,254);
+  background-color: rgb(254, 255, 254);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -36,24 +35,23 @@
   color: white;
 }
 
-.qr-scanner-placeholder{
+.qr-scanner-placeholder {
   border-radius: 10px;
   height: 100% !important;
   width: 100% !important;
   /*background-color: red;*/
   color: black;
   /* z-index: 100; */
-
 }
-.qr-scanner-tag{
+.qr-scanner-tag {
   width: 100%;
   height: 100%;
-  display:flex;
+  display: flex;
   /*background-color: blue;*/
   justify-content: center;
   align-items: center;
 }
-.crosshair{
+.crosshair {
   position: absolute;
   background-image: url("../../public/scan_outline.svg");
   height: 400px;
@@ -63,34 +61,76 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
-.search-bar{
-  background-color: black;
-  border-radius: 25px !important;
+@keyframes example {
+  from {
+    bottom: -100px;
+  }
+  to {
+    bottom: "100px",
+  }
+}
+.slide-in-popup {
+  left: 50% !important;
+  animation-name: example;
+  animation-duration: 225ms;
+  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+.slide-in-popup.animate {
+  /* transition: left 225ms cubic-bezier(0, 0, 0.2, 1) 0ms; */
+}
+
+.search-bar::placeholder {
+  color: #c2c2c2 !important;
+}
+.search-bar {
+  background-color: transparent !important;
+  /* border-radius: 25px !important; */
   width: 90%;
-  margin-right: 30px;
+  border: none !important;
+}
+.qr-search-container {
+  background-color: #f6f8f5 !important;
+  /* border: 2px grey solid !important; */
+  border-radius: 20px;
+}
+.qr-search-container:focus-within {
+  /* border-radius: 0px;   */
+  /* border: 2px grey solid !important; */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
 
+.search-bar:focus {
+  background-color: #d7d7d7;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
-.search-bar:focus{
-  background-color: #323232;
+.search-icon {
+  border: none !important;
+  background-color: transparent !important;
 }
-
-.search-div{
-  background-color: #323232;
-  padding-left: 10px;
-}
-.search-button{
+.search-button {
   margin-left: 5px !important;
-  border-radius: 50px !important;
-  color: green;
-  width: 10%;
+  /* border-radius: 25px !important; */
+  color: #68b49a !important;
+  border: none !important;
+  /* transform: ; */
+  /* background-color: red !important; */
+  /* width: 10%; */
 }
-.qr-scan-nav{
+.qr-scan-nav {
   background-color: white !important;
   color: black !important;
 }
-
-.notif{
-  background-color: #F0F0F0;
+.qr-body-wrapper {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  background-color: #464646;
+  position: absolute;
+  z-index: 0;
+}
+.notif {
+  background-color: #f0f0f0;
   width: 330px;
   height: 80px;
   margin-left: calc(50% - 165px);
@@ -98,20 +138,20 @@
   display: table;
   margin-bottom: 70px;
 }
-.graphic{
+.graphic {
   float: left;
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   width: 48px;
   height: 48px;
 }
-.text-group{
+.text-group {
   float: left;
   margin-left: 15px;
   text-align: left;
   width: 200px;
   height: 34px;
 }
-.report-btn{
+.report-btn {
   float: left;
   width: 35px;
   height: 35px;
@@ -120,7 +160,7 @@
   border-color: #d9d9d9 !important;
 }
 /* i can't make an octagon */
-.octagon{
+.octagon {
   width: 20px;
   height: 20px;
   margin-left: -5.5px;
@@ -133,12 +173,12 @@
   width: 248px !important;
 }
 .report-modal-height {
-  height: 366px!important;
+  height: 366px !important;
 }
 .report-modal-header {
   font-size: 16px;
   font-weight: 600;
-  background-color: #F0F0F0 !important;
+  background-color: #f0f0f0 !important;
   border-bottom: 0 !important;
   justify-content: center !important;
   padding-top: 15px !important;
@@ -156,20 +196,20 @@
   margin-left: auto;
 }
 .report-modal-body {
-  justify-content: center !important;;
-  background-color: #F0F0F0 !important;
+  justify-content: center !important;
+  background-color: #f0f0f0 !important;
   border: 0 !important;
   padding: 10px !important;
   font-size: 15px;
   font-weight: 400;
 }
-.large-graphic{
+.large-graphic {
   margin-left: calc(50% - 49.5px);
-  background-color: #D6D6D6;
+  background-color: #d6d6d6;
   width: 99px;
   height: 99px;
 }
 .report-modal-footer {
-  background-color: #F0F0F0 !important;
+  background-color: #f0f0f0 !important;
   border-top: 0 !important;
 }
