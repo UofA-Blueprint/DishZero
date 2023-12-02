@@ -13,7 +13,7 @@ const app = express()
 dotenv.config()
 
 app.use(cors({
-    origin: '*'
+    origin: 'https://app.dishzero.ca'
 }))
 app.use(express.json())
 app.use(cookieParser())
@@ -44,5 +44,7 @@ app.use('/api/dish', dishRouter)
 app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/qrcode', qrCodeRouter)
+
+app.options('*', cors());
 
 export { app }
