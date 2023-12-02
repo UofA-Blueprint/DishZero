@@ -18,6 +18,8 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+app.options('*', cors());
+
 let environment = process.env.NODE_ENV
 
 if (environment === 'prod') {
@@ -45,6 +47,6 @@ app.use('/api/transactions', transactionsRouter)
 app.use('/api/users', userRouter)
 app.use('/api/qrcode', qrCodeRouter)
 
-app.options('*', cors());
+
 
 export { app }
