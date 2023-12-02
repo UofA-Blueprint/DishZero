@@ -64,18 +64,23 @@
   background-size: cover;
 }
 .search-bar{
-  background-color: #D7D7D7;
+  background-color: black;
   border-radius: 25px !important;
   width: 90%;
+  margin-right: 30px;
 
 }
 .search-bar:focus{
-  background-color: #D7D7D7;
+  background-color: #323232;
 }
 
+.search-div{
+  background-color: #323232;
+  padding-left: 10px;
+}
 .search-button{
   margin-left: 5px !important;
-  border-radius: 25px !important;
+  border-radius: 50px !important;
   color: green;
   width: 10%;
 }

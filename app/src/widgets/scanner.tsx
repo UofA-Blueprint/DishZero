@@ -43,28 +43,30 @@ const BottomTextInput = ({ onSubmit }) => {
     }
     return (
 
-        <div className="start-0 position-fixed bottom-0 w-100 px-5" >
-            <div>
+        <div className="outer-div">
+            <div className="start-0 position-fixed bottom-0 w-100 px-5" >
+                <div className="search-div">
 
-                <Form onSubmit={handleSubmit}>
+                    <Form onSubmit={handleSubmit}>
 
-                    <InputGroup className="mb-3">
+                        <InputGroup className="mb-3">
+{/* 
+                            <InputGroup.Text className="search-bar">
+                                <FontAwesomeIcon icon={faSearch} />
+                            </InputGroup.Text> */}
+                            <Form.Text className="text-muted">
 
-                        <InputGroup.Text className="search-bar">
-                            <FontAwesomeIcon icon={faSearch} />
-                        </InputGroup.Text>
-                        <Form.Text className="text-muted">
+                            </Form.Text>
 
-                        </Form.Text>
+                            <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
 
-                        <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
+                            <Button onSubmit={handleSubmit}  type="submit" className="search-button" data-testid ='enter-btn'>
+                                Enter
+                            </Button>
 
-                        <Button onSubmit={handleSubmit} variant="light" type="submit" className="mr-sm-2 search-bar search-button" data-testid ='enter-btn'>
-                            Enter
-                        </Button>
-
-                    </InputGroup >
-                </Form>
+                        </InputGroup >
+                    </Form>
+                </div>
             </div>
         </div>
     )
