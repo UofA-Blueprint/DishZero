@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "NODE_ENV=prod NEW_RELIC_APP_NAME=dishzero_backend NEW_RELIC_LICENSE_KEY=$(grep NEW_RELIC_LICENSE_KEY .env | cut -d '=' -f2)  node -r newrelic ./build/server.js",
-    "dev": "ts-node ./src/server.ts",
+    "dev": "NODE_ENV=dev ts-node ./src/server.ts",
     "format": "prettier --write 'src/**/*.ts'"
   },
   "devDependencies": {
@@ -17,12 +17,14 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.385.0",
     "@types/config": "^3.3.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^20.3.1",
+    "@types/node-cron": "^3.0.8",
     "config": "^3.3.9",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -32,6 +34,7 @@
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.0",
     "newrelic": "^10.6.1",
+    "node-cron": "^3.0.2",
     "pino-http": "^8.3.3",
     "pino-pretty": "^10.0.0",
     "tslint": "^6.1.3",
