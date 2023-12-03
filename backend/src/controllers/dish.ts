@@ -23,7 +23,7 @@ import {
     getLatestTransactionByTstampAndDishId,
 } from '../services/transactions'
 import { getQrCode } from '../services/qrCode'
-import { db } from '../services/firebase'
+import { db } from '../internal/firebase'
 import nodeConfig from 'config'
 import { User } from '../models/user'
 

@@ -284,3 +284,86 @@ the qr code routes are defined in the `src/routes/qrCode.ts` file. The routes ar
     ```
     qid: delete the qr code with this qid
     ```
+
+### Cron
+the cron routes are defined in the `src/routes/cron.ts` file. The routes are mounted on the `/cron` path. The routes are:
+
+- #### GET `/api/cron/email`
+    Returns information about the email cron
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+- #### POST `/api/cron/email/enable`
+    Enables/disables email cron
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    body:
+    ```
+    enabled: boolean
+    ```
+
+- #### POST `/api/cron/email/template`
+    Updates email template
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    body:
+    ```
+    template : {
+        subject : string,
+        body : string
+    }
+    ```
+
+- #### POST `/api/cron/email/expression`
+    Updates email cron expression
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+    body:
+    ```
+    days : {
+        monday : false,
+        tuesday : false,
+        wednesday : true,
+        thursday : false,
+        friday : false,
+        saturday : false,
+        sunday : false
+    }
+    ```
+
+- #### POST `/api/cron/email/stop`
+    Stops the cron job
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```
+
+- #### POST `/api/cron/email/start`
+    Starts the cron job with the current expression in the database (stopping any previous running cron job)
+    
+    headers:
+    ```
+    x-api-key: preset constant api key
+    session-token: generated sessionCookie from firebase after login
+    ```

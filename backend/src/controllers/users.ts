@@ -9,7 +9,7 @@ import {
     verifyType,
 } from '../services/users'
 import { CustomRequest } from '../middlewares/auth'
-import { auth } from '../services/firebase'
+import { auth } from '../internal/firebase'
 import { User } from '../models/user'
 import Logger from '../utils/logger'
 
