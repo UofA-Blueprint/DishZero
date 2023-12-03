@@ -116,10 +116,7 @@ const adminApi = {
                             if (firebaseTimestamp != null) {
                                 timeDifference = currentTimestamp - firebaseTimestamp.getTime();
                                 hoursDifference = timeDifference / 3600000 ;
-                                console.log(currentTimestamp)
-                                console.log(firebaseTimestamp)
-                                console.log(timeDifference)
-                                console.log(hoursDifference)
+                                
                                 if (dish.userId === user.id && dish.borrowed === true && hoursDifference > 48) {
                                     count += 1;
                                 }
