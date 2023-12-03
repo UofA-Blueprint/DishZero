@@ -11,9 +11,14 @@ import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import {BallTriangle} from 'react-loader-spinner';
 import MobileBackground from '../assets/leaf-mobile-background.png';
+import { check } from "prettier";
 
+// Display DishCard for unreturned dishes
 const DishLog = ({ dishes }) => {
   const { sessionToken } = useAuth();
+  if(!dishes){
+    dishes = []
+  }
   return (
     <div id="dish-log" className="mt-3">
       {dishes.map((dish) => {
@@ -26,6 +31,39 @@ const DishLog = ({ dishes }) => {
 };
 
 
+// Get user dishes status to be displayed in the homepage
+const GetDishes = (dishesUsed) =>{
+  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
+  return (
+    <div id="dishes" style={{marginTop: '24px'}}>
+        <div className="d-flex justify-content-between">
+          <p className="sub-header-3">My Dishes</p>
+          <p className="details-2 mt-1">{checkedOutDishes} in use</p>
+        </div>
+        
+        { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
+          <div className="d-flex flex-column">
+            <div className="mt-5 d-flex justify-content-center">
+              <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
+              <img src={leaf_green} style={{transform:'rotate(-45deg)', marginTop:'-16px'}} />
+              <img src={leaf_green} />
+            </div>
+            <div className="d-flex justify-content-center mt-3">
+              <p className="details-1 text-center" style={{maxWidth:'244px'}}>
+                You don't have any dishes borrowed at the moment. Start borrowing to make an impact!
+              </p>
+            </div>
+            <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
+              <ReactRouterLink to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
+                <p className="sub-header-3 text-center m-2">Borrow</p>
+              </ReactRouterLink>
+            </a>
+          </div>
+        }
+    </div>
+)}
+
+// Display homepage for new users
 const NewUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed);
   return (
@@ -63,37 +101,7 @@ const NewUser = (dishesUsed) => {
 };
 
 
-const GetDishes = (dishesUsed) =>{
-  const checkedOutDishes = dishesUsed?.filter(dish => dish.returned.timestamp == "").length
-  return (
-    <div id="dishes" style={{marginTop: '24px'}}>
-        <div className="d-flex justify-content-between">
-          <p className="sub-header-3">My Dishes</p>
-          <p className="details-2 mt-1">{checkedOutDishes} in use</p>
-        </div>
-        { (checkedOutDishes != 0) ? <DishLog dishes={dishesUsed} /> :
-          <div className="d-flex flex-column">
-            <div className="mt-5 d-flex justify-content-center">
-              <img src={leaf_green} style={{transform:'rotate(-90deg)'}} />
-              <img src={leaf_green} style={{transform:'rotate(-45deg)', marginTop:'-16px'}} />
-              <img src={leaf_green} />
-            </div>
-            <div className="d-flex justify-content-center mt-3">
-              <p className="details-1 text-center" style={{maxWidth:'244px'}}>
-                You don't have any dishes borrowed at the moment. Start borrowing to make an impact!
-              </p>
-            </div>
-            <a className="btn-primary align-self-center mt-2" style={{textDecoration:'none'}}>
-              <ReactRouterLink to={"/borrow"} style={{ textDecoration: 'none', color: '#FFF'}}>
-                <p className="sub-header-3 text-center m-2">Borrow</p>
-              </ReactRouterLink>
-            </a>
-          </div>
-        }
-      </div>
-
-      )}
-
+// Display homepage for existing users
 const ExistingUser = (dishesUsed) => {
   const content = GetDishes(dishesUsed)
   const returnedDishes = dishesUsed?.filter(dish => dish.returned.timestamp != "").length
@@ -104,12 +112,12 @@ const ExistingUser = (dishesUsed) => {
         <div className="d-flex justify-content-between" style={{marginTop:'16px'}}>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <p className="header mb-0">{returnedDishes}</p>
+            <p className="header mb-0" data-testid="returned-dishes-count">{returnedDishes}</p>
             <p className="sub-header-3 mb-1">Dishes Used</p>
           </div>
           <div className="light-blue d-flex flex-column justify-content-end" style={{height:'118px', width:'48%', borderRadius:'10px', padding:'16px', position:'relative'}}>
             <img src={leaf_white} alt="leaf" style={{position:'absolute', top:'16px', right:'16px'}}/>
-            <div className="d-flex"><p className="header mb-0">{returnedDishes * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
+            <div className="d-flex"><p className="header mb-0" data-testid="waste-diverted-amt">{returnedDishes * 0.5}</p><p className="sub-header-2 mb-1" style={{alignSelf:'end', marginLeft:'7px'}}>Lbs</p></div>
             <p className="sub-header-3 mb-1">Waste Diverted</p>
           </div>
         </div>
@@ -160,7 +168,6 @@ export default () => {
   const { currentUser, sessionToken } = useAuth();
   const [dishesUsed, setDishesUsed] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768); //eslint-disable-line @typescript-eslint/no-unused-vars
-
   let content;
   // Fetch dishes transaction for the user
   useEffect(() => {
@@ -192,6 +199,7 @@ export default () => {
     return(
       <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
       <BallTriangle
+          data-testid="ball-triangle-loading"
           height={100}
           width={100}
           radius={5}

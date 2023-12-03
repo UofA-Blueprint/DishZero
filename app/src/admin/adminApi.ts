@@ -109,13 +109,20 @@ const adminApi = {
                     for (const user of users) {
                         let count = 0;
                         for (const dish of dishes) {
-                            const firebaseTimestamp = dish.borrowedAt;
+                            const firebaseTimestamp = new Date(dish.borrowedAt);
                             const currentTimestamp = new Date().getTime();
-                            const timeDifference = currentTimestamp - firebaseTimestamp;
-                            const hoursDifference = timeDifference / (1000 * 60 * 60);
-                            if (dish.userId === user.id && dish.borrowed === true && hoursDifference > 48) {
-                                count += 1;
+                            let timeDifference;
+                            let hoursDifference;
+                            if (firebaseTimestamp != null) {
+                                timeDifference = currentTimestamp - firebaseTimestamp.getTime();
+                                hoursDifference = timeDifference / 3600000 ;
+                                
+                                if (dish.userId === user.id && dish.borrowed === true && hoursDifference > 48) {
+                                    count += 1;
+                                }
                             }
+                            
+                            
                         }
                         result.push({
                             email: user.email,
