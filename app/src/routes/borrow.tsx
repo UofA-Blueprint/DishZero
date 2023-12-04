@@ -1,92 +1,44 @@
+/*eslint-disable*/
 import { useState, useEffect } from "react";
-import React from 'react';
-import { useNavigate } from "react-router-dom";
-import Scanner from "../widgets/scanner";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { faCoffee, faExclamation } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate, useLocation } from "react-router-dom";
+import React from "react";
+//import Scanner from "../widgets/scanner"
+//import DishAPI from "../features/api"
+import "../styles/QRScanner.css";
+//import { Button, Modal } from 'react-bootstrap'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
+import Modal from "react-bootstrap/Modal";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import Cookies from "js-cookie";
+import { AppHeader } from "../widgets/appHeader";
+import Scanner from "../widgets/scanner";
+import CameraInput from "../widgets/cameraScanner";
+import BottomTextInput from "../widgets/bottomTextInput";
 import { useAuth } from "../contexts/AuthContext";
+import { faCoffee, faExclamation } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
-const Confirm = ({ show, onSubmit, onCancel, id }) => {
-  return (
-    <Modal
-      onHide={onCancel}
-      show={show}
-      className="modal-dialog-centered modal-sm"
-      centered
-    >
-      <Modal.Header closeButton></Modal.Header>
-      <Modal.Body className="text-center">
-        <FontAwesomeIcon icon={faCoffee} size="4x" />
-        <p style={{ textAlign: "center" }}>ID: {id}</p>
-      </Modal.Body>
-      <Modal.Footer className="justify-content-center">
-        <Button data-testid = 'borrow-btn' variant="secondary" onClick={onSubmit}>
-          Borrow
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-};
-
-const DishNotFound = ({ show, onCancel, id }) => {
-  return (
-    <Modal
-      onHide={onCancel}
-      show={show}
-      className="modal-dialog-centered modal-sm"
-      centered
-    >
-      <Modal.Header closeButton></Modal.Header>
-      <Modal.Body className="text-center">
-        <FontAwesomeIcon
-          style={{ color: '#BF4949', margin: '16 0 16 0' }}
-          icon={faExclamation}
-          size="4x"
-        />
-        <p style={{ textAlign: 'center' }}>
-          Dish ID: {id} does not exist. Please try again.
-        </p>
-      </Modal.Body>
-    </Modal>
-  );
-};
-
-const BorrowDishSuccess = ({ show, success, onCancel, id }) => {
-  return (
-    <Modal onHide={onCancel} show={show} className="modal-dialog-bottom modal-sm" centered>
-      <Modal.Header closeButton></Modal.Header>
-      <Modal.Body style={{ width: '100%', display: 'flex', gap: '0.5rem' }}>
-        {success ? (
-          <>
-            <FontAwesomeIcon icon={faCoffee} size="4x" />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>Successfully borrowed</div>
-              <div>Dish # {id} </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <FontAwesomeIcon
-              style={{ color: '#BF4949' }}
-              icon={faExclamation}
-              size="4x"
-            />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>Failed to borrow</div>
-              <div>Dish # {id} </div>
-              <div>Please scan and try again</div>
-            </div>
-          </>
-        )}
-      </Modal.Body>
-    </Modal>
-  );
-}
-
-export default () => {
+const Borrow = () => {
+  const [scanId, setScanId] = useState("");
+  const [showNotif, setShowNotif] = useState(false);
+  const [popUp, setPopUp] = useState(false);
+  const [dishType, setDishType] = useState("");
+  const [qid, setQid] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [dishIcon, setDishIcon] = useState();
+  const [notifType, setNotifType] = useState("returned");
+  const [error, setError] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [reportPopUp, setReportPopUp] = useState(false);
+  const [reportValue, setReportValue] = useState("alright");
+  const [dishID, setDishID] = useState("");
+  const { currentUser, sessionToken } = useAuth();
+  const [confirm, setConfirm] = useState(false);
+  const [dishNotFound, setDishNotFound] = useState(false);
+  const [borrowDishResult, setBorrowDishResult] = useState({
+    show: false,
+    success: false,
+  });
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const previousURL = queryParams.get('previousURL');
@@ -98,29 +50,94 @@ export default () => {
     }
   }, []);
 
-  const {currentUser, sessionToken} = useAuth()
-  const [scanId, setScanId] = useState("");
-  const [confirm, setConfirm] = useState(false);
-  const [dishNotFound, setDishNotFound] = useState(false);
-  const [borrowDishResult, setBorrowDishResult] = useState({
-    show: false,
-    success: false,
-  });
+  
 
   const navigate = useNavigate();
-  const onScan = confirm
-    ? null
-    : (id: string) => {
-        const urlID = id.match(/dishID=([^&]+)/);
-        const dishID = urlID ? urlID[1] : id;
-        setScanId(dishID);
-        setConfirm(true);
-      };
+
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (popUp) {
+        setPopUp(false);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [popUp]);
+
+  // const onCancel = popUp
+  //   ? () => {
+  //       setPopUp(false);
+  //     }
+  //   : null;
+
+  const onClick = () => {
+    setPopUp(true);
+  };
+
+  const DishNotFound = ({ show, onCancel, id }) => {
+    return (
+      <Modal
+        onHide={onCancel}
+        show={show}
+        className="modal-dialog-centered modal-sm"
+        centered
+      >
+        <Modal.Header closeButton></Modal.Header>
+        <Modal.Body className="text-center">
+          <FontAwesomeIcon
+            style={{ color: '#BF4949', margin: '16 0 16 0' }}
+            icon={faExclamation}
+            size="4x"
+          />
+          <p style={{ textAlign: 'center' }}>
+            Dish ID: {id} does not exist. Please try again.
+          </p>
+        </Modal.Body>
+      </Modal>
+    );
+  };
+  
+  const BorrowDishSuccess = ({ show, success, onCancel, id }) => {
+    return (
+      <Modal onHide={onCancel} show={show} className="modal-dialog-bottom modal-sm" centered>
+        <Modal.Header closeButton></Modal.Header>
+        <Modal.Body style={{ width: '100%', display: 'flex', gap: '0.5rem' }}>
+          {success ? (
+            <>
+              <FontAwesomeIcon icon={faCoffee} size="4x" />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div>Successfully borrowed</div>
+                <div>Dish # {id} </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon
+                style={{ color: '#BF4949' }}
+                icon={faExclamation}
+                size="4x"
+              />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div>Failed to borrow</div>
+                <div>Dish # {id} </div>
+                <div>Please scan and try again</div>
+              </div>
+            </>
+          )}
+        </Modal.Body>
+      </Modal>
+    );
+  }
+  
+
+ 
+ 
 
   const onConfirm = async () => {
-    if (!confirm) {
-      return false;
-    }
+    // if (!confirm) {
+    //   return false;
+    // }
     setConfirm(false);
     const user = currentUser?.id || null;
     console.log("USER: " + user);
@@ -149,22 +166,33 @@ export default () => {
     setDishNotFound(false);
     setBorrowDishResult({ ...borrowDishResult, show: false });
   };
-
   return (
-    <>
-      <Scanner
-        mode="Scan Dishes"
-        onScan={onScan}
-        onClose={() => navigate("/home")}
-      />
-      <Confirm
-        show={confirm}
-        id={scanId}
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#464646",
+      }}
+    >
+   
+      <AppHeader title={"Borrow Dishes"} className={"headerDiv"} />
+     
+      <CameraInput
+        setLoading={setIsLoading}
+        isMobile={isMobile}
+        isLoading={isLoading}
+        style={{ height: "100%" }}
         onSubmit={async () => {
-          await onConfirm();
-        }}
-        onCancel={onCancel}
+          await onConfirm();}}
       />
+      <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
+          await onConfirm();
+          
+        }}  />
+
       <DishNotFound show={dishNotFound} id={scanId} onCancel={onCancel} />
       <BorrowDishSuccess
         show={borrowDishResult.show}
@@ -172,6 +200,9 @@ export default () => {
         onCancel={onCancel}
         id={scanId}
       />
-    </>
+    </div>
   );
 };
+
+
+

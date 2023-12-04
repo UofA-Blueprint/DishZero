@@ -245,7 +245,6 @@ const Return = () => {
     );
   };
   const onSubmit = async (condition: string) => {
-    console.log("peewoop"); //Remove this
 
     console.log("Session-token: ", sessionToken);
     let dishID;

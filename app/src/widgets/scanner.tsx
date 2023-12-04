@@ -43,17 +43,17 @@ const BottomTextInput = ({ onSubmit }) => {
     }
     return (
 
-        <div className="outer-div">
+        <div>
             <div className="start-0 position-fixed bottom-0 w-100 px-5" >
-                <div className="search-div">
+                <div>
 
                     <Form onSubmit={handleSubmit}>
 
                         <InputGroup className="mb-3">
-{/* 
+
                             <InputGroup.Text className="search-bar">
                                 <FontAwesomeIcon icon={faSearch} />
-                            </InputGroup.Text> */}
+                            </InputGroup.Text>
                             <Form.Text className="text-muted">
 
                             </Form.Text>

@@ -1,3 +1,10 @@
+.borrow-pg {
+  background-color: #323232;
+  position: absolute;
+  top:0;
+  left:0;
+}
+
 .scanner-main {
   text-align: center;
   position: fixed;
