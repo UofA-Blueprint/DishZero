@@ -6,7 +6,7 @@ import {
 import React from "react";
 import LoginRoute from "./login";
 import HomeRoute from "./home";
-// import BorrowRoute from "./borrow";
+import BorrowRoute from "./borrow";
 import ReturnRoute from "./return";
 import Admin from "./admin";
 import { Sidebar } from "../widgets/sidebar";

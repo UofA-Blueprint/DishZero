@@ -18,6 +18,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { faCoffee, faExclamation } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 
+
 const Borrow = () => {
   const [scanId, setScanId] = useState("");
   const [showNotif, setShowNotif] = useState(false);
@@ -180,29 +181,31 @@ const Borrow = () => {
    
       <AppHeader title={"Borrow Dishes"} className={"headerDiv"} />
      
-      <CameraInput
-        setLoading={setIsLoading}
-        isMobile={isMobile}
-        isLoading={isLoading}
-        style={{ height: "100%" }}
-        onSubmit={async () => {
-          await onConfirm();}}
-      />
-      <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
-          await onConfirm();
-          
-        }}  />
 
-      <DishNotFound show={dishNotFound} id={scanId} onCancel={onCancel} />
-      <BorrowDishSuccess
-        show={borrowDishResult.show}
-        success={borrowDishResult.success}
-        onCancel={onCancel}
-        id={scanId}
+      <div className = "qr-body-wrapper">
+
+            <div className="b-text-wrapper">
+              <h1 className="borrow-header">
+                Use phone camera to scan QR Code or type in id in box below
+              </h1>
+            </div>
+          <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
+              await onConfirm();
+              
+            }}  />
+    
+        <DishNotFound show={dishNotFound} id={scanId} onCancel={onCancel} />
+        <BorrowDishSuccess
+          show={borrowDishResult.show}
+          success={borrowDishResult.success}
+          onCancel={onCancel}
+          id={scanId}
       />
+       </div>
     </div>
   );
 };
 
+export default Borrow;
 
 
