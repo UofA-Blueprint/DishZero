@@ -15,6 +15,7 @@ export default ({dish, token}) => {
           setDishAPI(response.data.dish)
         })
         .catch(function (error) {
+          console.log(error)
         });
       },[])
 
