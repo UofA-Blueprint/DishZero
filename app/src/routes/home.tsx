@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link as ReactRouterLink} from "react-router-dom";
 import scan_icon from "../assets/scan.svg";
 import leaf_white from "../assets/leaf-white.svg";
@@ -11,7 +11,6 @@ import { Box, AppBar, Typography, Link as LinkMUI } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import {BallTriangle} from 'react-loader-spinner';
 import MobileBackground from '../assets/leaf-mobile-background.png';
-import { check } from "prettier";
 
 // Display DishCard for unreturned dishes
 const DishLog = ({ dishes }) => {

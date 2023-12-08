@@ -17,7 +17,7 @@ import { fetchEmailCron } from './controllers/cron/email'
 const app = express()
 dotenv.config()
 const corsOptions = {
-    origin: 'https://app.dishzero.ca', // This is your front-end origin
+    origin: '*', // This is your front-end origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Include OPTIONS for preflight requests
     allowedHeaders: 'Content-Type,Authorization,x-api-key,session-token', // Include custom headers
     credentials: true, // This is important because you are sending a session token in your request
