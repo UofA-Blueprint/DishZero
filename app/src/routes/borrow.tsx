@@ -183,7 +183,7 @@ const Borrow = () => {
                   <FontAwesomeIcon icon= {faLeaf} color="white" fontSize="2.5em"/>
                 </div>
               <h1 className="borrow-header">
-                Use phone camera to scan QR Code or type in iD in box below
+              Use phone camera to scan QR Code or type in the ID in the box below
               </h1>
             </div>
           <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
