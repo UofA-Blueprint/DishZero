@@ -17,6 +17,16 @@ export const Sidebar = () => {
   const { currentUser, logout } = useAuth();
   const [admin, setAdmin] = useState(false);
   const [volunteer, setVolunteer] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  // Sync state with the opening/closing of the sidebar
+  const handleSidebarStateChange = (state) => {
+    setIsSidebarOpen(state.isOpen);
+  };
 
   //When we load the page or refresh, check the role of the user and setadmin or volunteer accordingly
   useEffect(() => {
@@ -29,10 +39,8 @@ export const Sidebar = () => {
     }
   }, [currentUser]);
 
-  
-
   return (
-    <Menu>
+    <Menu isOpen={isSidebarOpen} onStateChange={handleSidebarStateChange}>
       <p
         className="memu-title"
         style={{
@@ -44,7 +52,7 @@ export const Sidebar = () => {
       </p>
 
       <p>MENU</p>
-      <ReactRouterLink className="menu-item" to="/home">
+      <ReactRouterLink className="menu-item" to="/home" onClick={closeSidebar}>
         <img style={{ paddingRight: 16 }} src={home_icon} alt="" />
         Home
       </ReactRouterLink>
@@ -60,6 +68,7 @@ export const Sidebar = () => {
             className="menu-item"
             to="/volunteer/return"
             style={{ paddingTop: 10 }}
+            onClick={closeSidebar}
           >
             <img style={{ paddingRight: 16 }} src={task_icon} alt="" />
             Return Dishes
