@@ -1,8 +1,7 @@
-import { render, act, screen, waitFor, within, fireEvent } from "@testing-library/react";
+import { render, act, screen, waitFor, fireEvent } from "@testing-library/react";
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import '@testing-library/jest-dom';
-import userEvent from '@testing-library/user-event';
 
 import Admin from '../routes/admin';
 
