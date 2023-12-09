@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { auth, db } from '../services/firebase'
+import { auth, db } from '../internal/firebase'
 import { getUserByEmail } from '../services/users'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import Logger from '../utils/logger'

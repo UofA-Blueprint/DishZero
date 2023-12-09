@@ -15,19 +15,21 @@ export default ({dish, token}) => {
           setDishAPI(response.data.dish)
         })
         .catch(function (error) {
-          console.log(error);
+          console.log(error)
         });
       },[])
 
 
-    const icon = dishAPI['type'] == 'mug' ? mug : container
+    // const icon = dishAPI['type'] == 'mug' ? mug : container
+    const icon = dishAPI && dishAPI['type'] === 'mug' ? mug : container;
+    const iconAltText = dishAPI && dishAPI['type'] === 'mug' ? 'Mug Icon' : 'Container Icon';
 
     const dishCheckOut = new Date(dish.timestamp)
     const dishDue = new Date(dishCheckOut.getTime() + twoDaysInMs)
     return (
-        <div className="dish-card mb-3">
+        <div className="dish-card mb-3" data-testid = "dish-card">
             <div className="type-icon">
-              <img src={icon}></img>
+              <img src={icon} alt={iconAltText}></img>
             </div>
             <div className="flex-column">
                 <p className="details-1" style={{marginLeft:'17px'}}>Return before {dishDue.toLocaleDateString("en-US")}</p>

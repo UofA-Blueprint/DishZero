@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import { Condition, Dish, DishStatus } from '../models/dish'
-import { db } from './firebase'
+import { db } from '../internal/firebase'
 import Logger from '../utils/logger'
 
 export const getDish = async (qid: number): Promise<Dish | undefined | null> => {

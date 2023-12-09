@@ -1,5 +1,5 @@
 import { QrCode } from '../models/qrCode'
-import { db } from './firebase'
+import { db } from '../internal/firebase'
 import nodeConfig from 'config'
 import Logger from '../utils/logger'
 import Joi from 'joi'

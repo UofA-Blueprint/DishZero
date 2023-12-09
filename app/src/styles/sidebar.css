@@ -1,6 +1,6 @@
 /* Position and sizing of burger button */
 .bm-burger-button {
-  position: fixed;
+  position: absolute;
   width: 25px;
   height: 19.05px;
   left: 26px;
@@ -92,4 +92,15 @@ Note: Beware of modifying this element as it can break the animations - you shou
   margin-top: auto;
   border-top: 3px solid #808080;
   padding-top: 15px;
+}
+
+
+@media (max-height: 740px) {
+  .bm-burger-button {
+    position: absolute;
+    width: 25px;
+    height: 19.05px;
+    left: 26px;
+    top: 8%;
+  }
 }

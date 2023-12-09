@@ -15,7 +15,7 @@ type User = {
 
 type AuthContextValue = {
   currentUser: User | null;
-  sessionToken: string | null;
+  sessionToken: string;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -23,7 +23,7 @@ type AuthContextValue = {
 // default values to avoid type errors
 const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
-  sessionToken: null,
+  sessionToken: '',
   login: async () => { console.log("placeholder"); },
   logout: async () => { console.log("placeholder"); },
 });
@@ -34,7 +34,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [sessionToken, setSessionToken] = useState<string | null>(() => {
+  const [sessionToken, setSessionToken] = useState<string>(() => {
     const cookie = Cookies.get("session-token");
     return cookie ? cookie : null;
   });
@@ -58,9 +58,6 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    console.log("running update cookie");
-    console.log("user is", currentUser);
-
     try {
       const response = await axios.get(
         `/api/users/session`,
@@ -74,9 +71,7 @@ export function AuthProvider({ children }) {
       );
 
       const data = response.data.user;
-      if (response && response?.status === 200) {
-        console.log("setting current user");
-        console.log(data);
+      if (response && response.status === 200) {
         // if it gets here then current user should be null
         setCurrentUser({
           id: data?.id,
@@ -88,7 +83,7 @@ export function AuthProvider({ children }) {
         logout();
       }
     } catch (error: any) {
-      console.error("Failed to call authentication. e ");
+      console.error("Failed to call authentication.");
       console.error(error);
       if (error.response?.status === 401) {
         console.log("user unauthorised");
@@ -104,8 +99,6 @@ export function AuthProvider({ children }) {
   async function login() {
     try {
       const credentials = await signInWithPopup(auth, provider);
-      console.log("credentials ", credentials);
-      console.log("firebase user", credentials.user);
       const idToken = await getIdToken(credentials.user);
 
       if (!credentials.user.email?.match("@ualberta.ca")) {
@@ -127,8 +120,7 @@ export function AuthProvider({ children }) {
       );
 
       const { data } = res;
-      console.log("data is", data);
-      console.log("session is", data.session);
+      // TODO remove later
       setSessionToken(data.session);
       Cookies.set("session-token", data.session);
       const newUser = data?.user;
@@ -137,7 +129,6 @@ export function AuthProvider({ children }) {
           ...data.user,
         });
       }
-      console.log("logged in");
 
       navigate("/home");
     } catch (error: any) {
@@ -160,8 +151,7 @@ export function AuthProvider({ children }) {
       }
     );
     auth.signOut();
-    console.log('logout response', res);
-    setSessionToken(null);
+    setSessionToken('');
     setCurrentUser(null);
     Cookies.remove("session-token");
     navigate("/login");
