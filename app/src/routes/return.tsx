@@ -409,7 +409,7 @@ const Return = () => {
         style={{ height: "100%" }}
         onSubmit={onSubmit}
       />
-      <BottomTextInput disabled={isLoading} onSubmit={onSubmit} />
+      <BottomTextInput disabled={isLoading} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={ onSubmit}  />
     </div>
   );
 };

@@ -4,6 +4,11 @@
   top:0;
   left:0;
 }
+.borrow-icon {
+  position:absolute;
+  right: 45%;
+  bottom: 62%;
+}
 .borrow-header {
   color:#d6d6d6;
   position: absolute;

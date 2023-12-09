@@ -8,14 +8,12 @@ import "../styles/QRScanner.css";
 //import { Button, Modal } from 'react-bootstrap'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "react-bootstrap/Modal";
-import { faClose } from "@fortawesome/free-solid-svg-icons";
-import Cookies from "js-cookie";
 import { AppHeader } from "../widgets/appHeader";
-import Scanner from "../widgets/scanner";
-import CameraInput from "../widgets/cameraScanner";
 import BottomTextInput from "../widgets/bottomTextInput";
 import { useAuth } from "../contexts/AuthContext";
-import { faCoffee, faExclamation } from "@fortawesome/free-solid-svg-icons";
+import { faCoffee, faExclamation,faLeaf } from "@fortawesome/free-solid-svg-icons";
+import '@fortawesome/fontawesome-free/css/all.css';
+
 import axios from "axios";
 
 
@@ -131,10 +129,6 @@ const Borrow = () => {
     );
   }
   
-
- 
- 
-
   const onConfirm = async () => {
     // if (!confirm) {
     //   return false;
@@ -185,8 +179,11 @@ const Borrow = () => {
       <div className = "qr-body-wrapper">
 
             <div className="b-text-wrapper">
+                <div className="borrow-icon">
+                  <FontAwesomeIcon icon= {faLeaf} color="white" fontSize="2.5em"/>
+                </div>
               <h1 className="borrow-header">
-                Use phone camera to scan QR Code or type in id in box below
+                Use phone camera to scan QR Code or type in iD in box below
               </h1>
             </div>
           <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
