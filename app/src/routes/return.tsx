@@ -245,7 +245,6 @@ const Return = () => {
     );
   };
   const onSubmit = async (condition: string) => {
-    console.log("peewoop"); //Remove this
 
     console.log("Session-token: ", sessionToken);
     let dishID;
@@ -410,7 +409,7 @@ const Return = () => {
         style={{ height: "100%" }}
         onSubmit={onSubmit}
       />
-      <BottomTextInput disabled={isLoading} onSubmit={onSubmit} />
+      <BottomTextInput disabled={isLoading} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={ onSubmit}  />
     </div>
   );
 };
