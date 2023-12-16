@@ -17,12 +17,11 @@ import {
 const BottomTextInput = (props) => {
     const [input, setInput] = useState("");
     
-    console.log("woo");
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
-        console.log('BhamWham');
+     
         e.preventDefault();
-        props.onSubmit(input)
+        await props.onSubmit(props.value)
         return false;
     }
     return (
@@ -34,7 +33,7 @@ const BottomTextInput = (props) => {
                             <FontAwesomeIcon icon={faSearch} />                            
                         </InputGroup.Text>
 
-                        <Form.Control className="search-bar" value={input} onChange={(e) => setInput(e.target.value)} type="text" placeholder="Enter dish id #" />
+                        <Form.Control className="search-bar" value={props.value} onChange={props.onChange} type="text" placeholder="Enter dish id #" />
 
                         <Button variant="outline-secondary" id="button-addon2" onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button">
                             <FontAwesomeIcon icon={faPaperPlane} fontSize={"1.4em"}/>                            
