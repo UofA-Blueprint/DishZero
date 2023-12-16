@@ -1,3 +1,29 @@
+.borrow-pg {
+  background-color: #323232;
+  position: absolute;
+  top:0;
+  left:0;
+}
+.borrow-icon {
+  position:absolute;
+  right: 45%;
+  bottom: 62%;
+}
+.borrow-header {
+  color:#d6d6d6;
+  position: absolute;
+  font-size:20px;
+  top: 40%;
+  
+}
+.b-text-wrapper {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
+  position: relative;
+  text-align: center;
+
+}
+
 .scanner-main {
   text-align: center;
   position: fixed;
