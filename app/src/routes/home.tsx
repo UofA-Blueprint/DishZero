@@ -170,18 +170,27 @@ export default () => {
   let content;
   // Fetch dishes transaction for the user
   useEffect(() => {
-    axios
-      .get(`/api/transactions`, {
-        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
-        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-      })
-      .then(function (response) {
-        setDishesUsed(response.data.transactions);
-        setIsLoading(false)
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    const redirectURL = sessionStorage.getItem('previousURL');
+    if (redirectURL) {
+      // Redirect to the borrow page
+      window.location.href = redirectURL;
+    } else {
+      axios
+        .get(`/api/transactions`, {
+          headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
+          baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+        })
+        .then(function (response) {
+          setDishesUsed(response.data.transactions);
+          setIsLoading(false)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    // Clear the temporary storage
+    sessionStorage.removeItem('previousURL');
   }, []);
 
   const user = currentUser;
