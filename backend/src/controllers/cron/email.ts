@@ -4,7 +4,7 @@ import { verifyIfUserAdmin } from '../../services/users'
 import Logger from '../../utils/logger'
 import { db } from '../../internal/firebase'
 import nodeConfig from 'config'
-import { convertToUTC, validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
+import { convertToMT, convertToUTC, validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
 import { EmailClient, getEmailCron, initializeEmailCron, isEmailCronEnabled, setEmailCron } from '../../cron/email'
 import cron from 'node-cron';
 
@@ -29,8 +29,25 @@ export const getEmail = async (req: Request, res: Response) => {
             moduleName,
             function: 'getEmail',
         })
-        return res.status(200).json({ cron })
+
+        const utcExpr = cron?.expression.split(" ")
+        const days = utcExpr[utcExpr.length-1].split(",")
+        const minutes = parseInt(utcExpr[1])
+        const hours = parseInt(utcExpr[2])
+        
+        let setDays : Array<string> = []
+        for (let day of days) {
+            const tuple = convertToMT(minutes, hours, day)
+            setDays.push(tuple[2])
+        }
+        const tuple = convertToMT(minutes, hours, "MON")
+        let cronExpression = `0 ${tuple[0]} ${tuple[1]} * * `
+        return res.status(200).json({ cron : {
+            ...cron,
+            expression: cronExpression
+        } })
     } catch (error: any) {
+        console.log(error)
         Logger.error({
             error: error,
             moduleName,
