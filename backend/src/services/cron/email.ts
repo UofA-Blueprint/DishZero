@@ -22,7 +22,7 @@ export const convertToUTC = (minute: number, hour: number, day: string) : [numbe
         "MON": "TUE",
         "TUE": "WED",
         "WED": "THU",
-        "THE": "FRI",
+        "THU": "FRI",
         "FRI": "SAT",
         "SAT": "SUN",
         "SUN": "MON",
@@ -32,10 +32,35 @@ export const convertToUTC = (minute: number, hour: number, day: string) : [numbe
     let increment = 6
     // mst/mdt
     if (month <= 2 || month >= 11) {
-        increment = 6
+        increment = 7
     }
 
     const newHour = (hour+increment)%24
+    if (newHour < hour) day = days[day]
+
+    return [minute, newHour, day]
+}
+
+
+export const convertToMT = (minute: number, hour: number, day: string) : [number, number, string] => {
+    const days : {[key : string]: string}= {
+        "MON": "SUN",
+        "TUE": "MON",
+        "WED": "TUE",
+        "THU": "WED",
+        "FRI": "THU",
+        "SAT": "FRI",
+        "SUN": "SAT",
+    }
+    const date = new Date()
+    const month = date.getMonth()
+    let increment = -6
+    // mst/mdt
+    if (month <= 2 || month >= 11) {
+        increment = -7
+    }
+
+    const newHour = (hour+increment+24)%24
     if (newHour < hour) day = days[day]
 
     return [minute, newHour, day]
