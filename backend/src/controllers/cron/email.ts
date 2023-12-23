@@ -31,7 +31,12 @@ export const getEmail = async (req: Request, res: Response) => {
         })
 
         const utcExpr = cron?.expression.split(" ")
-        const days = utcExpr[utcExpr.length-1].split(",")
+        let days = utcExpr[utcExpr.length-1]
+        if (days.length > 3) {
+            days = days.split(",")
+        } else {
+            days = [days]
+        }
         const minutes = parseInt(utcExpr[1])
         const hours = parseInt(utcExpr[2])
         
@@ -42,6 +47,11 @@ export const getEmail = async (req: Request, res: Response) => {
         }
         const tuple = convertToMT(minutes, hours, "MON")
         let cronExpression = `0 ${tuple[0]} ${tuple[1]} * * `
+        if (setDays.length > 1) {
+            cronExpression += setDays.join(",")
+        } else {
+            cronExpression += setDays[0]
+        }
         return res.status(200).json({ cron : {
             ...cron,
             expression: cronExpression

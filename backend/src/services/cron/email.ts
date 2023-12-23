@@ -61,7 +61,7 @@ export const convertToMT = (minute: number, hour: number, day: string) : [number
     }
 
     const newHour = (hour+increment+24)%24
-    if (newHour < hour) day = days[day]
+    if (newHour > hour) day = days[day]
 
     return [minute, newHour, day]
 }
