@@ -421,7 +421,8 @@ export const returnDish = async (req: Request, res: Response) => {
 export const updateDishCondition = async (req: Request, res: Response) => {
     // get id and condition
     let id = req.query['id']?.toString()
-    if (!id) {
+    let qid = req.query['qid']?.toString()
+    if (!id && !qid) {
         Logger.error({
             module: 'dish.controller',
             message: 'No qid provided',
@@ -455,24 +456,45 @@ export const updateDishCondition = async (req: Request, res: Response) => {
     // check if the dish exists
     // if yes, update it with condition
     try {
-        let associatedDish = await getDishById(id)
-        if (!associatedDish) {
-            Logger.error({
+        if (id) {
+            let associatedDish = await getDishById(id)
+            if (!associatedDish) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish not found',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+            }
+    
+            await updateCondition(associatedDish.id, condition)
+    
+            Logger.info({
                 module: 'dish.controller',
-                message: 'Dish not found',
+                function: 'updateDishCondition',
+                message: 'successfully updated dish condition',
             })
-            return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+    
+            return res.status(200).json({ message: 'updated condition' })
+        } else if (qid) {
+            let associatedDish = await getDish(parseInt(qid))
+            if (!associatedDish) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish not found',
+                })
+                return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
+            }
+    
+            await updateCondition(associatedDish.id, condition)
+    
+            Logger.info({
+                module: 'dish.controller',
+                function: 'updateDishCondition',
+                message: 'successfully updated dish condition',
+            })
+    
+            return res.status(200).json({ message: 'updated condition' })
         }
-
-        await updateCondition(associatedDish.id, condition)
-
-        Logger.info({
-            module: 'dish.controller',
-            function: 'updateDishCondition',
-            message: 'successfully updated dish condition',
-        })
-
-        return res.status(200).json({ message: 'updated condition' })
     } catch (error: any) {
         Logger.error({
             module: 'dish.controller',
