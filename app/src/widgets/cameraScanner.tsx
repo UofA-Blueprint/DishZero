@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Container, Button, InputGroup } from "react-bootstrap";
-import QrReader from "react-qr-scanner";
+import {QrReader} from "./QrScanner/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { BallTriangle, TailSpin } from "react-loader-spinner";
@@ -24,8 +24,7 @@ import {
 const CameraInput = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showQr, setShowQr] = useState(false);
-  const [frontCamera, setFrontCamera] = useState(false);
-
+  const [frontCamera, setFrontCamera] = useState(0);
   const style = { height: "100%" };
 
   /*useEffect(() => {
@@ -61,14 +60,7 @@ const CameraInput = (props) => {
         {/* TODO: Disable setFacingMode when only one camera is available */}
       </div>
       <div className="qr-scanner-placeholder" style={style}>
-        <div>
-          <Button
-            variant="secondary"
-            onClick={() => setFrontCamera(!frontCamera)}
-          >
-            <FontAwesomeIcon icon={faCameraRotate} />
-          </Button>
-        </div>
+        
 
         <div
           className="qr-scanner-tag"
@@ -77,6 +69,7 @@ const CameraInput = (props) => {
             setShowQr(!showQr);
           }}
         >
+          
           {/* <div className="crosshair"/> */}
           {props.isLoading ? (
           <Box
@@ -103,18 +96,20 @@ const CameraInput = (props) => {
         ) : (<>
           {showQr ? (
             <QrReader
-              delay={100000} //should we keep this
-              style={{ position: "fixed", height: "85%" }}
-              onError={handleError}
-              onScan={(data) => {
-                if (data != null) {
-                  setShowQr(false);
-                  handleScan(data);
-                }
-              }}
-              // TODO: determine based off https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints/facingMode
-              facingMode={frontCamera ? "user" : "environment"}
-            />
+            scanDelay={1000} //should we keep this
+            videoContainerStyle={{height: "100%", width: "100px" }}
+            onError={handleError}
+            onResult={(result, error, codeReader) => {
+              if (result != null) {
+                setShowQr(false);
+                handleScan(result);
+              }
+            }}
+            videoId="123"
+            deviceIndex={frontCamera}
+            // key="environment"
+            // constraints={{ facingMode: 'environment' }}
+          />
           ) : (
             <div>
               {" "}
@@ -144,6 +139,14 @@ const CameraInput = (props) => {
           )}
           </>
         )}
+        </div>
+        <div style={{zIndex:'100000',position:'absolute',right:20,top:0}}>
+          <Button
+            variant="secondary"
+            onClick={() => {setFrontCamera(frontCamera+1); console.log(frontCamera)}}
+          >
+            <FontAwesomeIcon icon={faCameraRotate} size="lg" />
+          </Button>
         </div>
       </div>
     </div>
