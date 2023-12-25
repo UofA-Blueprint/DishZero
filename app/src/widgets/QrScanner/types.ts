@@ -9,7 +9,7 @@ export type QrReaderProps = {
   /**
    * Called when an error occurs.
    */
-  onResult?: OnResultFunction;
+  onResult: OnResultFunction;
   /**
    * Property that represents the view finder component
    */
@@ -38,6 +38,7 @@ export type QrReaderProps = {
    * Property that represents a style for the video
    */
   videoStyle?: any;
+  onError?: any,
   deviceIndex: number;
 };
 
@@ -45,7 +46,7 @@ export type OnResultFunction = (
   /**
    * The QR values extracted by Zxing
    */
-  result?: Result | undefined | null,
+  result?: Result | undefined,
   /**
    * The name of the exceptions thrown while reading the QR
    */
@@ -56,6 +57,11 @@ export type OnResultFunction = (
   codeReader?: BrowserQRCodeReader
 ) => void;
 
+export type OnErrorFunction = (
+  error?: Error | undefined | null,
+) => void;
+
+
 export type UseQrReaderHookProps = {
   /**
    * Media constraints object, to specify which camera and capabilities to use
@@ -64,7 +70,8 @@ export type UseQrReaderHookProps = {
   /**
    * Callback for retrieving the result
    */
-  onResult?: OnResultFunction;
+  onResult: OnResultFunction;
+  onError: OnErrorFunction;
   /**
    * Property that represents the scan period
    */

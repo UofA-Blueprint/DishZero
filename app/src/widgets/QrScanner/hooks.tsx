@@ -11,6 +11,7 @@ export const useQrReader: UseQrReaderHook = ({
   // constraints: video,
   onResult,
   videoId,
+  onError,
   deviceIndex
 }) => {
   const initialized = useRef(false)
@@ -46,7 +47,7 @@ export const useQrReader: UseQrReaderHook = ({
         const message =
           'MediaDevices API has no support for your browser. You can fix this by running "npm i webrtc-adapter"';
 
-        onResult(null, new Error(message), codeReader);
+        onResult(undefined, new Error(message), codeReader);
       }
 
       // if (isValidType(video, 'constraints', 'object')) {
@@ -64,7 +65,8 @@ export const useQrReader: UseQrReaderHook = ({
           .then((controls: IScannerControls) => {controlsRef.current = controls;console.log(controls)})
           .catch((error: Error) => {
             if (isValidType(onResult, 'onResult', 'function')) {
-              onResult(null, error, codeReader);
+              onError(error);
+              // onResult(null, error, codeReader);
             }
           });
       // }

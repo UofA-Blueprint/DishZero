@@ -14,6 +14,7 @@ export const QrReader: React.FC<QrReaderProps> = ({
   scanDelay,
   // className,
   onResult,
+  onError,
   videoId,
   deviceIndex
 }) => {
@@ -22,6 +23,7 @@ export const QrReader: React.FC<QrReaderProps> = ({
     scanDelay,
     onResult,
     videoId,
+    onError,
     deviceIndex
   });
 

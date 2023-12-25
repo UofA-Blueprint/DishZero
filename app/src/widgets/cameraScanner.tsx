@@ -34,7 +34,9 @@ const CameraInput = (props) => {
   const handleError = (err: any) => {
     console.error(err.message);
     if (err.message === "Permission denied") {
-      ("Camera Permission Denied");
+      setErrorMessage("Camera Permission Denied");
+    } else {
+      setErrorMessage(err.message);
     }
     setShowQr(false);
   };
@@ -97,14 +99,15 @@ const CameraInput = (props) => {
           {showQr ? (
             <QrReader
             scanDelay={1000} //should we keep this
-            videoContainerStyle={{height: "100%", width: "100px" }}
-            onError={handleError}
+            videoContainerStyle={{height: "100%", width: "200px" }}
+            
             onResult={(result, error, codeReader) => {
               if (result != null) {
                 setShowQr(false);
                 handleScan(result);
-              }
+              } 
             }}
+            onError={handleError}
             videoId="123"
             deviceIndex={frontCamera}
             // key="environment"
