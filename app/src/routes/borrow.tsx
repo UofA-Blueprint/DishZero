@@ -44,8 +44,7 @@ const Borrow = () => {
     if (previousURL?.includes("dishzero.ca")) {
       const dishID = (previousURL.match(/dishID=([^&]+)/) || "")[1];
       setConfirm(true);
-      setScanId(dishID);
-      onConfirm();
+      onConfirm(dishID);
     }
   }, []);
 
@@ -129,11 +128,12 @@ const Borrow = () => {
     );
   }
   
-  const onConfirm = async () => {
+  const onConfirm = async (scanId: string) => {
     // if (!confirm) {
     //   return false;
     // }
     setConfirm(false);
+    setScanId(scanId)
     const user = currentUser?.id || null;
     console.log("USER: " + user);
     console.log("scanid", scanId);
@@ -187,7 +187,7 @@ const Borrow = () => {
               </h1>
             </div>
           <BottomTextInput disabled = {false} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={async () => {
-              await onConfirm();
+              await onConfirm(scanId);
               
             }}  />
     

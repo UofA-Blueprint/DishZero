@@ -1,5 +1,5 @@
 /*eslint-disable*/
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import React from "react";
 //import Scanner from "../widgets/scanner"
@@ -21,6 +21,7 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  FormControl,
   RadioGroup,
   Radio,
   IconButton,
@@ -35,6 +36,79 @@ import ErrorIcon from "../assets/error_icon.svg";
 import CloseIcon from "../assets/X_icon.svg";
 import axios from "axios";
 
+const PopUpModal = memo(({ dishType, error, reportToggle, qid, isMobile }) => {
+  let avatarIcon;
+  if (error) {
+    avatarIcon = ErrorIcon;
+  } else if (dishType == "plate") {
+    avatarIcon = plateIcon;
+  } else {
+    avatarIcon = mugIcon;
+  }
+  return (
+    <Box
+      sx={stylesConst.boxContainer}
+      className="position-fixed translate-middle slide-in-popup animate"
+    >
+      <Avatar
+        src={avatarIcon}
+        variant="square"
+        sx={{ width: 60, height: 60, marginRight: 2.5 }}
+        // sx={{ marginRight: 2.5 }}
+        alt="Sign In Button Logo"
+      />
+      <div style={stylesConst.divContainer}>
+        {error ? (
+          <div>
+            <Typography sx={stylesConst.errorText}>Failed to return</Typography>
+            <Typography sx={stylesConst.errorText}>{error}</Typography>
+          </div>
+        ) : (
+          <div style={{ flex: 1, flexDirection: "row" }}>
+            <Typography sx={stylesConst.successText}>
+              Successfully returned
+            </Typography>
+            {/* <img
+              style={{ paddingRight: 16 }}
+              src={ReportIcon}
+              alt=""
+              onClick={reportToggle}
+            /> */}
+          </div>
+        )}
+        <Typography variant="h6" sx={stylesConst.text}>
+          {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
+        </Typography>
+
+        {error ? (
+          <Typography sx={stylesConst.errorCaption}>
+            Please scan and try again
+          </Typography>
+        ) : (
+          <></>
+        )}
+      </div>
+      {error ? (
+        <></>
+      ) : (
+        <div style={{ marginLeft: "auto" }}>
+          <Button
+            onClick={reportToggle}
+            variant="contained"
+            color="error"
+            sx={{ minWidth: "unset", borderRadius: "100px", aspectRatio: "1" }}
+          >
+            <Avatar
+              src={ReportIcon}
+              sx={{ width: 25, height: 25, margin: "0" }}
+              variant="square"
+            ></Avatar>
+          </Button>
+        </div>
+      )}
+    </Box>
+  );
+});
 const Return = () => {
   const [scanId, setScanId] = useState("");
   const [showNotif, setShowNotif] = useState(false);
@@ -47,7 +121,7 @@ const Return = () => {
   const [error, setError] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [reportPopUp, setReportPopUp] = useState(false);
-  const [reportValue, setReportValue] = useState("alright");
+  const [reportValue, setReportValue] = useState("small_crack_chip");
   const [dishID, setDishID] = useState("");
   const { currentUser, sessionToken } = useAuth();
 
@@ -85,78 +159,14 @@ const Return = () => {
     setPopUp(true);
   };
 
-  const PopUpModal = ({ dishType, error, reportToggle, qid, isMobile }) => {
-    let avatarIcon;
-    if (error) {
-      avatarIcon = ErrorIcon;
-    } else if (dishType == "plate") {
-      avatarIcon = plateIcon;
-    } else {
-      avatarIcon = mugIcon;
-    }
-    return (
-      <Box
-        sx={stylesConst.boxContainer}
-        className="position-fixed translate-middle slide-in-popup animate"
-      >
-        <Avatar
-          src={avatarIcon}
-          variant="square"
-          sx={{ width: 60, height: 60, marginRight: 2.5 }}
-          // sx={{ marginRight: 2.5 }}
-          alt="Sign In Button Logo"
-        />
-        <div style={stylesConst.divContainer}>
-          {error ? (
-            <div>
-              <Typography sx={stylesConst.errorText}>
-                Failed to return
-              </Typography>
-              <Typography sx={stylesConst.errorText}>{error}</Typography>
-            </div>
-          ) : (
-            <div style={{ flex: 1, flexDirection: "row" }}>
-              <Typography sx={stylesConst.successText}>
-                Successfully returned
-              </Typography>
-              {/* <img
-                style={{ paddingRight: 16 }}
-                src={ReportIcon}
-                alt=""
-                onClick={reportToggle}
-              /> */}
-            </div>
-          )}
-          <Typography variant="h6" sx={stylesConst.text}>
-            {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
-          </Typography>
-
-          {error ? (
-            <Typography sx={stylesConst.errorCaption}>
-              Please scan and try again
-            </Typography>
-          ) : (
-            <></>
-          )}
-        </div>
-        <div style={{ marginLeft: "auto" }}>
-              
-            <Button onClick={reportToggle} variant="contained" color="error" sx={{minWidth:'unset',borderRadius: '100px', aspectRatio: '1'}} >
-            <Avatar
-              src={ReportIcon}
-              sx={{ width: 25, height: 25, margin: "0" }}
-              variant="square"
-            ></Avatar>
-          </Button>
-        </div>
-      </Box>
-    );
-  };
   const ReportModal = () => {
+    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setReportValue((event.target as HTMLInputElement).value);
+    };
     return (
-      <Box
+      <div
         className="position-absolute top-50 start-50 translate-middle shadow-lg"
-        sx={{
+        style={{
           ...stylesConst.boxContainer,
           zIndex: 10000,
           height: 500,
@@ -184,18 +194,19 @@ const Return = () => {
           sx={{ width: 75, height: 75 }}
           variant="square"
         ></Avatar>
-        <FormGroup>
+        <FormControl>
           <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue="alright"
+            aria-labelledby="yes"
             name="radio-buttons-group"
+            onChange={handleRadioChange}
+            value={reportValue}
           >
             <FormControlLabel
               value="small_crack_chip"
               control={
                 <Radio
                   onClick={() => {
-                    setReportValue("small_crack_chip");
+                    // setReportValue("small_crack_chip");
                   }}
                 />
               }
@@ -207,7 +218,7 @@ const Return = () => {
               control={
                 <Radio
                   onClick={() => {
-                    setReportValue("large_crack_chunk");
+                    // setReportValue("large_crack_chunk");
                   }}
                 />
               }
@@ -219,7 +230,7 @@ const Return = () => {
               control={
                 <Radio
                   onClick={() => {
-                    setReportValue("shattered");
+                    // setReportValue("shattered");
                   }}
                 />
               }
@@ -227,7 +238,7 @@ const Return = () => {
               label="Shattered"
             />
           </RadioGroup>
-        </FormGroup>
+        </FormControl>
         <Button
           variant="contained"
           onClick={reportToggle}
@@ -241,7 +252,7 @@ const Return = () => {
         >
           Report
         </Button>
-      </Box>
+      </div>
     );
   };
   const onSubmit = async (condition: string) => {
@@ -439,6 +450,7 @@ const stylesConst = {
   },
 
   divContainer: {
+    fontFamily: '"Roboto","Helvetica","Arial",sans-serif !important',
     flexDirection: "column",
   },
 

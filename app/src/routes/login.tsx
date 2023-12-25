@@ -26,6 +26,7 @@ export default function Login() {
     };
 
     window.addEventListener('resize', handleResize);
+    sessionStorage.removeItem('previousURL');
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -36,6 +37,13 @@ export default function Login() {
   // fired on button click while the user is not signed in.
   // logs in the user and navigates to home screen if successfully logged in
   const handleSignIn = async () => {
+    // Get the 'previousURL' parameter from the query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const previousURL = urlParams.get('previousURL');
+
+    // Save the original URL to sessionStorage
+    sessionStorage.setItem('previousURL', previousURL || '');
+
     await login()
   }
 

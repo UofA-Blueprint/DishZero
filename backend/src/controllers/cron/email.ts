@@ -4,7 +4,7 @@ import { verifyIfUserAdmin } from '../../services/users'
 import Logger from '../../utils/logger'
 import { db } from '../../internal/firebase'
 import nodeConfig from 'config'
-import { validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
+import { convertToMT, convertToUTC, validateEmailFields, validateUpdateEmailBody } from '../../services/cron/email'
 import { EmailClient, getEmailCron, initializeEmailCron, isEmailCronEnabled, setEmailCron } from '../../cron/email'
 import cron from 'node-cron';
 
@@ -29,8 +29,35 @@ export const getEmail = async (req: Request, res: Response) => {
             moduleName,
             function: 'getEmail',
         })
-        return res.status(200).json({ cron })
+
+        const utcExpr = cron?.expression.split(" ")
+        let days = utcExpr[utcExpr.length-1]
+        if (days.length > 3) {
+            days = days.split(",")
+        } else {
+            days = [days]
+        }
+        const minutes = parseInt(utcExpr[1])
+        const hours = parseInt(utcExpr[2])
+        
+        let setDays : Array<string> = []
+        for (let day of days) {
+            const tuple = convertToMT(minutes, hours, day)
+            setDays.push(tuple[2])
+        }
+        const tuple = convertToMT(minutes, hours, "MON")
+        let cronExpression = `0 ${tuple[0]} ${tuple[1]} * * `
+        if (setDays.length > 1) {
+            cronExpression += setDays.join(",")
+        } else {
+            cronExpression += setDays[0]
+        }
+        return res.status(200).json({ cron : {
+            ...cron,
+            expression: cronExpression
+        } })
     } catch (error: any) {
+        console.log(error)
         Logger.error({
             error: error,
             moduleName,
@@ -226,13 +253,16 @@ export const updateEmailCronExpression = async (req: Request, res: Response) => 
         return res.status(400).json({ error: 'bad_request' })
     }
 
-    let cronExpression = `0 ${minutes} ${hours} * * `
-    let setDays = []
+
+    let setDays : Array<string> = []
     for (let day of daysArr) {
         if (days[day]) {
-            setDays.push(day.substring(0, 3).toUpperCase())
+            const tuple = convertToUTC(minutes, hours, day.substring(0, 3).toUpperCase())
+            setDays.push(tuple[2])
         }
     }
+    const tuple = convertToUTC(minutes, hours, "MON")
+    let cronExpression = `0 ${tuple[0]} ${tuple[1]} * * `
     cronExpression += setDays.join(",")
 
     await db.collection(nodeConfig.get('collections.cron')).doc('email').update({
