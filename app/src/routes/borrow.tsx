@@ -12,7 +12,7 @@ import { AppHeader } from "../widgets/appHeader";
 import BottomTextInput from "../widgets/bottomTextInput";
 import { useAuth } from "../contexts/AuthContext";
 import { faCoffee, faExclamation,faLeaf } from "@fortawesome/free-solid-svg-icons";
-import '@fortawesome/fontawesome-free/css/all.css';
+// import '@fortawesome/fontawesome-free/css/all.css';
 
 import axios from "axios";
 
