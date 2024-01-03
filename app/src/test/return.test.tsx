@@ -36,7 +36,7 @@ jest.mock("../contexts/AuthContext", () => ({
   useAuth: () => ({
     currentUser: {
       id: "mocked-user-id",
-      role: "customer",
+      role: "admin",
       email: "mocked-email@ama.ca",
     },
     sessionToken: "mocked-session-token",
@@ -53,7 +53,7 @@ beforeEach(() => {
   useAuthMock.mockImplementation(() => ({
     currentUser: {
       id: "mocked-user-id",
-      role: "customer",
+      role: "admin",
       email: "mocked-email@ama.ca",
     },
     sessionToken: "mocked-session-token",
@@ -70,47 +70,6 @@ test("Confirm page is visible to admins", () => {
   );
   expect(screen.getByText("Return Dishes")).toBeInTheDocument();
 });
-
-// //
-// test('Confirm modal is displayed when confirm state is true', async () => {
-//     //Mock response to be returned by our mock implementation of the useAuth
-
-//     render(
-//         <BrowserRouter>
-//         <Borrow />
-//         </BrowserRouter>
-//         );
-
-//     // You might need to simulate the condition that sets the confirm state to true
-//     // For example, if a button click sets this state, you would simulate that click
-//     const enterButton = screen.getByTestId('enter-btn');
-//     fireEvent.click(enterButton);
-
-//     expect(screen.getByText('Borrow')).toBeInTheDocument(); // Assuming 'Borrow' is unique to this modal
-// });
-
-// // return 404 page to customers
-// test("Return 404 page to customers", async () => {
-
-//   render(
-//     <BrowserRouter>
-//       <Return />
-//     </BrowserRouter>
-//   );
-//   expect(screen.getByText('404')).toBeInTheDocument(); // Assuming 'Borrow' is unique to this modal
-
-// });
-
-// test("Return 404 page to customers", async () => {
-
-//   render(
-//     <BrowserRouter>
-//       <Return />
-//     </BrowserRouter>
-//   );
-//   expect(screen.getByText('404')).toBeInTheDocument(); // Assuming 'Borrow' is unique to this modal
-
-// });
 
 test("triggers search on Enter key", async () => {
   // Mock the API call for transactions
