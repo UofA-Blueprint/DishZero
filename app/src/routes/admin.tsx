@@ -305,7 +305,7 @@ function sortRows(rows) {
 }
 
 // function Admin() {
-function Admin({ path }: { path: string }) {
+function Admin({ path }: { path?: string }) {
     const { currentUser, sessionToken } = useAuth()
     const [dishesUsed, setDishesUsed] = useState<any[]>([])
     const [transactionsUsed, setTransactionsUsed] = useState<any[]>([])
@@ -353,8 +353,10 @@ function Admin({ path }: { path: string }) {
         setSearchValue(searchInput)
     }
 
-    const numBorrowedDishes = dishesUsed.filter((dish) => dish.borrowed == true).length
-    const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
+    // const numBorrowedDishes = dishesUsed.filter((dish) => dish.borrowed == true).length
+    const numBorrowedDishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed).length
+    const returnedDishes = dishesUsed.length - numBorrowedDishes
+    // const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
     const lost = findLost(dishesUsed, transactionsUsed)
     const overdue = findOverdue(dishesUsed, transactionsUsed) - lost
 
@@ -366,74 +368,74 @@ function Admin({ path }: { path: string }) {
     const table = dishTable()
     const add = addDish()
 
-    // const theme = createTheme({
-    //     palette: {
-    //         primary: {
-    //             dark: DISHZERO_COLOR_DARK,
-    //             light: DISHZERO_COLOR_LIGHT,
-    //             main: DISHZERO_COLOR,
-    //         },
-    //         secondary: {
-    //             dark: SECONDARY_DARK,
-    //             light: SECONDARY_LIGHT,
-    //             main: SECONDARY,
-    //         },
-    //     },
-    // })
+    const theme = createTheme({
+        palette: {
+            primary: {
+                dark: DISHZERO_COLOR_DARK,
+                light: DISHZERO_COLOR_LIGHT,
+                main: DISHZERO_COLOR,
+            },
+            secondary: {
+                dark: SECONDARY_DARK,
+                light: SECONDARY_LIGHT,
+                main: SECONDARY,
+            },
+        },
+    })
 
     return (
-        // <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-            {/* on mobile */}
-            <MobileView>
-                <div>
-                    <h1>Admin Panel</h1>
-                </div>
-                <img src={leaf_icon} alt="" />
-                <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
-            </MobileView>
-
-            {/* on desktop */}
-            <BrowserView>
-                {path == 'dishes' && <AdminDishes />}
-                {path == '' && (
-                    <div className="d-flex">
-                        <Toolbar />
-                        <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
-                            <p className="sub-header-2">Home</p>
-                            {bar}
-                            <p className="sub-header-2" style={{ marginTop: 40 }}>
-                                Recent transactions
-                            </p>
-
-                            <div className="d-flex" style={{ marginBottom: '16px' }}>
-                                {/* search Bar */}
-
-                                <input
-                                    className="search-container d-flex"
-                                    type="text"
-                                    placeholder="Type text here..."
-                                    onChange={searchChange}
-                                    value={searchInput}
-                                    style={{ marginRight: '8px' }}
-                                />
-
-                                <button className="search-b d-flex" onClick={handleClick}>
-                                    <p className="sub-header-3">Search</p>
-                                </button>
-
-                                <div className="d-flex justify-content-end" style={{ width: '100%' }}>
-                                    {add}
-                                </div>
-                            </div>
-                            {table}
-                            {row}
-                        </div>
+        <ThemeProvider theme={theme}>
+            <SnackbarProvider>
+                {/* on mobile */}
+                <MobileView>
+                    <div>
+                        <h1>Admin Panel</h1>
                     </div>
-                )}
-            </BrowserView>
-        </SnackbarProvider>
-        // </ThemeProvider>
+                    <img src={leaf_icon} alt="" />
+                    <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
+                </MobileView>
+
+                {/* on desktop */}
+                <BrowserView>
+                    {path == 'dishes' && <AdminDishes />}
+                    {(path == '' || !path) && (
+                        <div className="d-flex">
+                            <Toolbar />
+                            <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
+                                <p className="sub-header-2">Home</p>
+                                {bar}
+                                <p className="sub-header-2" style={{ marginTop: 40 }}>
+                                    Recent transactions
+                                </p>
+
+                                <div className="d-flex" style={{ marginBottom: '16px' }}>
+                                    {/* search Bar */}
+
+                                    <input
+                                        className="search-container d-flex"
+                                        type="text"
+                                        placeholder="Type text here..."
+                                        onChange={searchChange}
+                                        value={searchInput}
+                                        style={{ marginRight: '8px' }}
+                                    />
+
+                                    <button className="search-b d-flex" onClick={handleClick}>
+                                        <p className="sub-header-3">Search</p>
+                                    </button>
+
+                                    <div className="d-flex justify-content-end" style={{ width: '100%' }}>
+                                        {add}
+                                    </div>
+                                </div>
+                                {table}
+                                {row}
+                            </div>
+                        </div>
+                    )}
+                </BrowserView>
+            </SnackbarProvider>
+        </ThemeProvider>
     )
 }
 
