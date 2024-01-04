@@ -188,7 +188,8 @@ const adminApi = {
                     for (const user of users) {
                         let count = 0
                         for (const dish of dishes) {
-                            if (dish.userId === user.id && dish.borrowed === true) {
+                            if (dish.status === DishStatus.BORROWED && dish.userId === user.id) {
+                                // if (dish.userId === user.id && dish.borrowed === true) {
                                 count += 1
                             }
                         }
