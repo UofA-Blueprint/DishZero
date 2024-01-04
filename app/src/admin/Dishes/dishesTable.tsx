@@ -2,12 +2,11 @@
 import { useEffect, useState } from 'react'
 import { Simulate } from 'react-dom/test-utils'
 import load = Simulate.load
-import { Dish, StyledContainedButton, StyledOutlinedButton } from './constants'
+import { Dish, StyledContainedButton, StyledOutlinedButton, generateColumns } from './constants'
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
 import CustomToolbar from '../DataGrid/customToolbar'
 import { StyledDataGrid } from '../DataGrid/constants'
-import { columns } from './constants'
 import NoResultsOverlay from '../DataGrid/noResultsOverlay'
 import { Box, Button, Dialog, DialogContent, Typography } from '@mui/material'
 import { GridOverlay, GridRowId, GridRowModel } from '@mui/x-data-grid'
@@ -28,6 +27,8 @@ export default function AdminDishesTable({ filteredRows, setAllRows }: Props) {
     const [loadingDishes, setLoadingDishes] = useState(true)
     const [deleting, setDeleting] = useState(false)
 
+    const [dishTypes, setDishTypes] = useState<string[]>([])
+
     const { enqueueSnackbar } = useSnackbar()
 
     const loadDataFromBackend = async function () {
@@ -40,8 +41,17 @@ export default function AdminDishesTable({ filteredRows, setAllRows }: Props) {
         setAllRows(dishData)
     }
 
+    const fetchDishTypes = async () => {
+        let dishTypes: string[] = []
+        if (sessionToken) {
+            dishTypes = await adminApi.getDishTypes(sessionToken)
+        }
+        setDishTypes(dishTypes)
+    }
+
     useEffect(() => {
         loadDataFromBackend()
+        fetchDishTypes()
     }, [])
 
     const handleDishDelete = async function () {
@@ -92,7 +102,7 @@ export default function AdminDishesTable({ filteredRows, setAllRows }: Props) {
             <StyledDataGrid
                 loading={loadingDishes}
                 rows={filteredRows}
-                columns={columns}
+                columns={generateColumns(dishTypes)}
                 initialState={{
                     pagination: {
                         paginationModel: { page: 0, pageSize: 10 },

@@ -78,7 +78,7 @@ export const DishConditionColors = {
     shattered: '#BF4949',
 }
 
-export const columns: GridColDef[] = [
+export const generateColumns = (dishTypes: string[]): GridColDef[] => [
     { field: 'qid', headerName: 'Dish Id', minWidth: 100, maxWidth: 100, flex: 1 },
     {
         field: 'type',
@@ -86,6 +86,8 @@ export const columns: GridColDef[] = [
         minWidth: 100,
         maxWidth: 150,
         flex: 1,
+        type: 'singleSelect',
+        valueOptions: Object.values(dishTypes) as string[],
         valueFormatter({ value }: { value: string }) {
             return capitalizeFirstLetter(value)
         },
