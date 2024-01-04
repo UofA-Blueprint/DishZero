@@ -227,7 +227,7 @@ const adminApi = {
                                 hoursDifference = timeDifference / 3600000
                                 if (
                                     dish.userId === user.id &&
-                                    dish.status === DishStatus.BORROWED &&
+                                    dish.status === DishStatus.borrowed &&
                                     hoursDifference > 48
                                 ) {
                                     count += 1
