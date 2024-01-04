@@ -2,205 +2,63 @@
 import { useEffect, useState } from 'react'
 import { Simulate } from 'react-dom/test-utils'
 import load = Simulate.load
-import { dishInterface } from '../constants'
+import { Dish, DishStatus, DishType } from '../constants'
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
-import { dishTag } from '../../routes/admin'
+import { DataGrid, GridColDef, DataGridProps } from '@mui/x-data-grid'
+import { useDemoData } from '@mui/x-data-grid-generator'
+import { styled } from '@mui/material/styles'
+import NoDishesOverlay from './NoDishesOverlay'
 
-const AdminDishTableRow = ({ dish, selectedHandler, index, selectedList }) => {
-    return (
-        <>
-            <tr>
-                <th
-                    scope="row"
-                    style={{
-                        textAlign: 'center',
-                    }}>
-                    <input checked={selectedList[index]} type="checkbox" onClick={() => selectedHandler(index)} />
-                </th>
-                <td>{dish.id}</td>
-                {/* <td>{dish.type}</td> */}
-                <td>{dishTag(dish.type)}</td>
-                <td>{dishTag(dish.status)}</td>
-                {/* <td>{dish.status}</td> */}
-                <td>
-                    {dish.overdue} {dish.overdue > 0 && 'days'}
-                </td>
-                <td>{dish.timesBorrowed}</td>
-                <td>{dish.dateAdded || ''}</td>
-            </tr>
-        </>
-    )
-}
+export const StyledDataGrid = styled(DataGrid)<DataGridProps>(({ theme }) => ({
+    '& .MuiDataGrid-columnHeaders': {
+        '& svg': {
+            fill: 'white',
+        },
+        backgroundColor: theme.palette.grey[800],
+        color: 'white',
+    },
+    '& .MuiDataGrid-columnHeaderTitleContainerContent span': {
+        color: 'white',
+    },
+    '& .MuiTablePagination-selectLabel': {
+        marginBottom: '0px',
+    },
+    '& .MuiTablePagination-displayedRows': {
+        marginBottom: '0px',
+    },
+    '& .MuiDataGrid-row': {
+        cursor: 'pointer',
+    },
+}))
 
 interface Props {
-    origDishList: dishInterface[]
+    rows: Dish[]
+    setRows: React.Dispatch<React.SetStateAction<Dish[]>>
 }
 
-export default function AdminDishTable({ origDishList }: Props) {
-    console.log(origDishList)
-
-    // get dishlist using useEffect
-    const [dishList, setDishList] = useState(origDishList)
-    const [query, setQuery] = useState('')
+export default function AdminDishTable({ rows, setRows }: Props) {
     const [headerChecked, setHeaderChecked] = useState(false)
-    const [selectedList, setSelectedList] = useState(Array(dishList.length).fill(false))
+    const [selectedList, setSelectedList] = useState(Array(rows.length).fill(false))
+
     const [selectedCount, setSelectedCount] = useState(0)
-    const [shownDishList, setShownDishList] = useState(dishList)
-    const [dishTypeFilter, setDishTypeFilter] = useState({
-        All: false,
-        Mug: false,
-        Dish: false,
-    })
-    const [dishFilterClick, setDishFilterClick] = useState(false)
-    const [dishStatusFilter, setDishStatusFilter] = useState({
-        All: false,
-        InUse: false,
-        Returned: false,
-        Overdue: false,
-    })
-    const [dishStatusClick, setDishStatusClick] = useState(false)
+
     const { currentUser, sessionToken } = useAuth()
-    /// filter function
-    const GetfilteredDish = (filter, dishes) => {
-        return dishes.filter((dish) => {
-            if (filter.dishType.includes(dish.type) && filter.dishStatus.includes(dish.status)) {
-                return true
-            } else {
-                return false
-            }
-        })
-    }
-    const CreateFilter = () => {
-        let dishType = ['']
-        let dishStatus = ['']
-        if (dishTypeFilter.Mug) {
-            dishType.push('Mug')
-        }
-        if (dishTypeFilter.Dish) {
-            dishType.push('Dish')
-        }
-        if (dishStatusFilter.InUse) {
-            dishStatus.push('In Use')
-        }
-        if (dishStatusFilter.Returned) {
-            dishStatus.push('Returned')
-        }
-        if (dishStatusFilter.Overdue) {
-            dishStatus.push('Overdue')
-        }
-        if (dishType.length === 1) {
-            dishType = ['Mug', 'Dish']
-        }
-        if (dishStatus.length === 1) {
-            dishStatus = ['In Use', 'Returned', 'Overdue']
-        }
-        return {
-            dishStatus,
-            dishType,
-        }
-    }
 
     const loadDataFromBackend = async function () {
         let dishData = []
         if (sessionToken) {
             dishData = await adminApi.getAllDishes(sessionToken)
         }
-        setDishList(dishData)
-        resetStateVars(dishData)
+        setRows(dishData)
     }
 
-    const resetStateVars = function (dishData) {
-        setQuery('')
-        setHeaderChecked(false)
-        setSelectedList(Array(dishList.length).fill(false))
-        setSelectedCount(0)
-        setShownDishList(dishData)
-        setDishTypeFilter({ All: false, Mug: false, Dish: false })
-        setDishFilterClick(false)
-        setDishStatusFilter({
-            All: false,
-            InUse: false,
-            Returned: false,
-            Overdue: false,
-        })
-        setDishStatusClick(false)
-    }
-
-    useEffect(() => {
-        if (origDishList.length == 0) {
-            // load the data again
-            loadDataFromBackend()
-        }
-    }, [])
-
-    useEffect(() => {
-        const filter = CreateFilter()
-        setShownDishList(GetfilteredDish(filter, dishList))
-    }, [dishStatusFilter, dishTypeFilter])
-    ///
-    ///
-    const handleDishStatusClick = () => {
-        setDishStatusClick(!dishStatusClick)
-    }
-    const handleAllStatus = () => {
-        if (dishStatusFilter.All === false) {
-            setDishStatusFilter({
-                All: true,
-                InUse: true,
-                Returned: true,
-                Overdue: true,
-            })
-        } else {
-            setDishStatusFilter({ ...dishStatusFilter, All: !dishStatusFilter.All })
-        }
-    }
-    const handleInUseFilter = () => {
-        setDishStatusFilter({
-            ...dishStatusFilter,
-            InUse: !dishStatusFilter.InUse,
-        })
-    }
-    const handleReturnFilter = () => {
-        setDishStatusFilter({
-            ...dishStatusFilter,
-            Returned: !dishStatusFilter.Returned,
-        })
-    }
-    const handleOverdueFilter = () => {
-        setDishStatusFilter({
-            ...dishStatusFilter,
-            Overdue: !dishStatusFilter.Overdue,
-        })
-    }
-    ///
-    ///
-    const handleDishFilterClick = () => {
-        setDishFilterClick(!dishFilterClick)
-    }
-    const handleAllFilter = () => {
-        if (dishTypeFilter.All === false) {
-            setDishTypeFilter({ All: true, Mug: true, Dish: true })
-        } else {
-            setDishTypeFilter({ ...dishTypeFilter, All: !dishTypeFilter.All })
-        }
-    }
-    const handleDishFilter = () => {
-        setDishTypeFilter({ ...dishTypeFilter, Dish: !dishTypeFilter.Dish })
-    }
-    const handleMugFilter = () => {
-        setDishTypeFilter({ ...dishTypeFilter, Mug: !dishTypeFilter.Mug })
-    }
-
-    // Handles state change of checkbox in rows
-    const selectItemHandler = (i: number) => {
-        const newSelItems = [...selectedList]
-        if (i >= newSelItems.length) {
-            return
-        }
-        newSelItems[i] = !newSelItems[i]
-        setSelectedList(newSelItems)
-    }
+    // useEffect(() => {
+    //     if (rows.length == 0) {
+    //         // load the data again
+    //         loadDataFromBackend()
+    //     }
+    // }, [])
 
     // Handles the state change of the checkbox in table head
     const handleHeaderCheckChange = () => {
@@ -213,176 +71,69 @@ export default function AdminDishTable({ origDishList }: Props) {
         }
     }
 
-    const getSearchedDishes = (query, dishes) => {
-        if (!query) {
-            return dishes
-        }
-        return dishes.filter((dish) => dish.id.includes(query))
-    }
-    const searchBarHandleChange = (value) => {
-        setQuery(value)
-        setShownDishList(getSearchedDishes(query, dishList))
-    }
+    const columns: GridColDef[] = [
+        { field: 'dishId', headerName: 'Dish Id', width: 200 },
+        {
+            field: 'dishType',
+            headerName: 'Dish Type',
+            width: 200,
+            type: 'singleSelect',
+            valueOptions: Object.values(DishType) as string[],
+        },
+        {
+            field: 'status',
+            headerName: 'Status',
+            width: 200,
+            editable: true,
+            type: 'singleSelect',
+
+            valueOptions: Object.values(DishStatus) as string[],
+        },
+        { field: 'overdue', headerName: 'Overdue', width: 200 },
+        { field: 'timesBorrowed', headerName: 'Times Borrowed', width: 200 },
+        {
+            field: 'dateAdded',
+            headerName: 'Date Added',
+            width: 200,
+            valueFormatter: ({ value }: { value: Date }) => {
+                return value.toDateString()
+            },
+        },
+    ]
+
+    const { data } = useDemoData({
+        dataSet: 'Commodity',
+        rowLength: 100000,
+        editable: true,
+    })
+    console.log(data)
+
     return (
         <>
-            <div className="dishDashboard-main-title">
-                <table className="table table-striped dishes-table-hover">
-                    <thead
-                        className=""
-                        style={{
-                            textAlign: 'left',
-                            verticalAlign: 'middle',
-                        }}>
-                        <tr className="dishes-table-header">
-                            <th
-                                scope="col"
-                                align="center"
-                                style={{
-                                    borderTopLeftRadius: '10px',
-                                    textAlign: 'center',
-                                }}>
-                                <input type="checkbox" checked={headerChecked} onChange={handleHeaderCheckChange} />
-                            </th>
-                            <th scope="col">Dish ID</th>
-
-                            <th scope="col">
-                                <div className="dropdown">
-                                    Dish Type
-                                    <button
-                                        className="btn  dropdown-toggle border-0 p-0 mx-1"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        onClick={handleDishFilterClick}
-                                    />
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <input
-                                                checked={dishTypeFilter.All}
-                                                type="checkbox"
-                                                onChange={handleAllFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>All</label>
-                                        </li>
-                                        <li>
-                                            <input
-                                                checked={dishTypeFilter.Dish}
-                                                type="checkbox"
-                                                onChange={handleDishFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>Dish</label>
-                                        </li>
-                                        <li>
-                                            <input
-                                                checked={dishTypeFilter.Mug}
-                                                type="checkbox"
-                                                onChange={handleMugFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>Mug</label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </th>
-                            <th scope="col">
-                                <div className="dropdown">
-                                    Status
-                                    <button
-                                        className="btn dropdown-toggle border-0 p-0 mx-1"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                    />
-                                    <ul className="dropdown-menu">
-                                        <li>
-                                            <input
-                                                checked={dishStatusFilter.All}
-                                                type="checkbox"
-                                                onChange={handleAllStatus}
-                                                className="mx-2"
-                                            />
-                                            <label>All</label>
-                                        </li>
-                                        <li>
-                                            <input
-                                                checked={dishStatusFilter.InUse}
-                                                type="checkbox"
-                                                onChange={handleInUseFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>In Use</label>
-                                        </li>
-                                        <li>
-                                            <input
-                                                checked={dishStatusFilter.Returned}
-                                                type="checkbox"
-                                                onChange={handleReturnFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>Returned</label>
-                                        </li>
-                                        <li>
-                                            <input
-                                                checked={dishStatusFilter.Overdue}
-                                                type="checkbox"
-                                                onChange={handleOverdueFilter}
-                                                className="mx-2"
-                                            />
-                                            <label>Overdue</label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </th>
-                            <th scope="col">
-                                Overdue
-                                <button
-                                    className="btn border-0 p-0 mx-1"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                />
-                            </th>
-                            <th scope="col">
-                                Times Borrowed
-                                <button
-                                    className="btn border-0 p-0 mx-1"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                />
-                            </th>
-                            <th
-                                scope="col"
-                                style={{
-                                    borderTopRightRadius: '10px',
-                                }}>
-                                Date Added
-                                <button
-                                    className="btn border-0 p-0 mx-1"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {shownDishList.map((dish, key) => (
-                            <AdminDishTableRow
-                                dish={dish}
-                                key={key}
-                                selectedHandler={selectItemHandler}
-                                index={key}
-                                selectedList={selectedList}
-                            />
-                        ))}
-                    </tbody>
-                </table>
-                {/* 
-                <div className="dishDashboard-pagenumber">
-                </div> */}
+            <div style={{ width: '100%' }}>
+                <StyledDataGrid
+                    rows={rows}
+                    columns={columns}
+                    initialState={{
+                        pagination: {
+                            paginationModel: { page: 0, pageSize: 5 },
+                        },
+                    }}
+                    slots={{
+                        noRowsOverlay: NoDishesOverlay,
+                        noResultsOverlay: NoDishesOverlay,
+                    }}
+                    slotProps={{
+                        panel: {
+                            placement: 'top-start',
+                        },
+                    }}
+                    pageSizeOptions={[5, 10, 15]}
+                    autoHeight
+                    checkboxSelection
+                    getRowId={(row) => row.dishId}
+                    experimentalFeatures={{ ariaV7: true }}
+                />
             </div>
         </>
     )

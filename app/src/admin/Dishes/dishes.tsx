@@ -3,12 +3,13 @@ import leaf_icon from '../../assets/leaf.svg'
 import { BrowserView, MobileView } from 'react-device-detect'
 import Toolbar from '../toolbar'
 import { dishes } from '../constants'
-import { StyledAdminPageLayout } from '../styledAdmin'
-import { StyledDishDataLayout } from '../styledDishes'
 import AdminDishHeader from './dishHeader'
 import AdminDishTable from './dishTable'
+import { Box } from '@mui/material'
+import { useState } from 'react'
 
 export default function Dishes() {
+    const [rows, setRows] = useState(dishes)
     return (
         <>
             {/* on mobile */}
@@ -23,23 +24,14 @@ export default function Dishes() {
 
             {/* on desktop */}
             <BrowserView>
-                <StyledAdminPageLayout>
+                <Box display="flex">
                     <Toolbar />
-                    <StyledDishDataLayout>
-                        <AdminDishHeader />
-                        <AdminDishTable origDishList={dishes} />
-                    </StyledDishDataLayout>
-                </StyledAdminPageLayout>
+                    <Box sx={{ m: '20px' }}>
+                        <AdminDishHeader allRows={dishes} setRows={setRows} />
+                        <AdminDishTable rows={rows} setRows={setRows} />
+                    </Box>
+                </Box>
             </BrowserView>
         </>
-    )
-}
-
-const TransactionHistory = () => {
-    return (
-        <div>
-            <div className="dishDashboard-main-title">Transactions History</div>
-            <div className="transaction-daterange">Date Range</div>
-        </div>
     )
 }

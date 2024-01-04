@@ -1,7 +1,8 @@
-import { Add, IosShare, Search } from '@mui/icons-material'
-import { Box, Button, InputAdornment, TextField, Typography, styled } from '@mui/material'
+import { Add, IosShare, Search, Clear } from '@mui/icons-material'
+import { Box, Button, IconButton, InputAdornment, TextField, Typography, styled } from '@mui/material'
 import { useState } from 'react'
 import AddNewDishDialog from './addNewDish'
+import { Dish } from '../constants'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const StyledOutlinedButton = styled(Button)(({ theme }) => ({
@@ -25,8 +26,35 @@ export const StyledContainedButton = styled(Button)(({ theme }) => ({
     margin: '1rem',
 }))
 
-export default function AdminDishHeader() {
+const requestSearch = (searchValue: string, rows: Dish[], setRows: React.Dispatch<React.SetStateAction<Dish[]>>) => {
+    const searchRegex = new RegExp(escapeRegExp(searchValue), 'i')
+    const filteredRows = rows.filter((row: Dish) => {
+        return Object.keys(row).some((field: string) => {
+            return searchRegex.test((row[field] || '').toString())
+        })
+    })
+    setRows(filteredRows)
+}
+
+// remove characters that could cause errors
+const escapeRegExp = (value: string): string => {
+    return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
+}
+
+interface Props {
+    allRows: Dish[]
+    setRows: React.Dispatch<React.SetStateAction<Dish[]>>
+}
+
+export default function AdminDishHeader({ allRows, setRows }: Props) {
     const [open, setOpen] = useState(false)
+    const [search, setSearch] = useState('')
+
+    const handleSearch = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        const newSearchQuery = e.target.value
+        requestSearch(newSearchQuery, allRows, setRows)
+        setSearch(newSearchQuery)
+    }
 
     return (
         <>
@@ -52,12 +80,26 @@ export default function AdminDishHeader() {
                             },
                             height: 'fit-content',
                         }}
+                        onChange={handleSearch}
+                        value={search}
                         margin="dense"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
                                     <Search />
                                 </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <IconButton
+                                    size="small"
+                                    style={{ visibility: search ? 'visible' : 'hidden' }}
+                                    onClick={() =>
+                                        handleSearch({ target: { value: '' } } as React.ChangeEvent<
+                                            HTMLTextAreaElement | HTMLInputElement
+                                        >)
+                                    }>
+                                    <Clear fontSize="small" />
+                                </IconButton>
                             ),
                         }}
                     />
