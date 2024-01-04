@@ -5,18 +5,27 @@ import load = Simulate.load
 import { dishInterface } from '../constants'
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
+import { dishTag } from '../../routes/admin'
 
 const AdminDishTableRow = ({ dish, selectedHandler, index, selectedList }) => {
     return (
         <>
             <tr>
-                <th scope="row">
+                <th
+                    scope="row"
+                    style={{
+                        textAlign: 'center',
+                    }}>
                     <input checked={selectedList[index]} type="checkbox" onClick={() => selectedHandler(index)} />
                 </th>
                 <td>{dish.id}</td>
-                <td>{dish.type}</td>
-                <td>{dish.status}</td>
-                <td>{dish.overdue}</td>
+                {/* <td>{dish.type}</td> */}
+                <td>{dishTag(dish.type)}</td>
+                <td>{dishTag(dish.status)}</td>
+                {/* <td>{dish.status}</td> */}
+                <td>
+                    {dish.overdue} {dish.overdue > 0 && 'days'}
+                </td>
                 <td>{dish.timesBorrowed}</td>
                 <td>{dish.dateAdded || ''}</td>
             </tr>
@@ -217,24 +226,35 @@ export default function AdminDishTable({ origDishList }: Props) {
     return (
         <>
             <div className="dishDashboard-main-title">
-                <table className="table">
-                    <thead className="table-secondary" style={{ textAlign: 'left', verticalAlign: 'middle' }}>
-                        <tr>
-                            <th scope="col">
+                <table className="table table-striped dishes-table-hover">
+                    <thead
+                        className=""
+                        style={{
+                            textAlign: 'left',
+                            verticalAlign: 'middle',
+                        }}>
+                        <tr className="dishes-table-header">
+                            <th
+                                scope="col"
+                                align="center"
+                                style={{
+                                    borderTopLeftRadius: '10px',
+                                    textAlign: 'center',
+                                }}>
                                 <input type="checkbox" checked={headerChecked} onChange={handleHeaderCheckChange} />
                             </th>
                             <th scope="col">Dish ID</th>
 
                             <th scope="col">
                                 <div className="dropdown">
+                                    Dish Type
                                     <button
-                                        className="btn  dropdown-toggle border-0 p-0"
+                                        className="btn  dropdown-toggle border-0 p-0 mx-1"
                                         type="button"
                                         data-bs-toggle="dropdown"
                                         aria-expanded="false"
-                                        onClick={handleDishFilterClick}>
-                                        Dish type
-                                    </button>
+                                        onClick={handleDishFilterClick}
+                                    />
                                     <ul className="dropdown-menu">
                                         <li>
                                             <input
@@ -268,13 +288,13 @@ export default function AdminDishTable({ origDishList }: Props) {
                             </th>
                             <th scope="col">
                                 <div className="dropdown">
+                                    Status
                                     <button
-                                        className="btn dropdown-toggle border-0 p-0"
+                                        className="btn dropdown-toggle border-0 p-0 mx-1"
                                         type="button"
                                         data-bs-toggle="dropdown"
-                                        aria-expanded="false">
-                                        Status
-                                    </button>
+                                        aria-expanded="false"
+                                    />
                                     <ul className="dropdown-menu">
                                         <li>
                                             <input
@@ -316,31 +336,35 @@ export default function AdminDishTable({ origDishList }: Props) {
                                 </div>
                             </th>
                             <th scope="col">
+                                Overdue
                                 <button
-                                    className="btn border-0 p-0"
+                                    className="btn border-0 p-0 mx-1"
                                     type="button"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    Overdue
-                                </button>
+                                    aria-expanded="false"
+                                />
                             </th>
                             <th scope="col">
+                                Times Borrowed
                                 <button
-                                    className="btn border-0 p-0"
+                                    className="btn border-0 p-0 mx-1"
                                     type="button"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    Times Borrowed
-                                </button>
+                                    aria-expanded="false"
+                                />
                             </th>
-                            <th scope="col">
+                            <th
+                                scope="col"
+                                style={{
+                                    borderTopRightRadius: '10px',
+                                }}>
+                                Date Added
                                 <button
-                                    className="btn border-0 p-0"
+                                    className="btn border-0 p-0 mx-1"
                                     type="button"
                                     data-bs-toggle="dropdown"
-                                    aria-expanded="false">
-                                    Date Added
-                                </button>
+                                    aria-expanded="false"
+                                />
                             </th>
                         </tr>
                     </thead>
