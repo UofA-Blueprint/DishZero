@@ -44,8 +44,17 @@ import '../styles/admin.css'
 import leaf_white from '../assets/leaf-white.svg'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
-import { Box } from '@mui/material'
+import { Box, ThemeProvider, createTheme } from '@mui/material'
 import AdminDishes from '../admin/Dishes/dishesPage'
+import { SnackbarProvider } from 'notistack'
+import {
+    DISHZERO_COLOR,
+    DISHZERO_COLOR_DARK,
+    DISHZERO_COLOR_LIGHT,
+    SECONDARY,
+    SECONDARY_DARK,
+    SECONDARY_LIGHT,
+} from '../admin/Dishes/constants'
 
 function dishStatus(dishNumbers: number[]) {
     return (
@@ -512,58 +521,75 @@ function Admin({ path }: { path: string }) {
     const table = dishTable()
     const add = addDish()
 
+    const theme = createTheme({
+        palette: {
+            primary: {
+                dark: DISHZERO_COLOR_DARK,
+                light: DISHZERO_COLOR_LIGHT,
+                main: DISHZERO_COLOR,
+            },
+            secondary: {
+                dark: SECONDARY_DARK,
+                light: SECONDARY_LIGHT,
+                main: SECONDARY,
+            },
+        },
+    })
+
     return (
-        <>
-            {/* on mobile */}
-            <MobileView>
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <h1>Admin Panel</h1>
+        <ThemeProvider theme={theme}>
+            <SnackbarProvider>
+                {/* on mobile */}
+                <MobileView>
+                    <Box sx={{ textAlign: 'center', mt: 2 }}>
+                        <h1>Admin Panel</h1>
 
-                    <img src={leaf_icon} alt="" />
-                    <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
-                </Box>
-            </MobileView>
+                        <img src={leaf_icon} alt="" />
+                        <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
+                    </Box>
+                </MobileView>
 
-            {/* on desktop */}
-            <BrowserView>
-                {path == 'dishes' && <AdminDishes />}
-                {path == '' && (
-                    <div className="d-flex">
-                        <Toolbar />
-                        <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
-                            <p className="sub-header-2">Home</p>
-                            {bar}
-                            <p className="sub-header-2" style={{ marginTop: 40 }}>
-                                Recent transactions
-                            </p>
+                {/* on desktop */}
+                <BrowserView>
+                    {path == 'dishes' && <AdminDishes />}
+                    {path == '' && (
+                        <div className="d-flex">
+                            <Toolbar />
+                            <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
+                                <p className="sub-header-2">Home</p>
+                                {bar}
+                                <p className="sub-header-2" style={{ marginTop: 40 }}>
+                                    Recent transactions
+                                </p>
 
-                            <div className="d-flex" style={{ marginBottom: '16px' }}>
-                                {/* search Bar */}
+                                <div className="d-flex" style={{ marginBottom: '16px' }}>
+                                    {/* search Bar */}
 
-                                <input
-                                    className="search-container d-flex"
-                                    type="text"
-                                    placeholder="Type text here..."
-                                    onChange={searchChange}
-                                    value={searchInput}
-                                    style={{ marginRight: '8px' }}
-                                />
+                                    <input
+                                        className="search-container d-flex"
+                                        type="text"
+                                        placeholder="Type text here..."
+                                        onChange={searchChange}
+                                        value={searchInput}
+                                        style={{ marginRight: '8px' }}
+                                    />
 
-                                <button className="search-b d-flex" onClick={handleClick}>
-                                    <p className="sub-header-3">Search</p>
-                                </button>
+                                    <button className="search-b d-flex" onClick={handleClick}>
+                                        <p className="sub-header-3">Search</p>
+                                    </button>
 
-                                <div className="d-flex justify-content-end" style={{ width: '100%' }}>
-                                    {add}
+                                    <div className="d-flex justify-content-end" style={{ width: '100%' }}>
+                                        {add}
+                                    </div>
                                 </div>
+                                {table}
+                                {row}
                             </div>
-                            {table}
-                            {row}
                         </div>
-                    </div>
-                )}
-            </BrowserView>
-        </>
+                    )}
+                </BrowserView>
+            </SnackbarProvider>
+        </ThemeProvider>
     )
 }
 
