@@ -104,8 +104,8 @@ const router = createBrowserRouter([
             },
             {
                 path: '/admin',
-                // element: <PermissionsRoute validator={(r) => r === Role.admin} />,
-                // errorElement: <Error404 />,
+                element: <PermissionsRoute validator={(r) => r === Role.admin} />,
+                errorElement: <Error404 />,
 
                 children: [
                     // TODO: put admin related children here
