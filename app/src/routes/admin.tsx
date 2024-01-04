@@ -1,41 +1,4 @@
 /* eslint-disable */
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import leaf_icon from "../assets/leaf.svg";
-import { MobileView, BrowserView } from "react-device-detect";
-import Toolbar from "../admin/toolbar";
-import '../styles/admin.css';
-import leaf_white from "../assets/leaf-white.svg";
-import axios from "axios";
-import { useAuth } from "../contexts/AuthContext";
-
-function dishStatus(dishNumbers: number[]) {
-  return(
-    <div className="d-flex">
-
-      <div className="admin-container" style={{position: 'relative'}}>
-        <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}} data-testid="in-use">{dishNumbers[0]}</p>
-        <p className="sub-header-4">Currently in use</p>
-      </div>
-      <div className="admin-container" style={{position: 'relative'}}>
-        <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}} data-testid="returned">{dishNumbers[1]}</p>
-        <p className="sub-header-4">Available</p>
-      </div>
-      <div className="admin-container" style={{position: 'relative'}}>
-        <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}} data-testid="overdue-count">{dishNumbers[2]}</p>
-        <p className="sub-header-4" data-testid="overdue-text">Overdue</p>
-      </div>
-      <div className="admin-container" style={{position: 'relative'}}>
-        <img src={leaf_white} style={{position:'absolute', top:'16px', right:'16px'}}/>
-        <p className="header" style={{marginTop: 10}} data-testid="lost-count">{dishNumbers[3]}</p>
-        <p className="sub-header-4">Dishes Lost</p>
-      </div>
-  </div>
-  );
-=======
 import { useState, useEffect } from 'react'
 import leaf_icon from '../assets/leaf.svg'
 import { MobileView, BrowserView } from 'react-device-detect'
@@ -62,40 +25,41 @@ function dishStatus(dishNumbers: number[]) {
         <div className="d-flex">
             <div className="admin-container" style={{ position: 'relative' }}>
                 <img src={leaf_white} style={{ position: 'absolute', top: '16px', right: '16px' }} />
-                <p className="header" style={{ marginTop: 10 }}>
+                <p className="header" style={{ marginTop: 10 }} data-testid="in-use">
                     {dishNumbers[0]}
                 </p>
                 <p className="sub-header-4">Currently in use</p>
             </div>
             <div className="admin-container" style={{ position: 'relative' }}>
                 <img src={leaf_white} style={{ position: 'absolute', top: '16px', right: '16px' }} />
-                <p className="header" style={{ marginTop: 10 }}>
+                <p className="header" style={{ marginTop: 10 }} data-testid="returned">
                     {dishNumbers[1]}
                 </p>
                 <p className="sub-header-4">Available</p>
             </div>
             <div className="admin-container" style={{ position: 'relative' }}>
                 <img src={leaf_white} style={{ position: 'absolute', top: '16px', right: '16px' }} />
-                <p className="header" style={{ marginTop: 10 }}>
+                <p className="header" style={{ marginTop: 10 }} data-testid="overdue-count">
                     {dishNumbers[2]}
                 </p>
-                <p className="sub-header-4">Overdue</p>
+                <p className="sub-header-4" data-testid="overdue-text">
+                    Overdue
+                </p>
             </div>
             <div className="admin-container" style={{ position: 'relative' }}>
                 <img src={leaf_white} style={{ position: 'absolute', top: '16px', right: '16px' }} />
-                <p className="header" style={{ marginTop: 10 }}>
+                <p className="header" style={{ marginTop: 10 }} data-testid="lost-count">
                     {dishNumbers[3]}
                 </p>
                 <p className="sub-header-4">Dishes Lost</p>
             </div>
         </div>
     )
->>>>>>> caf7f1f (Merged)
 }
 
-export function dishTag(text) {
+function dishTag(text) {
     let color = ''
-    switch (text.toLowerCase()) {
+    switch (text) {
         case 'mug':
             color = '#496EA5'
             break
@@ -119,7 +83,7 @@ export function dishTag(text) {
             break
     }
     return (
-        <div className="tag-container2 d-flex" style={{ borderColor: color }}>
+        <div className="tag-container d-flex" style={{ borderColor: color, marginTop: '-4px' }}>
             <p style={{ color: color }}>{text}</p>
         </div>
     )
@@ -134,27 +98,19 @@ function addDish() {
 }
 
 function dishTable() {
-<<<<<<< HEAD
-  return(
-    <div className="table-header d-flex" style={{position: 'relative'}}>
-      <p style={{position: "absolute", marginLeft: '4%'}}>Dish ID</p>
-      <p style={{position: "absolute", marginLeft: '22%'}}>Dish type</p>
-      <p style={{position: "absolute", marginLeft: '41%'}}>Dish Status</p>
-      <p style={{position: "absolute", marginLeft: '65%'}} data-testid="overdue-table">Overdue</p>
-      <p style={{position: "absolute", marginLeft: '84%'}} data-testid="email-table">Email</p>
-    </div>
-  );
-=======
     return (
         <div className="table-header d-flex" style={{ position: 'relative' }}>
             <p style={{ position: 'absolute', marginLeft: '4%' }}>Dish ID</p>
             <p style={{ position: 'absolute', marginLeft: '22%' }}>Dish type</p>
             <p style={{ position: 'absolute', marginLeft: '41%' }}>Dish Status</p>
-            <p style={{ position: 'absolute', marginLeft: '65%' }}>Overdue</p>
-            <p style={{ position: 'absolute', marginLeft: '84%' }}>Email</p>
+            <p style={{ position: 'absolute', marginLeft: '65%' }} data-testid="overdue-table">
+                Overdue
+            </p>
+            <p style={{ position: 'absolute', marginLeft: '84%' }} data-testid="email-table">
+                Email
+            </p>
         </div>
     )
->>>>>>> caf7f1f (Merged)
 }
 
 function findDish(ID, dishesUsed) {
@@ -201,60 +157,6 @@ function findLost(dishesUsed, transactionsUsed) {
 }
 
 function createRows(dishesUsed, transactionsUsed) {
-<<<<<<< HEAD
-  const list: any[] = [];
-  const timeToday = new Date();
-  transactionsUsed.map(transaction => {
-    let dish = findDish(transaction.dish, dishesUsed);
-    if (dish == null) {
-      return [];
-    }
-    else {
-      dish = dish[0];
-    }
-    const id = dish.qid; // this is a number
-    const type = dish.type;
-    let email = '';
-    if(transaction.user == undefined) {
-      email = 'NULL';
-    }
-    else {
-      email = transaction.user.email;
-    }
-    let status = '';
-    let overdue = '';
-    let timestamp;
-    if (transaction.returned.timestamp != '') {
-      timestamp = transaction.returned.timestamp;
-    }
-    else {
-      timestamp = transaction.timestamp;
-    }
-    if (transaction.returned.timestamp == "") {
-      let time = transaction.timestamp.slice(0,10);
-      time = new Date(time);
-      let difference = (timeToday.getTime() - time.getTime()) / 86400000;
-      difference = parseInt(difference.toString());
-      if (difference >= 30) {
-        status = 'lost'
-      }
-      else if (difference > 2) {
-        status = 'overdue';
-        difference = difference - 2;
-        overdue = difference.toString()+' day(s)';
-      }
-      else {
-        status = 'in use';
-      }
-    }
-    else if (transaction.returned.timestamp != "") {
-      status = 'returned';
-    }
-    const row = {id: id, type: type, email: email, status: status, overdue: overdue, timestamp: timestamp};
-    list.push(row);
-  });
-  return list;
-=======
     const list: any[] = []
     const timeToday = new Date()
     transactionsUsed.map((transaction) => {
@@ -264,7 +166,7 @@ function createRows(dishesUsed, transactionsUsed) {
         } else {
             dish = dish[0]
         }
-        const id = dish.qid
+        const id = dish.qid // this is a number
         const type = dish.type
         let email = ''
         if (transaction.user == undefined) {
@@ -301,7 +203,6 @@ function createRows(dishesUsed, transactionsUsed) {
         list.push(row)
     })
     return list
->>>>>>> caf7f1f (Merged)
 }
 
 function Rows(tableRows, search) {
@@ -313,22 +214,6 @@ function Rows(tableRows, search) {
         const rows = tableRows.filter(searchFilter)
         tableRows = rows
     }
-<<<<<<< HEAD
-  }
-  function changeCPage(id) {
-    setCurrentPage(id)
-  }
-  return(
-    <div>
-      <div>
-      {records.map(row =>
-        <div className="row-container d-flex" style={{position: 'relative'}}>
-          <p style={{position: "absolute", marginLeft: '4%'}} data-testid={`row-${row.id}`}>{row.id}</p>
-          <div style={{position: "absolute", marginLeft: '22%'}} data-testid={`row-${row.type}`}>{dishTag(row.type)}</div>
-          <p style={{position: "absolute", marginLeft: '41%'}} data-testid={`row-${row.status}`}>{dishTag(row.status)}</p>
-          <p style={{position: "absolute", marginLeft: '65%'}} data-testid={`row-${row.overdue}`}>{row.overdue}</p>
-          <p style={{position: "absolute", marginLeft: '84%'}} data-testid={`row-${row.email}`}>{row.email}</p>
-=======
 
     const [currentPage, setCurrentPage] = useState(1)
     const recordsPerPage = 6
@@ -359,11 +244,21 @@ function Rows(tableRows, search) {
             <div>
                 {records.map((row) => (
                     <div className="row-container d-flex" style={{ position: 'relative' }}>
-                        <p style={{ position: 'absolute', marginLeft: '4%' }}>{row.id}</p>
-                        <div style={{ position: 'absolute', marginLeft: '22%' }}>{dishTag(row.type)}</div>
-                        <p style={{ position: 'absolute', marginLeft: '41%' }}>{dishTag(row.status)}</p>
-                        <p style={{ position: 'absolute', marginLeft: '65%' }}>{row.overdue}</p>
-                        <p style={{ position: 'absolute', marginLeft: '84%' }}>{row.email}</p>
+                        <p style={{ position: 'absolute', marginLeft: '4%' }} data-testid={`row-${row.id}`}>
+                            {row.id}
+                        </p>
+                        <div style={{ position: 'absolute', marginLeft: '22%' }} data-testid={`row-${row.type}`}>
+                            {dishTag(row.type)}
+                        </div>
+                        <p style={{ position: 'absolute', marginLeft: '41%' }} data-testid={`row-${row.status}`}>
+                            {dishTag(row.status)}
+                        </p>
+                        <p style={{ position: 'absolute', marginLeft: '65%' }} data-testid={`row-${row.overdue}`}>
+                            {row.overdue}
+                        </p>
+                        <p style={{ position: 'absolute', marginLeft: '84%' }} data-testid={`row-${row.email}`}>
+                            {row.email}
+                        </p>
                     </div>
                 ))}
             </div>
@@ -388,7 +283,6 @@ function Rows(tableRows, search) {
                     </li>
                 </ul>
             </nav>
->>>>>>> caf7f1f (Merged)
         </div>
     )
 }
@@ -410,7 +304,7 @@ function sortRows(rows) {
     return tableRows
 }
 
-function Admin({ path }: { path: string }) {
+function Admin() {
     const { currentUser, sessionToken } = useAuth()
     const [dishesUsed, setDishesUsed] = useState<any[]>([])
     const [transactionsUsed, setTransactionsUsed] = useState<any[]>([])
@@ -420,40 +314,8 @@ function Admin({ path }: { path: string }) {
     //get dishes
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish`, {
-                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken ?? '' },
-                params: { all: true, transaction: true },
-            })
-            .then(function (response) {
-                setDishesUsed(response.data.dishes)
-            })
-            .catch(function (error) {
-                console.log(error)
-            })
-    }, [])
-
-<<<<<<< HEAD
-  //get dishes
-  useEffect(() => {
-    axios
-    .get(`/api/dish`, {
-      headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
-      params: {all: true, transaction: true},
-      baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-    })
-    .then(function (response) {
-      setDishesUsed(response.data.dishes);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
-=======
-    //get dishes
-    useEffect(() => {
-        axios
             .get(`/api/dish`, {
-                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken ?? '' },
+                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken! },
                 params: { all: true, transaction: true },
                 baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
             })
@@ -464,13 +326,12 @@ function Admin({ path }: { path: string }) {
                 console.log(error)
             })
     }, [])
->>>>>>> caf7f1f (Merged)
 
     //get transactions
     useEffect(() => {
         axios
             .get(`/api/transactions`, {
-                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken ?? '' },
+                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken! },
                 params: { all: true },
                 baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
             })
@@ -482,35 +343,17 @@ function Admin({ path }: { path: string }) {
             })
     }, [])
 
-<<<<<<< HEAD
-  //get transactions
-  useEffect(() => {
-    axios
-      .get(`/api/transactions`, {
-        headers: { "x-api-key": `${process.env.REACT_APP_API_KEY}`, "session-token": sessionToken! },
-        params: {all: true},
-        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-      })
-      .then(function (response) {
-        setTransactionsUsed(response.data.transactions);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  }, []);
-=======
     const searchChange = (value) => {
         value.preventDefault()
         setSearchInput(value.target.value)
     }
->>>>>>> caf7f1f (Merged)
 
     const handleClick = () => {
         setSearchValue(searchInput)
     }
 
-    const numBorrowedDishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed).length
-    const returnedDishes = dishesUsed.length - numBorrowedDishes
+    const numBorrowedDishes = dishesUsed.filter((dish) => dish.borrowed == true).length
+    const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
     const lost = findLost(dishesUsed, transactionsUsed)
     const overdue = findOverdue(dishesUsed, transactionsUsed) - lost
 
@@ -542,52 +385,48 @@ function Admin({ path }: { path: string }) {
         <SnackbarProvider>
             {/* on mobile */}
             <MobileView>
-                <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <div>
                     <h1>Admin Panel</h1>
-
-                    <img src={leaf_icon} alt="" />
-                    <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
-                </Box>
+                </div>
+                <img src={leaf_icon} alt="" />
+                <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
             </MobileView>
 
             {/* on desktop */}
             <BrowserView>
-                {path == 'dishes' && <AdminDishes />}
-                {path == '' && (
-                    <div className="d-flex">
-                        <Toolbar />
-                        <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
-                            <p className="sub-header-2">Home</p>
-                            {bar}
-                            <p className="sub-header-2" style={{ marginTop: 40 }}>
-                                Recent transactions
-                            </p>
+                <div className="d-flex">
+                    <Toolbar />
+                    <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
+                        <p className="sub-header-2">Home</p>
+                        {bar}
+                        <p className="sub-header-2" style={{ marginTop: 40 }}>
+                            Recent transactions
+                        </p>
 
-                            <div className="d-flex" style={{ marginBottom: '16px' }}>
-                                {/* search Bar */}
+                        <div className="d-flex" style={{ marginBottom: '16px' }}>
+                            {/* search Bar */}
 
-                                <input
-                                    className="search-container d-flex"
-                                    type="text"
-                                    placeholder="Type text here..."
-                                    onChange={searchChange}
-                                    value={searchInput}
-                                    style={{ marginRight: '8px' }}
-                                />
+                            <input
+                                className="search-container d-flex"
+                                type="text"
+                                placeholder="Type text here..."
+                                onChange={searchChange}
+                                value={searchInput}
+                                style={{ marginRight: '8px' }}
+                            />
 
-                                <button className="search-b d-flex" onClick={handleClick}>
-                                    <p className="sub-header-3">Search</p>
-                                </button>
+                            <button className="search-b d-flex" onClick={handleClick}>
+                                <p className="sub-header-3">Search</p>
+                            </button>
 
-                                <div className="d-flex justify-content-end" style={{ width: '100%' }}>
-                                    {add}
-                                </div>
+                            <div className="d-flex justify-content-end" style={{ width: '100%' }}>
+                                {add}
                             </div>
-                            {table}
-                            {row}
                         </div>
+                        {table}
+                        {row}
                     </div>
-                )}
+                </div>
             </BrowserView>
         </SnackbarProvider>
         // </ThemeProvider>
