@@ -10,7 +10,7 @@ export type Dish = {
     qid: number
     type: string
     status: DishStatus // update DishStatus enum
-    condition?: string // keep this for now
+    condition?: DishCondition // keep this for now
     timesBorrowed: number
     registered: string
     userId: string | null
