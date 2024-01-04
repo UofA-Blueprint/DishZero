@@ -10,10 +10,10 @@ import { useSnackbar } from 'notistack'
 interface Props {
     open: boolean
     setOpen: (open: boolean) => void
-    loadDishTypesFromBackend: () => void // function to reload the dish types from the backend
+    fetchDishTypes: () => void
 }
 
-export default function AddNewDishTypeDialog({ open, setOpen, loadDishTypesFromBackend }: Props) {
+export default function AddNewDishTypeDialog({ open, setOpen, fetchDishTypes }: Props) {
     const { sessionToken } = useAuth()
 
     const [error, setError] = useState<boolean>(false) // dish type is not entered
@@ -40,7 +40,9 @@ export default function AddNewDishTypeDialog({ open, setOpen, loadDishTypesFromB
                 enqueueSnackbar('Successfully added dish type', { variant: 'success' })
                 setOpen(false)
                 resetState()
-                loadDishTypesFromBackend()
+
+                // fetch new dish types
+                fetchDishTypes()
             }
             setLoading(false)
         }

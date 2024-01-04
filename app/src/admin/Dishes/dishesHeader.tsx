@@ -9,9 +9,12 @@ import StyledSearchBox from '../DataGrid/searchBox'
 interface Props {
     allRows: Dish[]
     setFilteredRows: React.Dispatch<React.SetStateAction<Dish[]>>
+    fetchDishes: () => void
+    dishTypes: string[]
+    fetchDishTypes: () => void
 }
 
-export default function AdminDishesHeader({ allRows, setFilteredRows }: Props) {
+export default function AdminDishesHeader({ allRows, setFilteredRows, fetchDishes, dishTypes, fetchDishTypes }: Props) {
     const [open, setOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -34,7 +37,13 @@ export default function AdminDishesHeader({ allRows, setFilteredRows }: Props) {
                     </StyledContainedButton>
                 </Box>
             </Box>
-            <AddNewDishDialog open={open} setOpen={setOpen} />
+            <AddNewDishDialog
+                open={open}
+                setOpen={setOpen}
+                dishTypes={dishTypes}
+                fetchDishTypes={fetchDishTypes}
+                fetchDishes={fetchDishes}
+            />
         </Box>
     )
 }

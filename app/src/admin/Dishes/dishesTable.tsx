@@ -17,42 +17,18 @@ import { BallTriangle } from 'react-loader-spinner'
 
 interface Props {
     filteredRows: Dish[]
-    setAllRows: React.Dispatch<React.SetStateAction<Dish[]>>
+    dishTypes: string[]
+    loadingDishes: boolean
+    fetchDishes: () => void
 }
 
-export default function AdminDishesTable({ filteredRows, setAllRows }: Props) {
+export default function AdminDishesTable({ filteredRows, dishTypes, loadingDishes, fetchDishes }: Props) {
     const { sessionToken } = useAuth()
     const [selectedRows, setSelectedRows] = useState<GridRowId[]>([])
     const [open, setOpen] = useState(false)
-    const [loadingDishes, setLoadingDishes] = useState(true)
     const [deleting, setDeleting] = useState(false)
 
-    const [dishTypes, setDishTypes] = useState<string[]>([])
-
     const { enqueueSnackbar } = useSnackbar()
-
-    const loadDataFromBackend = async function () {
-        let dishData: Dish[] = []
-        if (sessionToken) {
-            setLoadingDishes(true)
-            dishData = await adminApi.getAllDishes(sessionToken)
-            setLoadingDishes(false)
-        }
-        setAllRows(dishData)
-    }
-
-    const fetchDishTypes = async () => {
-        let dishTypes: string[] = []
-        if (sessionToken) {
-            dishTypes = await adminApi.getDishTypes(sessionToken)
-        }
-        setDishTypes(dishTypes)
-    }
-
-    useEffect(() => {
-        loadDataFromBackend()
-        fetchDishTypes()
-    }, [])
 
     const handleDishDelete = async function () {
         if (sessionToken) {
@@ -65,6 +41,7 @@ export default function AdminDishesTable({ filteredRows, setAllRows }: Props) {
                 setOpen(false)
                 setSelectedRows([])
                 enqueueSnackbar('Successfully deleted dishes', { variant: 'success' })
+                fetchDishes()
             }
             setDeleting(false)
         }

@@ -24,6 +24,9 @@ import UploadCSVDialog from './uploadCSVDialog'
 interface Props {
     open: boolean
     setOpen: (open: boolean) => void
+    dishTypes: string[]
+    fetchDishTypes: () => void // function to reload the dish types from the backend
+    fetchDishes: () => void // function to reload the dishes from the backend
 }
 
 export const usePreventReload = (loading: boolean) => {
@@ -43,31 +46,18 @@ export const usePreventReload = (loading: boolean) => {
     }, [loading])
 }
 
-export default function AddNewDishDialog({ open, setOpen }: Props) {
+export default function AddNewDishDialog({ open, setOpen, dishTypes, fetchDishTypes, fetchDishes }: Props) {
     const { sessionToken } = useAuth()
     const { enqueueSnackbar } = useSnackbar()
 
     const [addDishTypeDialogOpen, setAddDishTypeDialogOpen] = useState<boolean>(false)
     const [uploadCSVDialogOpen, setUploadCSVDialogOpen] = useState<boolean>(false)
 
-    const [allDishTypes, setAllDishTypes] = useState<string[]>([])
     const [error, setError] = useState<boolean>(false) // dish type or id is not entered
     const [loading, setLoading] = useState<boolean>(false)
 
     const [dishTypeValue, setDishTypeValue] = useState<string>('') // dish type value selected by user
     const [dishIdValue, setDishIdValue] = useState<string>('') // dish id value entered by user
-
-    const loadDishTypesFromBackend = async function () {
-        let dishTypes = []
-        if (sessionToken) {
-            dishTypes = await adminApi.getDishTypes(sessionToken)
-        }
-        setAllDishTypes(dishTypes)
-    }
-
-    useEffect(() => {
-        loadDishTypesFromBackend()
-    }, [])
 
     const resetState = () => {
         setError(false)
@@ -123,6 +113,7 @@ export default function AddNewDishDialog({ open, setOpen }: Props) {
                 enqueueSnackbar('Failed to add dish(es): ' + response.message, { variant: 'error' })
             } else {
                 setOpen(false)
+                fetchDishes()
                 resetState()
                 const dishesAdded = dishIdUpper - dishIdLower + 1
                 const existingDishes = Array.isArray(response.data.response.existingDishes)
@@ -175,7 +166,7 @@ export default function AddNewDishDialog({ open, setOpen }: Props) {
                         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                             setDishTypeValue(event.target.value)
                         }}>
-                        {allDishTypes.map((type) => (
+                        {dishTypes.map((type) => (
                             <FormControlLabel
                                 key={type}
                                 disabled={loading}
@@ -260,7 +251,7 @@ export default function AddNewDishDialog({ open, setOpen }: Props) {
             <AddNewDishTypeDialog
                 open={addDishTypeDialogOpen}
                 setOpen={setAddDishTypeDialogOpen}
-                loadDishTypesFromBackend={loadDishTypesFromBackend}
+                fetchDishTypes={fetchDishTypes}
             />
             <UploadCSVDialog open={uploadCSVDialogOpen} setOpen={setUploadCSVDialogOpen} />
         </>
