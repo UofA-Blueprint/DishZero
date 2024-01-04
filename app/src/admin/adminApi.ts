@@ -1,6 +1,6 @@
 import { GridRowId } from '@mui/x-data-grid'
 import axios from 'axios'
-import { DishStatus } from './Dishes/constants'
+import { Dish, DishStatus } from './Dishes/constants'
 
 type StatusItem = {
     email: string
@@ -42,7 +42,7 @@ const adminApi = {
 
     getAllDishes: async function (token: string) {
         const response = await axios
-            .get(`${this.serverAddress}/api/dish?all=true`, {
+            .get(`${this.serverAddress}/api/dish?all=true&transaction=true`, {
                 headers: headers(token),
             })
             .then((res) => {
@@ -57,16 +57,16 @@ const adminApi = {
     getDishTypes: async function (token: string) {
         const response = await axios
             .get(`${this.serverAddress}/api/dish/getDishTypes`, {
-                headers: headers(token),
+                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
             })
             .then((res) => {
                 return res
             })
             .catch((err) => {
-                console.log(`Failed to get dishe types from the database. ${err}.`)
+                console.log(`Failed to get dish types from the database. ${err}.`)
             })
-        const dishes = response?.data.dishes
-        return dishes
+        const dishTypes = response?.data.dishTypes
+        return dishTypes
     },
 
     addDishType: async function (token: string, dishType: string) {
@@ -77,7 +77,7 @@ const adminApi = {
                     type: dishType,
                 },
                 {
-                    headers: headers(token),
+                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
                 },
             )
             .then((res) => {
@@ -87,22 +87,24 @@ const adminApi = {
             .catch((err) => {
                 // eslint-disable-next-line no-console
                 console.error(`Failed to add dish type to the database. ${err}.`)
+                return err
             })
         return response
     },
 
-    addDish: async function (token: string, dishType: string, dishId: string) {
+    addDish: async function (token: string, qid: number, type: string) {
         const response = await axios
             .post(
                 `${this.serverAddress}/api/dish/create`,
                 {
                     dish: {
-                        qid: dishId,
-                        type: dishType,
+                        qid,
+                        type,
                     },
                 },
                 {
-                    headers: headers(token),
+                    // headers: headers(token),
+                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
                 },
             )
             .then((res) => {
@@ -111,6 +113,7 @@ const adminApi = {
             .catch((err) => {
                 // eslint-disable-next-line no-console
                 console.error(`Failed to add dish to the database. ${err}.`)
+                return err
             })
         return response
     },
@@ -118,16 +121,14 @@ const adminApi = {
     addDishes: async function (token: string, dishType: string, dishIdLower: number, dishIdUpper: number) {
         const response = await axios
             .post(
-                `${this.serverAddress}/api/dish/createMultiple`,
+                `${this.serverAddress}/api/dish/createMultipleDishes`,
                 {
-                    dish: {
-                        dishIdLower,
-                        dishIdUpper,
-                        type: dishType,
-                    },
+                    dishIdLower: dishIdLower,
+                    dishIdUpper: dishIdUpper,
+                    type: dishType,
                 },
                 {
-                    headers: headers(token),
+                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
                 },
             )
             .then((res) => {
@@ -136,6 +137,7 @@ const adminApi = {
             .catch((err) => {
                 // eslint-disable-next-line no-console
                 console.error(`Failed to add dish(es) to the database. ${err}.`)
+                return err
             })
         return response
     },
@@ -188,8 +190,7 @@ const adminApi = {
                     for (const user of users) {
                         let count = 0
                         for (const dish of dishes) {
-                            if (dish.status === DishStatus.BORROWED && dish.userId === user.id) {
-                                // if (dish.userId === user.id && dish.borrowed === true) {
+                            if (dish.userId === user.id && dish.status === DishStatus.borrowed) {
                                 count += 1
                             }
                         }
@@ -316,8 +317,8 @@ const adminApi = {
             })
     },
 
-    modifyDish: async function (token: string, newValues, oldValues) {
-        await axios
+    modifyDish: async function (token: string, newValues: Partial<Dish>, oldValues: Partial<Dish>) {
+        const response = await axios
             .post(
                 `${this.serverAddress}/api/dish/modifyDish`,
                 {
@@ -325,22 +326,20 @@ const adminApi = {
                     oldValues,
                 },
                 {
-                    headers: headers(token),
-                    params: {}, // qid here? or is dishId fine?
+                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
                 },
             )
             .then((res) => {
                 // eslint-disable-next-line no-console
-                console.log('Successfully changed the dish status', res)
-                // TODO: just return the newValues? since this will trigger the row to update
-                return newValues
+                console.log('Successfully modified dish', res)
+                return res
             })
             .catch((err) => {
                 // eslint-disable-next-line no-console
-                // eslint-disable-next-line no-console
-                console.log(`ERROR: Failed to change the dish status. ${err}.`)
-                return
+                console.error(`ERROR: Failed to modify dish. ${err}.`)
+                return err
             })
+        return response
     },
 }
 

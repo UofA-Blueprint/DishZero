@@ -1,35 +1,38 @@
 import { Button, Chip, styled } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 
-// TODO: make these constants or create a new mui theme!
-// export const DISHZERO_COLOR_DARK = '#68B49A'
+export const capitalizeFirstLetter = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+}
 
-/* from DIshZero image
-primary
-dark = #006049
-main = #48b697
-light = #a7ffe9
+export type Dish = {
+    id: string
+    qid: number
+    type: string
+    status: DishStatus // update DishStatus enum
+    condition?: string // keep this for now
+    timesBorrowed: number
+    registered: string
+    userId: string | null
+    borrowedAt: string | null // rename to dateBorrowed?
+    // notes: string | null // use to add notes to dish -> future work?
+}
 
-secondary (or could find a better secondary online?)
-dark = #a8d2d9
-main = #e8ffff
-light = #ffffff
+export enum DishStatus {
+    borrowed = 'borrowed',
+    available = 'available',
+    overdue = 'overdue',
+    broken = 'broken',
+    lost = 'lost',
+    unavailable = 'unavailable',
+}
 
-*/
-
-/*
-from https://coolors.co/68b49a
-primary
-dark = #4A967C
-main = #68B49A
-light = #89C5B0
-
-secondary - https://coolors.co/b56983
-dark = #964A65
-main = #B56983
-light = #C5899E
-
-*/
+export enum DishCondition {
+    smallChip = 'small_crack_chip',
+    largeCrack = 'large_crack_chunk',
+    shattered = 'shattered',
+    good = 'good',
+}
 
 export const DISHZERO_COLOR_DARK = '#006049'
 export const DISHZERO_COLOR = '#48b697'
@@ -54,55 +57,38 @@ export const StyledContainedButton = styled(Button)(({ theme }) => ({
     margin: '1rem',
 }))
 
-/* TODO: 
-    - Check if these are duplicates?
-    - Check that they are correct
-    - And that they match firebase
-*/
-
-export interface Dish {
-    dishId: number
-    dishType: DishType
-    status: DishStatus
-    overdue: number
-    timesBorrowed: number
-    dateAdded: Date
-}
-
-export enum DishType {
-    MUG = 'Mug',
-    DISH = 'Dish',
-}
-
 export const DishTypeColors = {
-    Mug: '#496EA5',
-    Dish: '#496EA5',
-}
-
-export enum DishStatus {
-    BORROWED = 'Borrowed',
-    RETURNED = 'Returned',
-    LOST = 'Lost',
-    OVERDUE = 'Overdue',
-    BROKEN = 'Broken',
+    mug: '#496EA5',
+    dish: '#496EA5',
 }
 
 export const DishStatusColors = {
-    Borrowed: '#68B49A',
-    Returned: '#29604D',
-    Lost: '#BF4949',
-    Overdue: '#BF4949',
-    Broken: '#BF4949',
+    borrowed: '#68B49A',
+    available: '#29604D',
+    lost: '#BF4949',
+    overdue: '#BF4949',
+    broken: '#BF4949',
+    unavailable: '#BF4949',
+}
+
+export const DishConditionColors = {
+    good: '#68B49A',
+    small_crack_chip: '#BF4949',
+    large_crack_chunk: '#BF4949',
+    shattered: '#BF4949',
 }
 
 export const columns: GridColDef[] = [
-    { field: 'dishId', headerName: 'Dish Id', width: 150 },
+    { field: 'qid', headerName: 'Dish Id', minWidth: 100, maxWidth: 100, flex: 1 },
     {
-        field: 'dishType',
+        field: 'type',
         headerName: 'Dish Type',
-        width: 150,
-        type: 'singleSelect',
-        valueOptions: Object.values(DishType) as string[],
+        minWidth: 100,
+        maxWidth: 150,
+        flex: 1,
+        valueFormatter({ value }: { value: string }) {
+            return capitalizeFirstLetter(value)
+        },
         renderCell(params) {
             return (
                 <>
@@ -110,8 +96,8 @@ export const columns: GridColDef[] = [
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${DishTypeColors[params.formattedValue] ?? 'inherit'}`,
-                                border: `2px solid ${DishTypeColors[params.formattedValue] ?? 'inherit'}`,
+                                color: `${DishTypeColors[params.value] ?? 'inherit'}`,
+                                border: `2px solid ${DishTypeColors[params.value] ?? 'inherit'}`,
                             }}
                             label={params.formattedValue}
                         />
@@ -123,19 +109,25 @@ export const columns: GridColDef[] = [
     {
         field: 'status',
         headerName: 'Status',
-        width: 150,
+        minWidth: 150,
+        maxWidth: 150,
+        flex: 1,
         editable: true,
         type: 'singleSelect',
         valueOptions: Object.values(DishStatus) as string[],
+        valueFormatter({ value }: { value: string }) {
+            return capitalizeFirstLetter(value)
+        },
         renderCell(params) {
             return (
                 <>
                     {params && (
+                        // TODO: add a border here same as the role from users page!
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${DishStatusColors[params.formattedValue] ?? 'inherit'}`,
-                                border: `2px solid ${DishStatusColors[params.formattedValue] ?? 'inherit'}`,
+                                color: `${DishStatusColors[params.value] ?? 'inherit'}`,
+                                border: `2px solid ${DishStatusColors[params.value] ?? 'inherit'}`,
                             }}
                             label={params.formattedValue}
                         />
@@ -144,92 +136,49 @@ export const columns: GridColDef[] = [
             )
         },
     },
+    { field: 'userId', headerName: 'Current User', minWidth: 200, maxWidth: 250, flex: 1 },
     {
-        field: 'overdue',
-        headerName: 'Overdue',
-        width: 150,
+        field: 'borrowedAt',
+        headerName: 'Date Borrowed',
+        minWidth: 150,
+        maxWidth: 250,
+        flex: 1,
+        valueFormatter({ value }: { value: string }) {
+            return value ? new Date(value).toLocaleDateString() : null
+        },
         renderCell(params) {
-            return <>{params.row['status'] == DishStatus.OVERDUE && <>{params.formattedValue}</>}</>
+            return (
+                <>
+                    {params && params.formattedValue && (
+                        <div
+                            style={{
+                                color:
+                                    new Date().getTime() - new Date(params.value).getTime() > 48 * 60 * 60 * 1000
+                                        ? '#BF4949'
+                                        : 'inherit',
+                            }}>
+                            {params.formattedValue}
+                        </div>
+                    )}
+                </>
+            )
         },
     },
-    { field: 'timesBorrowed', headerName: 'Times Borrowed', width: 150 },
     {
-        field: 'dateAdded',
+        field: 'timesBorrowed',
+        headerName: 'Times Borrowed',
+        minWidth: 100,
+        maxWidth: 150,
+        flex: 1,
+    },
+    {
+        field: 'registered',
         headerName: 'Date Added',
-        width: 200,
-        valueFormatter({ value }: { value: Date }) {
-            return value.toDateString()
+        minWidth: 150,
+        maxWidth: 250,
+        flex: 1,
+        valueFormatter({ value }: { value: string }) {
+            return new Date(value).toLocaleDateString()
         },
-        type: 'date',
-    },
-]
-
-export const dishes: Dish[] = [
-    {
-        dishId: 123456785,
-        dishType: DishType.DISH,
-        status: DishStatus.BORROWED,
-        // dishType: 'Dish',
-        // status: 'Borrowed',
-        overdue: 2,
-        timesBorrowed: 10,
-        dateAdded: new Date('07/13/2022'),
-    },
-    {
-        dishId: 123456786,
-        dishType: DishType.DISH,
-        status: DishStatus.RETURNED,
-        overdue: 2,
-        timesBorrowed: 20,
-        dateAdded: new Date('07/13/2022'),
-    },
-    {
-        dishId: 123456787,
-        dishType: DishType.DISH,
-        status: DishStatus.LOST,
-        overdue: 0,
-        timesBorrowed: 100,
-        dateAdded: new Date('07/13/2022'),
-    },
-    {
-        dishId: 123456788,
-        dishType: DishType.MUG,
-        status: DishStatus.OVERDUE,
-        overdue: 0,
-        timesBorrowed: 53,
-        dateAdded: new Date('07/13/2022'),
-    },
-    {
-        dishId: 123456789,
-        dishType: DishType.DISH,
-        status: DishStatus.BROKEN,
-        overdue: 0,
-        timesBorrowed: 30,
-        dateAdded: new Date('07/13/2022'),
-    },
-    {
-        dishId: 545,
-        dishType: DishType.MUG,
-        status: DishStatus.BORROWED,
-        overdue: 0,
-        timesBorrowed: 30,
-        dateAdded: new Date('07/12/2022'),
-    },
-    {
-        dishId: 213,
-        dishType: DishType.DISH,
-        status: DishStatus.OVERDUE,
-        overdue: 0,
-        timesBorrowed: 30,
-        dateAdded: new Date('07/14/2022'),
-        // dateAdded: '07/14/2022',
-    },
-    {
-        dishId: 555,
-        dishType: DishType.MUG,
-        status: DishStatus.RETURNED,
-        overdue: 0,
-        timesBorrowed: 30,
-        dateAdded: new Date('07/13/2023'),
     },
 ]

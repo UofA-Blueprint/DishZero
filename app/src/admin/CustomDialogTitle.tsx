@@ -1,4 +1,3 @@
-/*eslint-disable*/
 import { Box, Dialog, DialogTitle, IconButton, Typography } from '@mui/material'
 import { ReactNode } from 'react'
 import { Close } from '@mui/icons-material'
@@ -9,10 +8,10 @@ interface Props {
     dialogTitle: string
     loading: boolean
     children: ReactNode
+    onCloseCallback?: () => void // called when the dialog is being closed
 }
 
-export default function CustomDialogTitle({ open, setOpen, dialogTitle, loading, children }: Props) {
-    // TODO use formik to prevent page reload? or is there a way to set this?
+export default function CustomDialogTitle({ open, setOpen, dialogTitle, loading, children, onCloseCallback }: Props) {
     return (
         <Dialog
             open={open}
@@ -26,7 +25,12 @@ export default function CustomDialogTitle({ open, setOpen, dialogTitle, loading,
                     <Typography variant="h6" fontWeight="bold" sx={{ width: '90%', textAlign: 'center' }}>
                         {dialogTitle}
                     </Typography>
-                    <IconButton onClick={() => setOpen(false)} disabled={loading}>
+                    <IconButton
+                        onClick={() => {
+                            setOpen(false)
+                            onCloseCallback && onCloseCallback()
+                        }}
+                        disabled={loading}>
                         <Close />
                     </IconButton>
                 </Box>

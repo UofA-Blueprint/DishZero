@@ -1,6 +1,5 @@
-/*eslint-disable*/
 import { Box, DialogContent, LinearProgress, TextField } from '@mui/material'
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { DISHZERO_COLOR, DISHZERO_COLOR_LIGHT, StyledContainedButton } from './constants'
 import adminApi from '../adminApi'
 import { useAuth } from '../../contexts/AuthContext'
@@ -11,56 +10,49 @@ import { useSnackbar } from 'notistack'
 interface Props {
     open: boolean
     setOpen: (open: boolean) => void
-    loading?: boolean
-    setLoading?: (loading: boolean) => void
+    loadDishTypesFromBackend: () => void // function to reload the dish types from the backend
 }
 
-export default function AddNewDishTypeDialog({ open, setOpen }: Props) {
+export default function AddNewDishTypeDialog({ open, setOpen, loadDishTypesFromBackend }: Props) {
     const { sessionToken } = useAuth()
 
-    const [error, setError] = useState<boolean>(false) // dish type or id is not entered
+    const [error, setError] = useState<boolean>(false) // dish type is not entered
     const [loading, setLoading] = useState<boolean>(false)
-    const [newDishType, setNewDishType] = useState<string>('')
-
-    console.log('newDishType', newDishType)
+    const [newDishTypeValue, setNewDishTypeValue] = useState<string>('')
 
     const { enqueueSnackbar } = useSnackbar()
 
     // prevent page reload when loading
     usePreventReload(loading)
 
-    // reset error when dialog is opened/closed
-    // TODO incorporate this into the close button?
-    useEffect(() => {
+    const resetState = () => {
         setError(false)
-        setNewDishType('')
-    }, [open])
+        setNewDishTypeValue('')
+    }
 
-    const addNewDishType = useCallback(async () => {
-        if (newDishType === '') {
-            setError(true)
-            return
-        }
-
+    const addNewDishType = async () => {
         if (sessionToken) {
             setLoading(true)
-            const response = await adminApi.addDishType(sessionToken, newDishType)
-            console.log('Response:', response)
-
+            const response = await adminApi.addDishType(sessionToken, newDishTypeValue.toLowerCase())
             if (response && response.status != 200) {
-                enqueueSnackbar(`Failed to add dish type: ${response.status}`, { variant: 'error' })
+                enqueueSnackbar(`Failed to add dish type: ${response.message}`, { variant: 'error' })
             } else {
-                // TODO: fetch the dish types from the db? or just the loadDataFromBackend()
-                // loadDataFromBackend()
-                setOpen(false)
-                setNewDishType('')
                 enqueueSnackbar('Successfully added dish type', { variant: 'success' })
+                setOpen(false)
+                resetState()
+                loadDishTypesFromBackend()
             }
             setLoading(false)
         }
-    }, [newDishType, sessionToken])
+    }
+
     return (
-        <CustomDialogTitle open={open} setOpen={setOpen} dialogTitle={'Add New Dish Type'} loading={loading}>
+        <CustomDialogTitle
+            open={open}
+            setOpen={setOpen}
+            dialogTitle={'Add New Dish Type'}
+            loading={loading}
+            onCloseCallback={resetState}>
             <DialogContent sx={{ minWidth: '520px', maxWidth: '520px' }}>
                 <Box width="100%" sx={{ textAlign: 'center' }}>
                     <TextField
@@ -75,7 +67,7 @@ export default function AddNewDishTypeDialog({ open, setOpen }: Props) {
                                 setError(true)
                             } else {
                                 setError(false)
-                                setNewDishType(newValue)
+                                setNewDishTypeValue(newValue)
                             }
                         }}
                         disabled={loading}
@@ -86,7 +78,7 @@ export default function AddNewDishTypeDialog({ open, setOpen }: Props) {
                         variant="contained"
                         onClick={() => addNewDishType()}
                         sx={{ width: '90%', mt: '1rem' }}
-                        disabled={loading || error || newDishType == ''}>
+                        disabled={loading || error || newDishTypeValue == ''}>
                         Add new dish type
                     </StyledContainedButton>
                 </Box>

@@ -17,7 +17,7 @@ const router = express.Router()
 
 router.get('/', verifyApiKey, verifyFirebaseToken, getDishes)
 router.get('/getDishTypes', verifyApiKey, verifyFirebaseToken, getDishTypes)
-router.post('/createMultiple', verifyApiKey, verifyFirebaseToken, createMultipleDishes)
+router.post('/createMultipleDishes', verifyApiKey, verifyFirebaseToken, createMultipleDishes)
 router.post('/addDishType', verifyApiKey, verifyFirebaseToken, addDishType)
 router.post('/modifyDish', verifyApiKey, verifyFirebaseToken, modifyDish)
 // router.post('/modifyDishStatus', verifyApiKey, verifyFirebaseToken, modifyDishStatus)

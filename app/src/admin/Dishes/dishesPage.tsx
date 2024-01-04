@@ -1,18 +1,25 @@
 import Toolbar from '../toolbar'
-import { dishes } from './constants'
+import { Dish } from './constants'
 import AdminDishesHeader from './dishesHeader'
 import AdminDishesTable from './dishesTable'
 import { Box } from '@mui/material'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function AdminDishes() {
-    const [rows, setRows] = useState(dishes)
+    const [filteredRows, setFilteredRows] = useState<Dish[]>([])
+    const [allRows, setAllRows] = useState<Dish[]>([])
+
+    // update visible rows if all rows changes
+    useEffect(() => {
+        setFilteredRows(allRows)
+    }, [allRows])
+
     return (
         <Box display="flex">
             <Toolbar />
-            <Box sx={{ m: '20px' }}>
-                <AdminDishesHeader allRows={dishes} setRows={setRows} />
-                <AdminDishesTable rows={rows} setRows={setRows} />
+            <Box sx={{ m: '20px', flex: 1 }}>
+                <AdminDishesHeader allRows={allRows} setFilteredRows={setFilteredRows} />
+                <AdminDishesTable filteredRows={filteredRows} setAllRows={setAllRows} />
             </Box>
         </Box>
     )

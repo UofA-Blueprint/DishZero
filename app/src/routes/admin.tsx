@@ -51,6 +51,7 @@ import {
     DISHZERO_COLOR,
     DISHZERO_COLOR_DARK,
     DISHZERO_COLOR_LIGHT,
+    DishStatus,
     SECONDARY,
     SECONDARY_DARK,
     SECONDARY_LIGHT,
@@ -508,8 +509,10 @@ function Admin({ path }: { path: string }) {
         setSearchValue(searchInput)
     }
 
-    const numBorrowedDishes = dishesUsed.filter((dish) => dish.borrowed == true).length
-    const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
+    const numBorrowedDishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed).length
+    // const numBorrowedDishes = dishesUsed.filter((dish) => dish.borrowed == true).length
+    const returnedDishes = dishesUsed.length - numBorrowedDishes
+    // const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
     const lost = findLost(dishesUsed, transactionsUsed)
     const overdue = findOverdue(dishesUsed, transactionsUsed) - lost
 

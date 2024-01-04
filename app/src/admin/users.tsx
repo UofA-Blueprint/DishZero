@@ -635,7 +635,7 @@ export default function Users() {
 /////////////////////////////////////////////////////////////////////////
 
 //////////////////////////// Styles ////////////////////////////
-const styles = {
+export const styles = {
     root: {
         width: '100%',
         minHeight: `${window.innerHeight}px`,

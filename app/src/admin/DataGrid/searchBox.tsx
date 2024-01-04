@@ -1,23 +1,22 @@
 import { Clear, Search } from '@mui/icons-material'
 import { Box, IconButton, InputAdornment, TextField } from '@mui/material'
-// import { StyledOutlinedButton } from '../Dishes/constants'
-// import { useState } from 'react'
+import { useCallback } from 'react'
 
 interface Props {
-    search: string
-    handleSearch: (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void
+    searchQuery: string // the value of the search box
+    handleSearch: (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void // the function to handle search
 }
 
-// TODO Only search when button is pressed?
-// Then would need a clear button?
-// or does this work for now?
+export default function StyledSearchBox({ searchQuery, handleSearch }: Props) {
+    // clear the search box
+    const handleClearSearch = useCallback(() => {
+        handleSearch({ target: { value: '' } } as React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>)
+    }, [handleSearch])
 
-export default function StyledSearchBox({ search, handleSearch }: Props) {
-    // const [searchValue, setSearchValue] = useState<string>('')
     return (
-        <Box display="flex" alignItems={'center'}>
+        <Box display="flex">
             <TextField
-                placeholder="Search data..."
+                placeholder="Search table..."
                 size="small"
                 sx={{
                     m: '1rem',
@@ -25,35 +24,27 @@ export default function StyledSearchBox({ search, handleSearch }: Props) {
                         borderRadius: '30px',
                         border: '1px solid',
                     },
-                    height: 'fit-content',
                 }}
-                // onChange={(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-                //     setSearchValue(event.target.value)
-                // }
                 onChange={handleSearch}
-                value={search}
+                value={searchQuery}
                 margin="dense"
                 InputProps={{
                     startAdornment: (
+                        // search icon
                         <InputAdornment position="start">
                             <Search />
                         </InputAdornment>
                     ),
                     endAdornment: (
+                        // clear icon (only visible when there is text in the search box)
                         <IconButton
-                            size="small"
-                            style={{ visibility: search ? 'visible' : 'hidden' }}
-                            onClick={() =>
-                                handleSearch({ target: { value: '' } } as React.ChangeEvent<
-                                    HTMLTextAreaElement | HTMLInputElement
-                                >)
-                            }>
+                            style={{ visibility: searchQuery ? 'visible' : 'hidden' }}
+                            onClick={handleClearSearch}>
                             <Clear fontSize="small" />
                         </IconButton>
                     ),
                 }}
             />
-            {/* <StyledOutlinedButton>Search</StyledOutlinedButton> */}
         </Box>
     )
 }
