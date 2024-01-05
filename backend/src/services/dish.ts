@@ -30,6 +30,8 @@ export const deleteDish = async (qid: number): Promise<void> => {
         return
     }
     await db.collection('dishes').doc(snapshot.docs[0].id).delete()
+    // delete qr code
+    await db.collection('qr-codes').doc(qid.toString()).delete()
 }
 
 export const getDishById = async (id: string): Promise<Dish | null | undefined> => {
@@ -69,13 +71,29 @@ export const createDishInDatabase = async (dish: Partial<Dish>) => {
         dish.registered = new Date().toISOString()
     }
 
-    // new dishes are not borrowed and always set to false
-    dish.timesBorrowed = 0
-    dish.status = DishStatus.available
+    // only assign status & timesBorrwed if dish if they don't exist
+    dish.status = dish.status ?? DishStatus.available
+    dish.timesBorrowed = dish.timesBorrowed ?? 0
     dish.userId = null
     dish.borrowedAt = null
 
     let createdDish = await db.collection('dishes').add(dish)
+
+    // also add a new qr code to the database
+    console.log('createdDish', createdDish)
+    try {
+        await db.collection('qr-codes').doc(dish.qid!.toString()).set({
+            dishId: createdDish.id,
+        })
+    } catch (error) {
+        Logger.error({
+            module: 'dish.services',
+            message: 'Failed to create qr code. Please try again.',
+        })
+        // if adding a qr code fails, delete the dish
+        await db.collection('dishes').doc(createdDish.id).delete()
+    }
+
     Logger.info({
         module: 'dish.services',
         message: 'Created dish in database',
@@ -118,8 +136,24 @@ export const batchCreateDishes = async (dishIdLower: number, dishIdUpper: number
             registered: new Date().toISOString(),
         }
 
+        // add dish to batch
         const dishRef = db.collection('dishes').doc()
         batch.set(dishRef, dish)
+
+        // also add a new qr code to the database
+        try {
+            db.collection('qr-codes').doc(dish.qid.toString()).set({
+                dishId: dishRef.id,
+            })
+        } catch (error) {
+            Logger.error({
+                module: 'dish.services',
+                message: `Failed to create qr code. Please try again. ${error}`,
+            })
+            // if adding a qr code fails, remove the dish from the batch
+            batch.delete(dishRef)
+            // return error
+        }
     }
 
     try {
@@ -292,6 +326,9 @@ export const validateDishCreateRequestBody = (dish: Partial<Dish>) => {
     const schema = Joi.object({
         qid: Joi.number().required(),
         type: Joi.string().required(),
+        status: Joi.string().optional(),
+        timesBorrowed: Joi.number().optional(),
+        registered: Joi.string().optional(),
     }).required()
 
     return schema.validate(dish)
