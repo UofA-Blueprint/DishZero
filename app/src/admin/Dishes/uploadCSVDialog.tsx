@@ -30,7 +30,7 @@ interface Props {
 }
 
 // const templateFileUrl = 'https://disherzero.s3.amazonaws.com/dish_template.csv'
-const templateFileUrl = ''
+const templateFileUrl = 'https://drive.google.com/file/d/1P_8xxtuHDy8iZLHqbNDyCHusU0mW9eux/view?usp=sharing'
 
 export default function UploadCSVDialog({ open, setOpen, fetchDishes }: Props) {
     const { sessionToken } = useAuth()
@@ -62,7 +62,11 @@ export default function UploadCSVDialog({ open, setOpen, fetchDishes }: Props) {
         reader.onload = async (e) => {
             const text = e.target?.result as string
             const lines = text.split('\n')
-            const header = lines[0].split(',')
+            // remove /r/n from lines
+            const header = lines[0]
+                .replace('\r', '')
+                .split(',')
+                .map((item) => item.trim())
             const newResults: string[] = []
 
             if (sessionToken) {
@@ -70,21 +74,52 @@ export default function UploadCSVDialog({ open, setOpen, fetchDishes }: Props) {
 
                 for (const line of lines.slice(1)) {
                     // Skip the header line
-
-                    const values = line.split(',')
-                    let qid: number, type: string
+                    const values = line
+                        .replace('\r', '')
+                        .split(',')
+                        .map((item) => item.trim())
+                    let qid: number, type: string, status: string, timesBorrowed: number, registered: string
                     try {
                         qid = parseInt(values[header.indexOf('qid')], 10) // Parse qid as an integer
                         if (isNaN(qid)) {
                             throw new Error(`qid is not a number`)
                         }
                         type = String(values[header.indexOf('type')]) // Ensure type is a string
+
+                        // check if status exists
+                        if (header.includes('status')) {
+                            status = String(values[header.indexOf('status')])
+                        } else {
+                            status = 'available'
+                        }
+
+                        // check if timesBorrowed exists
+                        if (header.includes('timesBorrowed')) {
+                            timesBorrowed = parseInt(values[header.indexOf('timesBorrowed')], 10)
+                            if (isNaN(timesBorrowed)) {
+                                throw new Error(`timesBorrowed is not a number`)
+                            }
+                        } else {
+                            timesBorrowed = 0
+                        }
+
+                        if (header.includes('registered')) {
+                            try {
+                                // create date from string
+                                const [day, month, year] = values[header.indexOf('registered')].split('/')
+                                registered = new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toISOString()
+                            } catch (e) {
+                                throw new Error(`registered is not a valid date`)
+                            }
+                        } else {
+                            registered = new Date().toISOString()
+                        }
                     } catch (e) {
                         console.log(e)
                         newResults.push(`Failed to parse line: "${line}"; with error message: "${e}"`)
                         continue
                     }
-                    const response = await adminApi.addDish(sessionToken, qid, type)
+                    const response = await adminApi.addDish(sessionToken, qid, type, status, timesBorrowed, registered)
                     console.log(response)
                     if (response && response.status != 200) {
                         newResults.push(

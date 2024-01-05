@@ -92,7 +92,14 @@ const adminApi = {
         return response
     },
 
-    addDish: async function (token: string, qid: number, type: string) {
+    addDish: async function (
+        token: string,
+        qid: number,
+        type: string,
+        status?: string,
+        timesBorrowed?: number,
+        registered?: string,
+    ) {
         const response = await axios
             .post(
                 `${this.serverAddress}/api/dish/create`,
@@ -100,6 +107,9 @@ const adminApi = {
                     dish: {
                         qid,
                         type,
+                        status,
+                        timesBorrowed,
+                        registered,
                     },
                 },
                 {
