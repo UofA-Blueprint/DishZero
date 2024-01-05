@@ -26,12 +26,13 @@ import { ExpandMore, FileCopyOutlined } from '@mui/icons-material'
 interface Props {
     open: boolean
     setOpen: (open: boolean) => void
+    fetchDishes: () => void
 }
 
 // const templateFileUrl = 'https://disherzero.s3.amazonaws.com/dish_template.csv'
 const templateFileUrl = ''
 
-export default function UploadCSVDialog({ open, setOpen }: Props) {
+export default function UploadCSVDialog({ open, setOpen, fetchDishes }: Props) {
     const { sessionToken } = useAuth()
 
     const [error, setError] = useState<boolean>(false) // csv is not uploaded?
@@ -99,6 +100,9 @@ export default function UploadCSVDialog({ open, setOpen }: Props) {
                 setLoading(false)
                 setOpen(false)
                 resetState()
+
+                // fetch new dishes
+                fetchDishes()
             }
         }
         file && reader.readAsText(file)

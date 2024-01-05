@@ -253,7 +253,7 @@ export default function AddNewDishDialog({ open, setOpen, dishTypes, fetchDishTy
                 setOpen={setAddDishTypeDialogOpen}
                 fetchDishTypes={fetchDishTypes}
             />
-            <UploadCSVDialog open={uploadCSVDialogOpen} setOpen={setUploadCSVDialogOpen} />
+            <UploadCSVDialog open={uploadCSVDialogOpen} setOpen={setUploadCSVDialogOpen} fetchDishes={fetchDishes} />
         </>
     )
 }
