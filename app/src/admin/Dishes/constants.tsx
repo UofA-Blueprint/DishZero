@@ -145,8 +145,9 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
         minWidth: 150,
         maxWidth: 250,
         flex: 1,
+        type: 'date',
         valueFormatter({ value }: { value: string }) {
-            return value ? new Date(value).toLocaleDateString() : null
+            return value ? new Date(value).toLocaleString() : null
         },
         renderCell(params) {
             return (
@@ -179,6 +180,7 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
         minWidth: 150,
         maxWidth: 250,
         flex: 1,
+        type: 'date',
         valueFormatter({ value }: { value: string }) {
             return new Date(value).toLocaleDateString()
         },

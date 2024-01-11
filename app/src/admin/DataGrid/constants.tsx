@@ -11,6 +11,11 @@ export const searchGrid = (
     const searchRegex = new RegExp(escapeRegExp(searchQuery), 'i')
     const filteredRows = allRows.filter((row: any) => {
         return Object.keys(row).some((field: string) => {
+            if (field === 'borrowedAt' && row[field]) {
+                return searchRegex.test(new Date(row[field]).toLocaleString())
+            } else if (field === 'registered' && row[field]) {
+                return searchRegex.test(new Date(row[field]).toLocaleDateString())
+            }
             return searchRegex.test((row[field] || '').toString())
         })
     })
