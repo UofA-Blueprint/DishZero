@@ -290,7 +290,7 @@ const Return = ({ noTimer }) => {
                 `/api/dish/return`,
                 {
                     returned: {
-                        condition: 'alright',
+                        condition: 'good',
                     },
                 },
                 {
