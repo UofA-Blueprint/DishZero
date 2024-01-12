@@ -71,9 +71,10 @@ export const useQrReader: UseQrReaderHook = ({
           });
       // }
     })()
+    
+    }
     return () => {
       controlsRef.current?.stop();
-    }
     }
   }, [deviceIndex]);
 };
