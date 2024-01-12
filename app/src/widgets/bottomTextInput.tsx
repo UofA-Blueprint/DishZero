@@ -35,7 +35,7 @@ const BottomTextInput = (props) => {
 
                         <Form.Control className="search-bar" value={props.value} onChange={props.onChange} type="text" placeholder="Enter dish id #" />
 
-                        <Button variant="outline-secondary" id="button-addon2" onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button">
+                        <Button variant="outline-secondary" id="button-addon2" onSubmit={handleSubmit} type="submit" disabled = {props.disabled} className="search-button" data-testid ='return-btn'>
                             <FontAwesomeIcon icon={faPaperPlane} fontSize={"1.4em"}/>                            
                         </Button>
 

@@ -36,80 +36,95 @@ import ErrorIcon from "../assets/error_icon.svg";
 import CloseIcon from "../assets/X_icon.svg";
 import axios from "axios";
 
-const PopUpModal = memo(({ dishType, error, reportToggle, qid, isMobile }) => {
-  let avatarIcon;
-  if (error) {
-    avatarIcon = ErrorIcon;
-  } else if (dishType == "plate") {
-    avatarIcon = plateIcon;
-  } else {
-    avatarIcon = mugIcon;
-  }
-  return (
-    <Box
-      sx={stylesConst.boxContainer}
-      className="position-fixed translate-middle slide-in-popup animate"
-    >
-      <Avatar
-        src={avatarIcon}
-        variant="square"
-        sx={{ width: 60, height: 60, marginRight: 2.5 }}
-        // sx={{ marginRight: 2.5 }}
-        alt="Sign In Button Logo"
-      />
-      <div style={stylesConst.divContainer}>
-        {error ? (
-          <div>
-            <Typography sx={stylesConst.errorText}>Failed to return</Typography>
-            <Typography sx={stylesConst.errorText}>{error}</Typography>
-          </div>
-        ) : (
-          <div style={{ flex: 1, flexDirection: "row" }}>
-            <Typography sx={stylesConst.successText}>
-              Successfully returned
-            </Typography>
-            {/* <img
+const PopUpModal = memo(
+  ({ dishType, error, message, reportToggle, qid, isMobile }) => {
+    let avatarIcon;
+    if (error) {
+      avatarIcon = ErrorIcon;
+    } else if (dishType == "plate") {
+      avatarIcon = plateIcon;
+    } else {
+      avatarIcon = mugIcon;
+    }
+    return (
+      <Box
+        sx={stylesConst.boxContainer}
+        className="position-fixed translate-middle slide-in-popup animate"
+      >
+        <Avatar
+          src={avatarIcon}
+          variant="square"
+          sx={{ width: 60, height: 60, marginRight: 2.5 }}
+          // sx={{ marginRight: 2.5 }}
+          alt="Sign In Button Logo"
+        />
+        <div style={stylesConst.divContainer}>
+          {error ? (
+            <div>
+              <Typography sx={stylesConst.errorText}>
+                Failed to return
+              </Typography>
+              <Typography sx={stylesConst.errorText}>{error}</Typography>
+            </div>
+          ) : (
+            <div style={{ flex: 1, flexDirection: "row" }}>
+              <Typography sx={stylesConst.successText}>
+                Successfully returned
+              </Typography>
+              {/* <img
               style={{ paddingRight: 16 }}
               src={ReportIcon}
               alt=""
               onClick={reportToggle}
             /> */}
+            </div>
+          )}
+          <Typography variant="h6" sx={stylesConst.text} data-testid ='plate-id-and-condition'>
+            {message ? message.charAt(0).toUpperCase() + message.slice(1) : ""}
+            {/* {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid} */}
+          </Typography>
+
+          <Typography variant="h6" sx={stylesConst.text}>
+            {/* {message ? message.charAt(0).toUpperCase() + message.slice(1) : ""} */}
+            {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
+          </Typography>
+
+          {error ? (
+            <Typography sx={stylesConst.errorCaption}>
+              Please scan and try again
+            </Typography>
+          ) : (
+            <></>
+          )}
+        </div>
+        {error ? (
+          <></>
+        ) : (
+          <div style={{ marginLeft: "auto" }}>
+            <Button
+              onClick={reportToggle}
+              variant="contained"
+              color="error"
+              sx={{
+                minWidth: "unset",
+                borderRadius: "100px",
+                aspectRatio: "1",
+              }}
+              data-testid="open-report-modal-btn"
+            >
+              <Avatar
+                src={ReportIcon}
+                sx={{ width: 25, height: 25, margin: "0" }}
+                variant="square"
+              ></Avatar>
+            </Button>
           </div>
         )}
-        <Typography variant="h6" sx={stylesConst.text}>
-          {dishType.charAt(0).toUpperCase() + dishType.slice(1)} #{qid}
-        </Typography>
-
-        {error ? (
-          <Typography sx={stylesConst.errorCaption}>
-            Please scan and try again
-          </Typography>
-        ) : (
-          <></>
-        )}
-      </div>
-      {error ? (
-        <></>
-      ) : (
-        <div style={{ marginLeft: "auto" }}>
-          <Button
-            onClick={reportToggle}
-            variant="contained"
-            color="error"
-            sx={{ minWidth: "unset", borderRadius: "100px", aspectRatio: "1" }}
-          >
-            <Avatar
-              src={ReportIcon}
-              sx={{ width: 25, height: 25, margin: "0" }}
-              variant="square"
-            ></Avatar>
-          </Button>
-        </div>
-      )}
-    </Box>
-  );
-});
-const Return = () => {
+      </Box>
+    );
+  }
+);
+const Return = ({ noTimer }) => {
   const [scanId, setScanId] = useState("");
   const [showNotif, setShowNotif] = useState(false);
   const [popUp, setPopUp] = useState(false);
@@ -124,7 +139,7 @@ const Return = () => {
   const [reportValue, setReportValue] = useState("small_crack_chip");
   const [dishID, setDishID] = useState("");
   const { currentUser, sessionToken } = useAuth();
-
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -141,13 +156,16 @@ const Return = () => {
     }*/
 
   useEffect(() => {
+    if (noTimer) {
+      return;
+    }
     const timer = setTimeout(() => {
       if (popUp) {
         setPopUp(false);
       }
     }, 5000);
     return () => clearTimeout(timer);
-  }, [popUp]);
+  }, [popUp, message]);
 
   const onCancel = popUp
     ? () => {
@@ -208,6 +226,7 @@ const Return = () => {
                   onClick={() => {
                     // setReportValue("small_crack_chip");
                   }}
+                  data-testid="small_crack"
                 />
               }
               sx={{ color: "black" }}
@@ -249,6 +268,7 @@ const Return = () => {
             width: "150px",
             borderRadius: "100px",
           }}
+          data-testid="end-report-btn"
         >
           Report
         </Button>
@@ -256,7 +276,6 @@ const Return = () => {
     );
   };
   const onSubmit = async (condition: string) => {
-
     console.log("Session-token: ", sessionToken);
     let dishID;
 
@@ -318,6 +337,7 @@ const Return = () => {
       .then(function (response) {
         setError("");
         setIsLoading(false);
+        setMessage('')
         setPopUp(true);
       })
       .catch(function (error) {
@@ -325,6 +345,7 @@ const Return = () => {
         console.log(error.response.data.message);
         setError(error.response.data.message);
         setIsLoading(false);
+        setMessage('')
         setPopUp(true);
       });
   };
@@ -336,7 +357,7 @@ const Return = () => {
     if (reportPopUp) {
       axios
         .post(
-          `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/condition?id=${dishID}`,
+          `/api/dish/condition`,
           {
             condition: `${reportValue}`,
           },
@@ -346,15 +367,23 @@ const Return = () => {
               "session-token": sessionToken,
               "Content-Type": "application/json",
             },
+            baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+            params: {
+              id: dishID,
+            },
           }
         )
         .then(function (response) {
           console.log(response);
+          setMessage(response?.data?.message);
+          setPopUp(true);
         })
         .catch(function (error) {
           // handle error
           console.log(error.response.data.message);
           setError(error.response.data.message);
+          setMessage('')
+          setPopUp(true);
         });
     }
 
@@ -405,6 +434,7 @@ const Return = () => {
           <PopUpModal
             dishType={dishType}
             error={error}
+            message={message}
             reportToggle={reportToggle}
             qid={qid}
             isMobile={isMobile}
@@ -420,7 +450,12 @@ const Return = () => {
         style={{ height: "100%" }}
         onSubmit={onSubmit}
       />
-      <BottomTextInput disabled={isLoading} value = {scanId} onChange = {(e) => setScanId(e.target.value)} onSubmit={ onSubmit}  />
+      <BottomTextInput
+        disabled={isLoading}
+        value={scanId}
+        onChange={(e) => setScanId(e.target.value)}
+        onSubmit={onSubmit}
+      />
     </div>
   );
 };

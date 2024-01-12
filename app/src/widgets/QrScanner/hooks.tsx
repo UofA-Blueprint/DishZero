@@ -57,7 +57,7 @@ export const useQrReader: UseQrReaderHook = ({
         // codeReader
         codeReader
           .decodeFromVideoDevice(currentDevice, videoId, (result, error) => {
-            console.log(result);
+            // console.log(result);
             if (isValidType(onResult, 'onResult', 'function')) {
               onResult(result, error, codeReader);
             }
