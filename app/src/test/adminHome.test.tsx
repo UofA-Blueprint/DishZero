@@ -29,7 +29,7 @@ const mockDishesData = [
     {
         borrowed: true,
         borrowedAt: '2023-11-11T02:40:20.230Z',
-        condition: 'alright',
+        condition: 'good',
         id: 'dish1',
         qid: 123,
         registered: '2023-07-22T20:19:47.144Z',
@@ -42,7 +42,7 @@ const mockDishesData = [
     {
         borrowed: false,
         borrowedAt: null,
-        condition: 'alright',
+        condition: 'good',
         id: 'dish2',
         qid: 23,
         registered: '2023-07-22T20:19:50.144Z',
@@ -55,7 +55,7 @@ const mockDishesData = [
     {
         borrowed: true,
         borrowedAt: '2023-11-16T02:40:20.230Z',
-        condition: 'alright',
+        condition: 'good',
         id: 'dish3',
         qid: 30,
         registered: '2023-07-22T20:19:50.144Z',
@@ -68,7 +68,7 @@ const mockDishesData = [
     {
         borrowed: true,
         borrowedAt: '2023-11-21T02:40:20.230Z',
-        condition: 'alright',
+        condition: 'good',
         id: 'dish2',
         qid: 23,
         registered: '2023-07-22T20:19:50.144Z',
@@ -81,7 +81,7 @@ const mockDishesData = [
     {
         borrowed: true,
         borrowedAt: '2022-11-21T02:40:20.230Z',
-        condition: 'alright',
+        condition: 'good',
         id: 'dish4',
         qid: 51,
         registered: '2020-07-22T20:19:50.144Z',
@@ -97,7 +97,7 @@ const mockTransactionsData = [
         dish: 'dish1',
         id: '123',
         returned: {
-            condition: 'alright',
+            condition: 'good',
             timestamp: '', // An empty string to indicate not returned
         },
         timestamp: '2023-11-11T02:40:20.230Z',
@@ -127,7 +127,7 @@ const mockTransactionsData = [
         dish: 'dish3',
         id: '30',
         returned: {
-            condition: 'alright',
+            condition: 'good',
             timestamp: '', // An empty string to indicate not returned
         },
         timestamp: '2023-11-16T02:40:20.230Z',
@@ -157,7 +157,7 @@ const mockTransactionsData = [
         dish: 'dish4',
         id: '51',
         returned: {
-            condition: 'alright',
+            condition: 'good',
             timestamp: '',
         },
         timestamp: '2022-11-21T02:40:20.230Z',
