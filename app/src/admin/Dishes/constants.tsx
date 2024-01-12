@@ -1,4 +1,4 @@
-import { Button, Chip, styled } from '@mui/material'
+import { Button, Chip, Tooltip, styled } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
 
 export const capitalizeFirstLetter = (string: string) => {
@@ -150,21 +150,19 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
             return value ? new Date(value).toLocaleString() : null
         },
         renderCell(params) {
-            return (
-                <>
-                    {params && params.formattedValue && (
-                        <div
-                            style={{
-                                color:
-                                    new Date().getTime() - new Date(params.value).getTime() > 48 * 60 * 60 * 1000
-                                        ? '#BF4949'
-                                        : 'inherit',
-                            }}>
-                            {params.formattedValue}
-                        </div>
-                    )}
-                </>
-            )
+            if (!params || !params.value || !params.formattedValue) return null
+            const timeSinceBorrowed = Date.now() - new Date(params.value).getTime()
+            const daysDifference = Math.floor(timeSinceBorrowed / (1000 * 3600 * 24))
+            const overdue = daysDifference >= 2
+
+            if (overdue) {
+                return (
+                    <Tooltip title={`${daysDifference} days`} placement="top" arrow>
+                        <div style={{ color: '#BF4949' }}>{params.formattedValue}</div>
+                    </Tooltip>
+                )
+            }
+            return <div>{params.formattedValue}</div>
         },
     },
     {
