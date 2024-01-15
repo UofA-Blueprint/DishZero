@@ -244,21 +244,21 @@ function Rows(tableRows, search) {
             <div>
                 {records.map((row, index) => (
                     <div className="row-container d-flex" style={{ position: 'relative' }} key={index}>
-                        <p style={{ position: 'absolute', marginLeft: '4%' }} data-testid={`row-${row.id}`}>
+                        <div style={{ position: 'absolute', marginLeft: '4%' }} data-testid={`row-${row.id}`}>
                             {row.id}
-                        </p>
+                        </div>
                         <div style={{ position: 'absolute', marginLeft: '22%' }} data-testid={`row-${row.type}`}>
                             {dishTag(row.type)}
                         </div>
-                        <p style={{ position: 'absolute', marginLeft: '41%' }} data-testid={`row-${row.status}`}>
+                        <div style={{ position: 'absolute', marginLeft: '41%' }} data-testid={`row-${row.status}`}>
                             {dishTag(row.status)}
-                        </p>
-                        <p style={{ position: 'absolute', marginLeft: '65%' }} data-testid={`row-${row.overdue}`}>
+                        </div>
+                        <div style={{ position: 'absolute', marginLeft: '65%' }} data-testid={`row-${row.overdue}`}>
                             {row.overdue}
-                        </p>
-                        <p style={{ position: 'absolute', marginLeft: '84%' }} data-testid={`row-${row.email}`}>
+                        </div>
+                        <div style={{ position: 'absolute', marginLeft: '84%' }} data-testid={`row-${row.email}`}>
                             {row.email}
-                        </p>
+                        </div>
                     </div>
                 ))}
             </div>
