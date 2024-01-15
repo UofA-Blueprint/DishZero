@@ -57,31 +57,33 @@ function dishStatus(dishNumbers: number[]) {
     )
 }
 
-function dishTag(text) {
-    let color = ''
+export function dishTagColor(text) {
     switch (text) {
         case 'mug':
-            color = '#496EA5'
-            break
+            return '#496EA5'
         case 'dish':
-            color = '#496EA5'
-            break
-        case 'overdue':
-            color = '#BF4949'
-            break
-        case 'in use':
-            color = '#68B49A'
-            break
+            return '#68B49A'
+        case 'borrowed':
+            return '#68B49A'
         case 'returned':
-            color = '#29604D'
-            break
+            return '#29604D'
+        case 'available':
+            return '#29604D'
+        case 'overdue':
+            return '#BF4949'
         case 'broken':
-            color = '#BF4949'
-            break
+            return '#BF4949'
         case 'lost':
-            color = '#BF4949'
-            break
+            return '#BF4949'
+        case 'unavailable':
+            return '#BF4949'
+        default:
+            return ''
     }
+}
+
+function dishTag(text) {
+    const color = dishTagColor(text)
     return (
         <div className="tag-container d-flex" style={{ borderColor: color, marginTop: '-4px' }}>
             <p style={{ color: color }}>{text}</p>

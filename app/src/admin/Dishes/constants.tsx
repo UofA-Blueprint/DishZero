@@ -1,5 +1,6 @@
 import { Button, Chip, Tooltip, styled } from '@mui/material'
 import { GridColDef } from '@mui/x-data-grid'
+import { dishTagColor } from '../../routes/admin'
 
 export const capitalizeFirstLetter = (string: string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
@@ -57,20 +58,6 @@ export const StyledContainedButton = styled(Button)(({ theme }) => ({
     margin: '1rem',
 }))
 
-export const DishTypeColors = {
-    mug: '#496EA5',
-    dish: '#496EA5',
-}
-
-export const DishStatusColors = {
-    borrowed: '#68B49A',
-    available: '#29604D',
-    lost: '#BF4949',
-    overdue: '#BF4949',
-    broken: '#BF4949',
-    unavailable: '#BF4949',
-}
-
 export const DishConditionColors = {
     good: '#68B49A',
     small_crack_chip: '#BF4949',
@@ -98,8 +85,8 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${DishTypeColors[params.value] ?? 'inherit'}`,
-                                border: `2px solid ${DishTypeColors[params.value] ?? 'inherit'}`,
+                                color: `${dishTagColor(params.value) ?? 'inherit'}`,
+                                border: `2px solid ${dishTagColor(params.value) ?? 'inherit'}`,
                             }}
                             label={params.formattedValue}
                         />
@@ -128,8 +115,8 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${DishStatusColors[params.value] ?? 'inherit'}`,
-                                border: `2px solid ${DishStatusColors[params.value] ?? 'inherit'}`,
+                                color: `${dishTagColor(params.value) ?? 'inherit'}`,
+                                border: `2px solid ${dishTagColor(params.value) ?? 'inherit'}`,
                             }}
                             label={params.formattedValue}
                         />
