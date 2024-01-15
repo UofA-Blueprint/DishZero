@@ -242,8 +242,8 @@ function Rows(tableRows, search) {
     return (
         <div>
             <div>
-                {records.map((row) => (
-                    <div className="row-container d-flex" style={{ position: 'relative' }}>
+                {records.map((row, index) => (
+                    <div className="row-container d-flex" style={{ position: 'relative' }} key={index}>
                         <p style={{ position: 'absolute', marginLeft: '4%' }} data-testid={`row-${row.id}`}>
                             {row.id}
                         </p>
