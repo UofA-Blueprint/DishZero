@@ -369,30 +369,12 @@ export const validateReturnDishRequestBody = (dish: Dish) => {
     return schema.validate(dish)
 }
 
-export const validateModifyDish = (body: Object) => {
+export const validateModifyDishStatus = (body: Object) => {
     const schema = Joi.object({
-        oldValues: Joi.object({
-            id: Joi.string().required(),
-            qid: Joi.number().required(),
-            status: Joi.string().required(),
-            type: Joi.string().optional(),
-            registered: Joi.string().optional(),
-            userId: Joi.string().optional().allow(null),
-            borrowedAt: Joi.string().optional().allow(null),
-            timesBorrowed: Joi.number().optional(),
-        }).required(),
-        newValues: Joi.object({
-            id: Joi.string().required(),
-            qid: Joi.number().required(),
-            status: Joi.string().required(),
-            type: Joi.string().optional(),
-            registered: Joi.string().optional(),
-            userId: Joi.string().optional().allow(null),
-            borrowedAt: Joi.string().optional().allow(null),
-            timesBorrowed: Joi.number().optional(),
-        }).required(),
+        id: Joi.string().required(),
+        oldStatus: Joi.string().required(),
+        newStatus: Joi.string().required(),
     }).required()
-
     return schema.validate(body)
 }
 
@@ -442,21 +424,16 @@ export const updateCondition = async (id: string, condition: string) => {
     await db.collection('dishes').doc(id).update({ condition })
 }
 
-export const updateDish = async (oldValues: Partial<Dish>, newValues: Partial<Dish>) => {
-    const snapshot = await db.collection('dishes').where('qid', '==', oldValues.qid).get()
-    console.log('snapshot', snapshot)
-
-    if (!snapshot.empty) {
-        const doc = snapshot.docs[0]
-
-        // check that type and status are the same
-        if (doc.data().type !== oldValues.type || doc.data().status !== oldValues.status) {
-            throw new Error(`Mismatch in value for ${oldValues}`)
-        }
-        await doc.ref.update(newValues)
-
-        return { message: 'Update successful' }
-    } else {
-        throw new Error('No matching document found')
+export const updateDishStatus = async (id: string, oldStatus: string, newStatus: string) => {
+    // check that old status is correct
+    const dish = await getDishById(id)
+    if (!dish) {
+        throw new Error('Dish does not exist in database')
     }
+    if (dish?.status !== oldStatus) {
+        throw new Error('Old status does not match value in database. Please reload the page')
+    }
+
+    // update status
+    await db.collection('dishes').doc(id).update({ status: newStatus })
 }

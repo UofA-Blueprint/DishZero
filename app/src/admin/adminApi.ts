@@ -1,6 +1,6 @@
 import { GridRowId } from '@mui/x-data-grid'
 import axios from 'axios'
-import { Dish, DishStatus } from './Dishes/constants'
+import { DishStatus } from './Dishes/constants'
 
 type StatusItem = {
     email: string
@@ -305,12 +305,13 @@ const adminApi = {
             })
     },
 
-    modifyDishStatus: async function (token: string, dishId: string, newStatus: string) {
-        await axios
+    modifyDishStatus: async function (token: string, id: string, oldStatus: string, newStatus: string) {
+        const response = await axios
             .post(
                 `${this.serverAddress}/api/dish/modifyDishStatus`,
                 {
-                    id: dishId,
+                    id,
+                    oldStatus,
                     newStatus,
                 },
                 {
@@ -320,35 +321,14 @@ const adminApi = {
             .then((res) => {
                 // eslint-disable-next-line no-console
                 console.log('Successfully changed the dish status', res)
-            })
-            .catch((err) => {
-                // eslint-disable-next-line no-console
-                console.error(`ERROR: Failed to change the dish status. ${err}.`)
-            })
-    },
-
-    modifyDish: async function (token: string, newValues: Partial<Dish>, oldValues: Partial<Dish>) {
-        const response = await axios
-            .post(
-                `${this.serverAddress}/api/dish/modifyDish`,
-                {
-                    newValues,
-                    oldValues,
-                },
-                {
-                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
-                },
-            )
-            .then((res) => {
-                // eslint-disable-next-line no-console
-                console.log('Successfully modified dish', res)
                 return res
             })
             .catch((err) => {
                 // eslint-disable-next-line no-console
-                console.error(`ERROR: Failed to modify dish. ${err}.`)
+                console.error(`ERROR: Failed to change the dish status. ${err}.`)
                 return err
             })
+
         return response
     },
 }

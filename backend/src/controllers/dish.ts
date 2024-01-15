@@ -17,8 +17,8 @@ import {
     deleteDish,
     getAllDishTypes,
     batchCreateDishes,
-    updateDish,
-    validateModifyDish,
+    updateDishStatus,
+    validateModifyDishStatus,
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
@@ -632,7 +632,7 @@ export const updateDishCondition = async (req: Request, res: Response) => {
         return res.status(200).json({ message: 'dish condition updated' })
     }
 }
-export const modifyDish = async (req: Request, res: Response) => {
+export const modifyDishStatus = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
     if (!verifyIfUserAdmin(userClaims)) {
         Logger.error({
@@ -643,20 +643,22 @@ export const modifyDish = async (req: Request, res: Response) => {
         return res.status(403).json({ error: 'forbidden' })
     }
 
-    let validation = validateModifyDish(req.body)
+    let validation = validateModifyDishStatus(req.body)
     if (validation.error) {
         Logger.error({
             module: 'dish.controller',
             error: validation.error,
-            message: 'Validation for modify dish failed',
+            message: 'Validation for modify dish status failed',
             statusCode: 400,
         })
 
-        return res.status(400).json({ error: 'bad_request', message: 'validation for status failed' })
+        return res.status(400).json({ error: 'bad_request', message: 'validation for modify dish status failed' })
     }
 
+    const { id, oldStatus, newStatus } = req.body
+
     try {
-        let response = await updateDish(req.body.oldValues, req.body.newValues)
+        let response = await updateDishStatus(id, oldStatus, newStatus)
         return res.status(200).json({ response })
     } catch (error: any) {
         Logger.error({
@@ -665,6 +667,8 @@ export const modifyDish = async (req: Request, res: Response) => {
             message: 'Error when modifying dish',
             statusCode: 500,
         })
-        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+        return res
+            .status(500)
+            .json({ error: 'internal_server_error', message: error.message ?? 'Unexpected error occurred' })
     }
 }

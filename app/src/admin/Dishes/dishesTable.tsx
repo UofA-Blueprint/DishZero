@@ -47,32 +47,35 @@ export default function AdminDishesTable({ filteredRows, dishTypes, loadingDishe
         }
     }
 
-    // must return the rowobject to update the internal state -> therefore you can cancel
-    // the update by returning the old row
-    const processRowUpdate = async (newRow: GridRowModel, oldRow: GridRowModel) => {
-        console.log('newRow', newRow)
-        console.log('oldRow', oldRow)
+    const modifyDishStatus = async (id: string, oldStatus: string, newStatus: string) => {
         if (sessionToken) {
-            console.log('Modifying dish...', newRow, oldRow)
-            const response = await adminApi.modifyDish(sessionToken, newRow, oldRow)
+            const response = await adminApi.modifyDishStatus(sessionToken, id, oldStatus, newStatus)
+            return response
+        }
+    }
 
-            console.log('Response:', response)
+    // must return the GridRowModel to update the internal state of the grid
+    const processRowUpdate = async (newRow: GridRowModel, oldRow: GridRowModel) => {
+        if (newRow.status !== oldRow.status) {
+            const oldStatus = oldRow.status
+            const { status: newStatus, id } = newRow
+            const response = (await modifyDishStatus(id, oldStatus, newStatus)) as any
 
-            if (response && response.status != 200) {
-                enqueueSnackbar('Failed to modify dish: ' + response.message, { variant: 'error' })
+            if (response && response?.status !== 200) {
+                enqueueSnackbar(
+                    `Failed to modify dish status: ${response.message}; ${response.response.data.message}`,
+                    { variant: 'error' },
+                )
                 return oldRow
             } else {
-                enqueueSnackbar(`Successfully modified dish: ${newRow.qid}`, { variant: 'success' })
+                enqueueSnackbar(`Successfully modified dish status`, { variant: 'success' })
                 return newRow
             }
         }
+
+        // if no status change, just return the old row
         return oldRow
     }
-
-    const handleProcessRowUpdateError = React.useCallback((error: Error) => {
-        console.error(error)
-        enqueueSnackbar(`Row could not be updated with error: ${error.message}`, { variant: 'error' })
-    }, [])
 
     return (
         <>
@@ -118,7 +121,6 @@ export default function AdminDishesTable({ filteredRows, dishTypes, loadingDishe
                 autoHeight
                 checkboxSelection
                 processRowUpdate={processRowUpdate}
-                onProcessRowUpdateError={handleProcessRowUpdateError}
                 getRowId={(row) => row.qid}
                 experimentalFeatures={{ ariaV7: true }}
                 onRowSelectionModelChange={(newSelection) => {

@@ -4,12 +4,12 @@ import {
     createDish,
     createMultipleDishes,
     addDishType,
-    modifyDish,
     deleteDishes,
     getDishes,
     returnDish,
     updateDishCondition,
     getDishTypes,
+    modifyDishStatus,
 } from '../controllers/dish'
 import { verifyApiKey, verifyFirebaseToken } from '../middlewares/auth'
 
@@ -19,8 +19,7 @@ router.get('/', verifyApiKey, verifyFirebaseToken, getDishes)
 router.get('/getDishTypes', verifyApiKey, verifyFirebaseToken, getDishTypes)
 router.post('/createMultipleDishes', verifyApiKey, verifyFirebaseToken, createMultipleDishes)
 router.post('/addDishType', verifyApiKey, verifyFirebaseToken, addDishType)
-router.post('/modifyDish', verifyApiKey, verifyFirebaseToken, modifyDish)
-// router.post('/modifyDishStatus', verifyApiKey, verifyFirebaseToken, modifyDishStatus)
+router.post('/modifyDishStatus', verifyApiKey, verifyFirebaseToken, modifyDishStatus)
 router.post('/create', verifyApiKey, verifyFirebaseToken, createDish)
 router.post('/borrow', verifyApiKey, verifyFirebaseToken, borrowDish)
 router.post('/return', verifyApiKey, verifyFirebaseToken, returnDish)
