@@ -88,7 +88,7 @@ export default function AdminDishesTable({ filteredRows, dishTypes, loadingDishe
                         paginationModel: { page: 0, pageSize: 10 },
                     },
                 }}
-                sx={{ flex: 1, minWidth: 950, maxWidth: 1300 }}
+                sx={{ flex: 1, minWidth: 1000, maxWidth: 1300 }}
                 slots={{
                     loadingOverlay: () => (
                         <GridOverlay style={{ flexDirection: 'column', paddingTop: 10, paddingBottom: 10 }}>

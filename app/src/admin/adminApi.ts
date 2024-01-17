@@ -39,10 +39,9 @@ const adminApi = {
         const transactions = response?.data.transactions
         return transactions
     },
-
-    getAllDishes: async function (token: string) {
+    getAllDishes: async function (token: string, withEmail?: boolean) {
         const response = await axios
-            .get(`${this.serverAddress}/api/dish?all=true&transaction=true`, {
+            .get(`${this.serverAddress}/api/dish?all=true&transaction=true&withEmail=${withEmail?.toString()}`, {
                 headers: headers(token),
             })
             .then((res) => {
@@ -228,19 +227,15 @@ const adminApi = {
                     for (const user of users) {
                         let count = 0
                         for (const dish of dishes) {
-                            const firebaseTimestamp = new Date(dish.borrowedAt)
-                            const currentTimestamp = new Date().getTime()
-                            let timeDifference
-                            let hoursDifference
-                            if (firebaseTimestamp != null) {
-                                timeDifference = currentTimestamp - firebaseTimestamp.getTime()
-                                hoursDifference = timeDifference / 3600000
-                                if (
-                                    dish.userId === user.id &&
-                                    dish.status === DishStatus.borrowed &&
-                                    hoursDifference > 48
-                                ) {
-                                    count += 1
+                            if (dish.userId === user.id && dish.status === DishStatus.borrowed) {
+                                const firebaseTimestamp = new Date(dish.borrowedAt)
+                                const currentTimestamp = new Date().getTime()
+                                let timeDifference
+                                let hoursDifference
+                                if (firebaseTimestamp != null) {
+                                    timeDifference = currentTimestamp - firebaseTimestamp.getTime()
+                                    hoursDifference = timeDifference / 3600000
+                                    if (hoursDifference > 48) count += 1
                                 }
                             }
                         }

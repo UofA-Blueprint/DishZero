@@ -247,7 +247,7 @@ export async function getUserDishesSimple(userClaims: DecodedIdToken): Promise<A
     return dishData
 }
 
-export async function getAllDishes(): Promise<Array<Dish>> {
+export async function getAllDishes(withEmail?: boolean): Promise<Array<Dish>> {
     let dishData = <Array<Dish>>[]
     let dishesQuerySnapshot = await db.collection('dishes').orderBy('qid').get()
     for (let doc of dishesQuerySnapshot.docs) {
@@ -261,7 +261,7 @@ export async function getAllDishes(): Promise<Array<Dish>> {
 
         // get user email (this adds a lot of time to the request)
         let userEmail
-        if (data.userId) {
+        if (data.userId && withEmail) {
             let userDoc = await db.collection('users').doc(data.userId).get()
             if (userDoc.exists) {
                 userEmail = userDoc.data()?.email
@@ -276,8 +276,7 @@ export async function getAllDishes(): Promise<Array<Dish>> {
             timesBorrowed: data.timesBorrowed ?? 0,
             status: data.status ?? DishStatus.available,
             condition: data.condition ?? DishCondition.good,
-            userId: userEmail ?? null,
-            // userId: data.user ?? null,
+            userId: withEmail ? userEmail ?? null : data.userId ?? null,
             borrowedAt: data.borrowedAt ?? null,
         })
     }

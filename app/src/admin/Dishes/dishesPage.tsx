@@ -19,7 +19,7 @@ export default function AdminDishes() {
         let dishData: Dish[] = []
         if (sessionToken) {
             setLoadingDishes(true)
-            dishData = await adminApi.getAllDishes(sessionToken)
+            dishData = await adminApi.getAllDishes(sessionToken, true)
             setLoadingDishes(false)
         }
         setAllRows(dishData)

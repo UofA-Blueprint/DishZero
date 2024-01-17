@@ -79,14 +79,15 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
             return capitalizeFirstLetter(value)
         },
         renderCell(params) {
+            const color = dishTagColor(params.value) ?? 'inherit'
             return (
                 <>
                     {params && (
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${dishTagColor(params.value) ?? 'inherit'}`,
-                                border: `2px solid ${dishTagColor(params.value) ?? 'inherit'}`,
+                                color: `${color}`,
+                                border: `2px solid ${color}`,
                             }}
                             label={params.formattedValue}
                         />
@@ -108,6 +109,7 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
             return capitalizeFirstLetter(value)
         },
         renderCell(params) {
+            const color = dishTagColor(params.value) ?? 'inherit'
             return (
                 <>
                     {params && (
@@ -115,8 +117,8 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
                         <Chip
                             variant="outlined"
                             sx={{
-                                color: `${dishTagColor(params.value) ?? 'inherit'}`,
-                                border: `2px solid ${dishTagColor(params.value) ?? 'inherit'}`,
+                                color: `${color}`,
+                                border: `2px solid ${color}`,
                             }}
                             label={params.formattedValue}
                         />
@@ -129,7 +131,7 @@ export const generateColumns = (dishTypes: string[]): GridColDef[] => [
     {
         field: 'borrowedAt',
         headerName: 'Date Borrowed',
-        minWidth: 150,
+        minWidth: 200,
         maxWidth: 250,
         flex: 1,
         type: 'date',

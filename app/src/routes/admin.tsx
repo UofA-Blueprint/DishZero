@@ -126,36 +126,32 @@ function findDish(ID, dishesUsed) {
     return dish
 }
 
-function findOverdue(dishesUsed, transactionsUsed) {
-    const transactions = transactionsUsed.filter((transaction) => transaction.returned.timestamp == '')
-    const timeToday = new Date()
-    let num = 0
-    transactions.map((transaction) => {
-        let time = transaction.timestamp.slice(0, 10)
-        time = new Date(time)
-        let difference = (timeToday.getTime() - time.getTime()) / 86400000
-        difference = parseInt(difference.toString())
-        if (difference > 2) {
-            num += 1
+function findOverdue(dishesUsed) {
+    const dishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed)
+    let overdue = 0
+    const today = new Date()
+    dishes.forEach((dish) => {
+        const borrowedAt = new Date(dish.borrowedAt)
+        const daysSinceBorrowed = Math.floor((today.getTime() - borrowedAt.getTime()) / 86400000)
+        if (daysSinceBorrowed >= 2) {
+            overdue += 1
         }
     })
-    return num
+    return overdue
 }
 
-function findLost(dishesUsed, transactionsUsed) {
-    const transactions = transactionsUsed.filter((transaction) => transaction.returned.timestamp == '')
-    const timeToday = new Date()
-    let num = 0
-    transactions.map((transaction) => {
-        let time = transaction.timestamp.slice(0, 10)
-        time = new Date(time)
-        let difference = (timeToday.getTime() - time.getTime()) / 86400000
-        difference = parseInt(difference.toString())
-        if (difference >= 30) {
-            num += 1
+function findLost(dishesUsed) {
+    const dishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed || dish.status === DishStatus.lost)
+    let lost = 0
+    const today = new Date()
+    dishes.forEach((dish) => {
+        const borrowedAt = new Date(dish.borrowedAt)
+        const daysSinceBorrowed = Math.floor((today.getTime() - borrowedAt.getTime()) / 86400000)
+        if (daysSinceBorrowed >= 30) {
+            lost += 1
         }
     })
-    return num
+    return lost
 }
 
 function createRows(dishesUsed, transactionsUsed) {
@@ -359,8 +355,8 @@ function Admin({ path }: { path?: string }) {
     const numBorrowedDishes = dishesUsed.filter((dish) => dish.status === DishStatus.borrowed).length
     const returnedDishes = dishesUsed.length - numBorrowedDishes
     // const returnedDishes = dishesUsed.filter((dish) => dish.borrowed == false).length
-    const lost = findLost(dishesUsed, transactionsUsed)
-    const overdue = findOverdue(dishesUsed, transactionsUsed) - lost
+    const lost = findLost(dishesUsed)
+    const overdue = findOverdue(dishesUsed) - lost
 
     const dishNumbers = [numBorrowedDishes, returnedDishes, overdue, lost]
     let tableRows = createRows(dishesUsed, transactionsUsed)

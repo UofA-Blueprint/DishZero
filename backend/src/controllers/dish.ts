@@ -97,6 +97,7 @@ export const getDishes = async (req: Request, res: Response) => {
     }
 
     let all = req.query['all']?.toString()
+    let withEmail = req.query['withEmail']?.toString() === 'true'
     let transaction = req.query['transaction']?.toString()
     let dishes: any
 
@@ -113,7 +114,7 @@ export const getDishes = async (req: Request, res: Response) => {
 
         try {
             if (transaction === 'true') {
-                dishes = await getAllDishes()
+                dishes = await getAllDishes(withEmail)
             } else {
                 dishes = await getAllDishesSimple()
             }
