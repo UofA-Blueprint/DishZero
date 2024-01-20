@@ -56,7 +56,7 @@ const adminApi = {
     getDishTypes: async function (token: string) {
         const response = await axios
             .get(`${this.serverAddress}/api/dish/getDishTypes`, {
-                headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
+                headers: headers(token),
             })
             .then((res) => {
                 return res
@@ -76,7 +76,7 @@ const adminApi = {
                     type: dishType,
                 },
                 {
-                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
+                    headers: headers(token),
                 },
             )
             .then((res) => {
@@ -112,8 +112,7 @@ const adminApi = {
                     },
                 },
                 {
-                    // headers: headers(token),
-                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
+                    headers: headers(token),
                 },
             )
             .then((res) => {
@@ -137,7 +136,7 @@ const adminApi = {
                     type: dishType,
                 },
                 {
-                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': token },
+                    headers: headers(token),
                 },
             )
             .then((res) => {
