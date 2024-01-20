@@ -6,8 +6,6 @@ import ReturnRoute from './return'
 import Admin from './admin'
 import { Sidebar } from '../widgets/sidebar'
 import { Error404 } from './misc'
-import Email from '../admin/email'
-import Users from '../admin/users'
 import { AuthProvider, useAuth } from '../contexts/AuthContext'
 
 const enum Role {
@@ -96,7 +94,7 @@ const router = createBrowserRouter([
                             {
                                 // TODO: wrap in "VOLUNTEER" route
                                 path: '/volunteer/return',
-                                element: <ReturnRoute />,
+                                element: <ReturnRoute noTimer={undefined} />,
                             },
                         ],
                     },
@@ -108,7 +106,6 @@ const router = createBrowserRouter([
                 errorElement: <Error404 />,
 
                 children: [
-                    // TODO: put admin related children here
                     {
                         path: '/admin',
                         element: <Admin path={''} />,
@@ -119,11 +116,11 @@ const router = createBrowserRouter([
                     },
                     {
                         path: '/admin/users',
-                        element: <Users />,
+                        element: <Admin path={'users'} />,
                     },
                     {
                         path: '/admin/email',
-                        element: <Email />,
+                        element: <Admin path={'email'} />,
                     },
                 ],
             },

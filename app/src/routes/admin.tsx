@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import leaf_icon from '../assets/leaf.svg'
 import { MobileView, BrowserView } from 'react-device-detect'
-import Toolbar from '../admin/toolbar'
+import Toolbar from '../admin/Sidebar/adminSidebar'
 import '../styles/admin.css'
 import leaf_white from '../assets/leaf-white.svg'
 import axios from 'axios'
@@ -19,6 +19,8 @@ import {
     SECONDARY_DARK,
     SECONDARY_LIGHT,
 } from '../admin/Dishes/constants'
+import Email from '../admin/email'
+import Users from '../admin/users'
 
 function dishStatus(dishNumbers: number[]) {
     return (
@@ -386,19 +388,21 @@ function Admin({ path }: { path?: string }) {
             <SnackbarProvider>
                 {/* on mobile */}
                 <MobileView>
-                    <div>
+                    <Box justifyContent="center" textAlign="center" margin="0.75rem">
                         <h1>Admin Panel</h1>
-                    </div>
-                    <img src={leaf_icon} alt="" />
-                    <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
+                        <img src={leaf_icon} alt="" />
+                        <h2>You're on mobile! Please go to desktop to view admin panel.</h2>
+                    </Box>
                 </MobileView>
 
                 {/* on desktop */}
                 <BrowserView>
-                    {path == 'dishes' && <AdminDishes />}
-                    {(path == '' || !path) && (
-                        <div className="d-flex">
-                            <Toolbar />
+                    <Box display="flex">
+                        <Toolbar />
+                        {path == 'dishes' && <AdminDishes />}
+                        {path == 'users' && <Users />}
+                        {path == 'email' && <Email />}
+                        {(path == '' || !path) && (
                             <div style={{ marginTop: '48px', marginLeft: '40px', marginRight: '40px', flexGrow: 1 }}>
                                 <p className="sub-header-2">Home</p>
                                 {bar}
@@ -429,8 +433,8 @@ function Admin({ path }: { path?: string }) {
                                 {table}
                                 {row}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </Box>
                 </BrowserView>
             </SnackbarProvider>
         </ThemeProvider>

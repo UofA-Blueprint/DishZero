@@ -1,6 +1,5 @@
 import { useAuth } from '../../contexts/AuthContext'
 import adminApi from '../adminApi'
-import Toolbar from '../toolbar'
 import { Dish } from './constants'
 import AdminDishesHeader from './dishesHeader'
 import AdminDishesTable from './dishesTable'
@@ -44,24 +43,21 @@ export default function AdminDishes() {
     }, [allRows])
 
     return (
-        <Box display="flex">
-            <Toolbar />
-            <Box sx={{ m: '20px', flex: 1 }}>
-                <AdminDishesHeader
-                    allRows={allRows}
-                    setFilteredRows={setFilteredRows}
-                    dishTypes={dishTypes}
-                    fetchDishTypes={fetchDishTypes}
-                    // setDishTypes={setDishTypes}
-                    fetchDishes={fetchDishes}
-                />
-                <AdminDishesTable
-                    filteredRows={filteredRows}
-                    fetchDishes={fetchDishes}
-                    loadingDishes={loadingDishes}
-                    dishTypes={dishTypes}
-                />
-            </Box>
+        <Box sx={{ m: '20px', flex: 1 }}>
+            <AdminDishesHeader
+                allRows={allRows}
+                setFilteredRows={setFilteredRows}
+                dishTypes={dishTypes}
+                fetchDishTypes={fetchDishTypes}
+                // setDishTypes={setDishTypes}
+                fetchDishes={fetchDishes}
+            />
+            <AdminDishesTable
+                filteredRows={filteredRows}
+                fetchDishes={fetchDishes}
+                loadingDishes={loadingDishes}
+                dishTypes={dishTypes}
+            />
         </Box>
     )
 }

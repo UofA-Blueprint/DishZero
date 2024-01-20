@@ -1,6 +1,5 @@
 ////////////////////////// Import Dependencies //////////////////////////
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import {
     Dialog,
@@ -14,7 +13,6 @@ import {
     DialogTitle,
     TableSortLabel,
     Button,
-    Avatar,
     Typography,
     Box,
     Paper,
@@ -28,16 +26,8 @@ import {
     TableRow,
 } from '@mui/material'
 import { BallTriangle } from 'react-loader-spinner'
-import DishzeroSidebarLogo from '../assets/dishzero-sidebar-logo.png'
 import 'typeface-poppins'
-import {
-    FilterList as FilterListIcon,
-    Home as HomeIcon,
-    DinnerDiningOutlined as DinnerDiningOutlinedIcon,
-    Person as PersonIcon,
-    Email as EmailIcon,
-    Search as SearchIcon,
-} from '@mui/icons-material'
+import { FilterList as FilterListIcon, Search as SearchIcon } from '@mui/icons-material'
 import { visuallyHidden } from '@mui/utils'
 import adminApi from './adminApi'
 //////////////////////////////////////////////////////////////////////////////
@@ -149,53 +139,6 @@ interface RoleFilterDialogProps {
     handleClose: () => void
     role: string
     handleRoleChange: (arg0: string) => void
-}
-//////////////////////////////////////////////////////////////
-
-/////////////////////////////// Sub-components ///////////////////////////////
-const Tab = ({ children, route }) => {
-    const navigate = useNavigate()
-
-    return (
-        <Button
-            sx={route === '/admin/users' ? styles.tabActive : styles.tabInactive}
-            variant="text"
-            onClick={() => navigate(route)}
-            disableElevation>
-            {children}
-        </Button>
-    )
-}
-
-//Custom Sidebar
-const Sidebar = () => {
-    return (
-        <Box sx={styles.sidebar}>
-            <Box sx={styles.logoFrame}>
-                <Avatar src={DishzeroSidebarLogo} sx={styles.dishzeroSidebarLogo} />
-                <Typography sx={styles.dishzeroName}>DishZero</Typography>
-            </Box>
-            <Box sx={styles.tabsFrame}>
-                <Typography sx={styles.adminPanelText}>Admin panel</Typography>
-                <Tab route="/admin">
-                    <HomeIcon sx={styles.tabIcon} />
-                    <Typography sx={styles.tabName}>Home</Typography>
-                </Tab>
-                <Tab route="/admin/dishes">
-                    <DinnerDiningOutlinedIcon sx={styles.tabIcon} />
-                    <Typography sx={styles.tabName}>Dishes</Typography>
-                </Tab>
-                <Tab route="/admin/users">
-                    <PersonIcon sx={styles.tabIcon} />
-                    <Typography sx={styles.tabName}>Users</Typography>
-                </Tab>
-                <Tab route="/admin/email">
-                    <EmailIcon sx={styles.tabIcon} />
-                    <Typography sx={styles.tabName}>Email</Typography>
-                </Tab>
-            </Box>
-        </Box>
-    )
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
@@ -578,57 +521,33 @@ export default function Users() {
         }
     }
 
-    const [isMobile, setIsMobile] = useState(false)
-
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth <= 768)
-        }
-
-        window.addEventListener('resize', handleResize)
-        return () => {
-            window.removeEventListener('resize', handleResize)
-        }
-    }, [])
-
     return (
         <>
-            {!isMobile ? (
-                <Box sx={styles.root}>
-                    <Sidebar />
-                    {isLoading ? (
-                        <Box sx={styles.loaderFrame}>
-                            <BallTriangle
-                                height={100}
-                                width={100}
-                                radius={5}
-                                data-testid="ball-triangle-loading"
-                                color="#4fa94d"
-                                ariaLabel="ball-triangle-loading"
-                                visible={true}
-                            />
-                        </Box>
-                    ) : (
-                        <MainFrame
-                            rows={rows}
-                            handleRoleFilterOpen={handleRoleFilterOpen}
-                            handleRoleUpdate={handleRoleUpdate}
-                        />
-                    )}
-                    <RoleFilterDialog
-                        open={openedRoleFilter}
-                        handleClose={handleRoleFilterClose}
-                        role={role}
-                        handleRoleChange={handleRoleChange}
+            {isLoading ? (
+                <Box sx={styles.loaderFrame}>
+                    <BallTriangle
+                        height={100}
+                        width={100}
+                        radius={5}
+                        data-testid="ball-triangle-loading"
+                        color="#4fa94d"
+                        ariaLabel="ball-triangle-loading"
+                        visible={true}
                     />
                 </Box>
             ) : (
-                <Box sx={styles.mobileInstructionFrame}>
-                    <Typography sx={styles.mobileInstruction}>
-                        Please use a computer to access an admin page.
-                    </Typography>
-                </Box>
+                <MainFrame
+                    rows={rows}
+                    handleRoleFilterOpen={handleRoleFilterOpen}
+                    handleRoleUpdate={handleRoleUpdate}
+                />
             )}
+            <RoleFilterDialog
+                open={openedRoleFilter}
+                handleClose={handleRoleFilterClose}
+                role={role}
+                handleRoleChange={handleRoleChange}
+            />
         </>
     )
 }

@@ -15,7 +15,7 @@ type DishStatusByUser = {
     role: string
 }
 
-const headers = (token: string) => {
+export const headers = (token: string) => {
     return {
         'x-api-key': process.env.REACT_APP_API_KEY || 'test',
         'session-token': token,
