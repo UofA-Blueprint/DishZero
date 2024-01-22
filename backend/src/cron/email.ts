@@ -8,6 +8,7 @@ import { getTemplate } from '../services/email'
 import Logger from '../utils/logger'
 import { getAllDishes } from '../services/dish'
 import { getUserById } from '../services/users'
+import { DishStatus } from '../models/dish'
 
 export enum EmailClient {
     AWS = 'aws',
@@ -34,7 +35,7 @@ export class EmailCron implements Cron {
                     Logger.info({
                         message: 'Sending email with AWS',
                     })
-                    
+
                     const template = await getTemplate()
                     const subject = template.subject
                     const body = template.body
@@ -46,7 +47,8 @@ export class EmailCron implements Cron {
                     const dishes = await getAllDishes()
 
                     for (const dish of dishes) {
-                        if (dish.borrowed && dish.userId && dish.borrowedAt) {
+                        if (dish.status === DishStatus.borrowed && dish.userId && dish.borrowedAt) {
+                            // if (dish.borrowed && dish.userId && dish.borrowedAt) {
                             const currentTime = new Date()
                             const borrowedDate = new Date(dish.borrowedAt.toString())
                             const hoursSinceBorrow = Math.abs(currentTime.getTime() - borrowedDate.getTime()) / oneHour
@@ -71,7 +73,7 @@ export class EmailCron implements Cron {
                         })
                     } else {
                         Logger.info({
-                            message: "no users have overdue dish"
+                            message: 'no users have overdue dish',
                         })
                     }
                 } else {
@@ -102,8 +104,8 @@ export const initializeEmailCron = async (options: CronOptions, client: EmailCli
     emailCron = new EmailCron(options, client)
     emailCron.start()
     Logger.info({
-        message: "starting email cron",
-        cron: emailCron
+        message: 'starting email cron',
+        cron: emailCron,
     })
 }
 
@@ -114,4 +116,3 @@ export const getEmailCron = () => {
 export const setEmailCron = (cron: EmailCron | null) => {
     emailCron = cron
 }
-

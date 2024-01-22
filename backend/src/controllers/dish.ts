@@ -1,11 +1,12 @@
 import { Request, Response } from 'express'
-import { Condition } from '../models/dish'
+import { DishCondition, DishStatus } from '../models/dish'
 import { Transaction } from '../models/transaction'
 import {
     getDish,
     updateBorrowedStatus,
     getAllDishesSimple,
     createDishInDatabase,
+    addDishTypeToDatabase,
     updateCondition,
     getAllDishes,
     getUserDishes,
@@ -13,6 +14,11 @@ import {
     validateReturnDishRequestBody,
     getDishById,
     validateUpdateConditonRequestBody,
+    deleteDish,
+    getAllDishTypes,
+    batchCreateDishes,
+    updateDishStatus,
+    validateModifyDishStatus,
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
@@ -34,8 +40,8 @@ export const getDishes = async (req: Request, res: Response) => {
 
     if (id) {
         try {
-            let dish = await db.collection('dishes').doc(id).get()
-            if (!dish.exists) {
+            const dish = await getDishById(id)
+            if (!dish) {
                 Logger.error({
                     message: 'Dish does not exist',
                     statusCode: 404,
@@ -49,7 +55,7 @@ export const getDishes = async (req: Request, res: Response) => {
                 module: 'dish.controller',
                 function: 'getDishes',
             })
-            return res.status(200).json({ dish: dish.data() })
+            return res.status(200).json({ dish: dish })
         } catch (error: any) {
             Logger.error({
                 message: 'Error when retrieving dish',
@@ -91,8 +97,9 @@ export const getDishes = async (req: Request, res: Response) => {
     }
 
     let all = req.query['all']?.toString()
+    let withEmail = req.query['withEmail']?.toString() === 'true'
     let transaction = req.query['transaction']?.toString()
-    let dishes
+    let dishes: any
 
     // if all is true, check if user is admin, if yes return all dishes
     if (all === 'true') {
@@ -107,7 +114,7 @@ export const getDishes = async (req: Request, res: Response) => {
 
         try {
             if (transaction === 'true') {
-                dishes = await getAllDishes()
+                dishes = await getAllDishes(withEmail)
             } else {
                 dishes = await getAllDishesSimple()
             }
@@ -127,7 +134,6 @@ export const getDishes = async (req: Request, res: Response) => {
             function: 'getDishes',
             message: 'sending all dishes to admin',
         })
-
         return res.status(200).json({ dishes })
     }
 
@@ -152,6 +158,124 @@ export const getDishes = async (req: Request, res: Response) => {
     }
 }
 
+export const getDishTypes = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let dishTypes
+    try {
+        dishTypes = await getAllDishTypes()
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            function: 'getDishTypes',
+            error,
+            message: 'error when getting dish types from firebase',
+        })
+
+        return res.status(500).json({ error: 'internal_server_error' })
+    }
+    return res.status(200).json({ dishTypes })
+}
+
+export const deleteDishes = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let dishIds = req.body.dishIds
+    if (!dishIds) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'No dishIds provided',
+            statusCode: 400,
+        })
+        return res.status(400).json({ error: 'bad_request' })
+    }
+
+    try {
+        for (let qid of dishIds) {
+            let dish = await getDish(parseInt(qid, 10))
+            // let dish = await getDishById(id)
+            if (!dish) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish not found',
+                    statusCode: 400,
+                })
+                return res.status(400).json({ error: 'bad_request' })
+            }
+            if (dish.status === DishStatus.borrowed) {
+                Logger.error({
+                    module: 'dish.controller',
+                    message: 'Dish is borrowed',
+                    statusCode: 400,
+                })
+                return res.status(400).json({ error: 'bad_request' })
+            }
+
+            deleteDish(parseInt(qid, 10))
+        }
+
+        Logger.info({
+            module: 'dish.controller',
+            message: 'Successfully deleted dishes',
+        })
+        return res.status(200).json({ message: 'dishes deleted' })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when deleting dishes',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
+export const createMultipleDishes = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let dishType = req.body.type
+    let dishIdLower = req.body.dishIdLower as number
+    let dishIdUpper = req.body.dishIdUpper as number
+
+    try {
+        const response = await batchCreateDishes(dishIdLower, dishIdUpper, dishType)
+        return res.status(200).json({ response })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when adding dishes to database',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
 export const createDish = async (req: Request, res: Response) => {
     let userClaims = (req as CustomRequest).firebase
     if (!verifyIfUserAdmin(userClaims)) {
@@ -171,6 +295,31 @@ export const createDish = async (req: Request, res: Response) => {
             module: 'dish.controller',
             error,
             message: 'Error when creating dish in database',
+            statusCode: 500,
+        })
+        return res.status(500).json({ error: 'internal_server_error', message: error.message })
+    }
+}
+
+export const addDishType = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    try {
+        let response = await addDishTypeToDatabase(req.body.type)
+        return res.status(200).json({ response })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when adding a new dish type to the database',
             statusCode: 500,
         })
         return res.status(500).json({ error: 'internal_server_error', message: error.message })
@@ -217,7 +366,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
         }
 
-        if (associatedDish.borrowed) {
+        if (associatedDish.status === DishStatus.borrowed) {
             Logger.error({
                 module: 'dish.controller',
                 message: 'Dish already borrowed',
@@ -225,7 +374,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish already borrowed' })
         }
 
-        const user = await getUserById(userClaims.uid) as User
+        const user = (await getUserById(userClaims.uid)) as User
         let transaction: Transaction = {
             dish: {
                 qid: associatedDish.qid,
@@ -234,7 +383,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             },
             user: user,
             returned: {
-                condition: Condition.alright,
+                condition: DishCondition.good,
                 timestamp: '',
             },
             timestamp: new Date().toISOString(),
@@ -318,7 +467,7 @@ export const returnDish = async (req: Request, res: Response) => {
                 return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish not found' })
             }
 
-            if (!associatedDish.borrowed) {
+            if (associatedDish.status !== DishStatus.borrowed) {
                 Logger.error({
                     module: 'dish.controller',
                     message: 'Dish not borrowed',
@@ -369,7 +518,7 @@ export const returnDish = async (req: Request, res: Response) => {
         }
 
         // Check if the borrowed property of the dish is true
-        if (!associatedDish.borrowed) {
+        if (associatedDish.status !== DishStatus.borrowed) {
             Logger.error({
                 module: 'dish.controller',
                 message: 'Dish not borrowed',
@@ -482,5 +631,45 @@ export const updateDishCondition = async (req: Request, res: Response) => {
         })
 
         return res.status(200).json({ message: 'dish condition updated' })
+    }
+}
+export const modifyDishStatus = async (req: Request, res: Response) => {
+    let userClaims = (req as CustomRequest).firebase
+    if (!verifyIfUserAdmin(userClaims)) {
+        Logger.error({
+            module: 'dish.controller',
+            message: 'User is not admin',
+            statusCode: 403,
+        })
+        return res.status(403).json({ error: 'forbidden' })
+    }
+
+    let validation = validateModifyDishStatus(req.body)
+    if (validation.error) {
+        Logger.error({
+            module: 'dish.controller',
+            error: validation.error,
+            message: 'Validation for modify dish status failed',
+            statusCode: 400,
+        })
+
+        return res.status(400).json({ error: 'bad_request', message: 'validation for modify dish status failed' })
+    }
+
+    const { id, oldStatus, newStatus } = req.body
+
+    try {
+        let response = await updateDishStatus(id, oldStatus, newStatus)
+        return res.status(200).json({ response })
+    } catch (error: any) {
+        Logger.error({
+            module: 'dish.controller',
+            error,
+            message: 'Error when modifying dish',
+            statusCode: 500,
+        })
+        return res
+            .status(500)
+            .json({ error: 'internal_server_error', message: error.message ?? 'Unexpected error occurred' })
     }
 }

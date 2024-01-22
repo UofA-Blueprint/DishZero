@@ -103,6 +103,18 @@ input[type="radio"] {
     color: white;
 }
 
+.dishes-table-header th {
+    background-color: #464646;
+    color:white;
+}
+
+.dishes-table-header th div button {
+    color:white
+}
+
+.dishes-table-hover tbody tr:hover th, tbody tr:hover td {
+    background-color: #e0e0e0;
+}
 
 .search-container {
     border-radius: 30px;
@@ -158,6 +170,19 @@ input[type="radio"] {
     padding-left: 20px;
     padding-right: 20px;
     justify-content: center;
+}
+
+.tag-container2 {
+    border-radius: 15px;
+    background-color: rgb(255, 255, 255);
+    height: 30px;
+    border: 2px solid black;
+    padding: 2px;
+    width: fit-content;
+    padding-left: 15px;
+    padding-right: 15px;
+    justify-content: center;
+
 }
 
 
