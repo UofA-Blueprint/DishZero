@@ -124,6 +124,7 @@ export function AuthProvider({ children }) {
 
             const { data } = res
             setSessionToken(data.session)
+            Cookies.set('session-token', data.session, { expires: 1 / 24 })
             const newUser = data?.user
             if (newUser !== currentUser) {
                 setCurrentUser({
