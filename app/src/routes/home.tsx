@@ -182,7 +182,8 @@ const ExistingUser = (dishesUsed) => {
                         <img src={leaf_white} alt="leaf" style={{ position: 'absolute', top: '16px', right: '16px' }} />
                         <div className="d-flex">
                             <p className="header mb-0" data-testid="waste-diverted-amt">
-                                {returnedDishes * 0.5}
+                                {/* {returnedDishes * 0.5} */}
+                                N/A
                             </p>
                             <p className="sub-header-2 mb-1" style={{ alignSelf: 'end', marginLeft: '7px' }}>
                                 Lbs
