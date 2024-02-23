@@ -160,6 +160,9 @@ const styles = {
         fontFamily: 'Poppins, sans-serif',
         color: '#4c4242',
         marginTop: '7px',
+        paddingLeft: 2.5,
+        paddingRight: 2.5,
+        textAlign: 'center'
     },
 
     signInButtonMobile: {
@@ -172,7 +175,7 @@ const styles = {
         borderRadius: '20px',
         backgroundColor: '#68B49A',
         borderWidth: '0',
-        marginTop: '80px',
+        marginTop: '70px',
         '&:hover': {
             backgroundColor: '#68B49A',
         },
