@@ -73,7 +73,7 @@ export default function Login() {
                     DishZero
                 </Typography>
                 <Typography variant="subtitle1" sx={styles.subheading}>
-                    Helping the planet one dish at a time
+                    The last dish you'll ever need on campus
                 </Typography>
                 <Button
                     variant="contained"
