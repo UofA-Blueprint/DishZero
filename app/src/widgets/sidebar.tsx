@@ -75,7 +75,7 @@ export const Sidebar = () => {
           </ReactRouterLink>
         </div>
       )}
-      <div style={{ paddingTop: 280 }}></div>
+      <div style={{ paddingTop: 150 }}></div>
       <Link
         className="menu-item"
         href="https://www.dishzero.ca/how-it-works-1"
