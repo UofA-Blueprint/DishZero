@@ -1,11 +1,12 @@
 /*eslint-disable*/
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { auth, provider } from '../firebase'
-import { getIdToken, signInWithPopup } from 'firebase/auth'
+import { GoogleAuthProvider, getAuth, getIdToken, onAuthStateChanged, signInWithPopup } from 'firebase/auth'
 import axios from 'axios'
 import Cookies from 'js-cookie'
 import { useNavigate } from 'react-router-dom'
+import LoadingSpinner from '../widgets/loadingSpinner'
 
 type User = {
     id: string
@@ -43,6 +44,24 @@ export function AuthProvider({ children }) {
         return cookie ? cookie : null
     })
     const [loading, setLoading] = useState(true)
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+    onAuthStateChanged(auth, (user) => {
+        if (loading) {
+            setLoading(false)
+        }
+    })
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768)
+        }
+
+        window.addEventListener('resize', handleResize)
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
 
     const navigate = useNavigate()
 
@@ -62,40 +81,39 @@ export function AuthProvider({ children }) {
             return
         }
 
-        try {
-            const response = await axios.get(`/api/users/session`, {
-                baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-                headers: {
-                    'x-api-key': `${process.env.REACT_APP_API_KEY}`,
-                    'session-token': sessionToken!,
-                },
-            })
-
-            const data = response.data.user
-            if (response && response.status === 200) {
-                console.log('setting current user')
-                console.log(data)
-                // if it gets here then current user should be null
-                setCurrentUser({
-                    id: data?.id,
-                    role: data?.role,
-                    email: data?.email,
+        if (sessionToken) {
+            try {
+                const response = await axios.get(`/api/users/session`, {
+                    baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+                    headers: {
+                        'x-api-key': `${process.env.REACT_APP_API_KEY}`,
+                        'session-token': sessionToken!,
+                    },
                 })
-            } else {
-                console.log('no token found or something')
-                logout()
-            }
-        } catch (error: any) {
-            console.error('Failed to call authentication')
-            console.error(error)
-            if (error.response?.status === 401) {
-                console.log('user unauthorised')
-                logout()
-            }
-        }
 
-        if (loading) {
-            setLoading(false)
+                const data = response.data.user
+                if (response && response.status === 200) {
+                    console.log('setting current user')
+                    console.log(data)
+                    // if it gets here then current user should be null
+                    setCurrentUser({
+                        id: data?.id,
+                        role: data?.role,
+                        email: data?.email,
+                    })
+                    setLoading(false)
+                } else {
+                    console.log('no token found or something')
+                    logout()
+                }
+            } catch (error: any) {
+                console.error('Failed to call authentication')
+                console.error(error)
+                if (error.response?.status === 401) {
+                    console.log('user unauthorised')
+                    logout()
+                }
+            }
         }
     }
 
@@ -103,7 +121,6 @@ export function AuthProvider({ children }) {
         try {
             const credentials = await signInWithPopup(auth, provider)
             const idToken = await getIdToken(credentials.user)
-
             if (!credentials.user.email?.match('@ualberta.ca')) {
                 credentials.user?.delete()
                 alert('Please login with your University of Alberta CCID')
@@ -124,41 +141,42 @@ export function AuthProvider({ children }) {
 
             const { data } = res
             setSessionToken(data.session)
-            Cookies.set('session-token', data.session, { expires: 1 / 24 })
+            Cookies.set('session-token', data.session, { expires: 90 })
             const newUser = data?.user
             if (newUser !== currentUser) {
                 setCurrentUser({
                     ...data.user,
                 })
             }
-            console.log('logged in')
 
             navigate('/home')
         } catch (error: any) {
-            console.log(error)
+            console.log(error.message)
             logout()
-            navigate('/login')
         }
     }
 
     async function logout() {
-        const res = await axios.post(
-            `/api/auth/logout/`,
-            {},
-            {
-                baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-                headers: {
-                    'x-api-key': `${process.env.REACT_APP_API_KEY}`,
-                    'session-token': sessionToken!,
+        if (sessionToken) {
+            const res = await axios.post(
+                `/api/auth/logout/`,
+                {},
+                {
+                    baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+                    headers: {
+                        'x-api-key': `${process.env.REACT_APP_API_KEY}`,
+                        'session-token': sessionToken!,
+                    },
                 },
-            },
-        )
-        auth.signOut()
-        console.log('logout response', res)
-        setSessionToken('')
-        setCurrentUser(null)
-        Cookies.remove('session-token')
+            )
+            auth.signOut()
+            console.log('logout response', res)
+            setSessionToken('')
+            setCurrentUser(null)
+            Cookies.remove('session-token')
+        }
         navigate('/login')
+        setLoading(false)
     }
 
     const value = {
@@ -167,5 +185,9 @@ export function AuthProvider({ children }) {
         login,
         logout,
     }
-    return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>
+    return (
+        <AuthContext.Provider value={value}>
+            {loading ? <LoadingSpinner isMobile={isMobile} /> : children}
+        </AuthContext.Provider>
+    )
 }

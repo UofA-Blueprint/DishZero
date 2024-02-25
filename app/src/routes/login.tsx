@@ -1,19 +1,20 @@
+/*eslint-disable*/
 import { useEffect, useState } from 'react'
 import { Button, Typography, Box, Avatar } from '@mui/material'
-import { BallTriangle } from 'react-loader-spinner'
 import desktopLogo from '../assets/dishzero-logo-desktop.png'
 import mobileLogo from '../assets/dishzero-logo-mobile.png'
 import signInButtonLogo from '../assets/sign-in-button-logo.png'
 import MobileBackground from '../assets/leaf-mobile-background.png'
 import 'typeface-poppins'
 import { useAuth } from '../contexts/AuthContext'
+import LoadingSpinner from '../widgets/loadingSpinner'
 
 export default function Login() {
     const { login } = useAuth()
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
     //Show spinner as soon as page is refreshed
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const { currentUser } = useAuth()
 
     //const {transaction_id} = useParams();
@@ -33,6 +34,7 @@ export default function Login() {
     // fired on button click while the user is not signed in.
     // logs in the user and navigates to home screen if successfully logged in
     const handleSignIn = async () => {
+        setIsLoading(true)
         // Get the 'previousURL' parameter from the query string
         const urlParams = new URLSearchParams(window.location.search)
         const previousURL = urlParams.get('previousURL')
@@ -42,28 +44,13 @@ export default function Login() {
 
         await login()
     }
-
     //Hide spinner as soon as Auth state has changed i.e. auth state has been read
-    useEffect(() => {
-        setIsLoading(false)
-    }, [currentUser])
 
     console.log('isLoading', isLoading)
 
     //As auth state is being read, display loader spinner
     if (isLoading) {
-        return (
-            <Box sx={isMobile ? styles.rootMobileLoader : styles.rootDesktop}>
-                <BallTriangle
-                    height={100}
-                    width={100}
-                    radius={5}
-                    color="#4fa94d"
-                    ariaLabel="ball-triangle-loading"
-                    visible={true}
-                />
-            </Box>
-        )
+        return <LoadingSpinner isMobile={isMobile} />
     }
     return (
         <Box sx={isMobile ? styles.rootMobile : styles.rootDesktop}>
@@ -78,7 +65,8 @@ export default function Login() {
                 <Button
                     variant="contained"
                     sx={isMobile ? styles.signInButtonMobile : styles.signInButtonDesktop}
-                    onClick={handleSignIn}>
+                    onClick={handleSignIn}
+                    disabled={isLoading}>
                     <Avatar src={signInButtonLogo} sx={styles.signInButtonLogo} alt="Sign In Button Logo" />
                     <Typography sx={styles.signInButtonText}>Sign in with CCID</Typography>
                 </Button>
@@ -87,7 +75,7 @@ export default function Login() {
     )
 }
 
-const styles = {
+export const styles = {
     rootDesktop: {
         width: '100vw',
         height: '100vh',
