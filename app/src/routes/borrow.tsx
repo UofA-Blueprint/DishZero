@@ -91,6 +91,9 @@ const Borrow = () => {
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <div>Successfully borrowed</div>
                                 <div>Dish # {id} </div>
+                                <div> </div>
+                                <div>Please return your dish within two days to the nearest DishZero Return Station</div>
+                                
                             </div>
                         </>
                     ) : (
