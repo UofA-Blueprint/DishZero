@@ -92,8 +92,9 @@ const Borrow = () => {
                                 <div>Successfully borrowed</div>
                                 <div>Dish # {id} </div>
                                 <div> </div>
-                                <div>Please return your dish within two days to the nearest DishZero Return Station</div>
-                                
+                                <div>
+                                    Please return your dish within two days to the nearest DishZero Return Station
+                                </div>
                             </div>
                         </>
                     ) : (
@@ -156,7 +157,7 @@ const Borrow = () => {
                 justifyContent: 'center',
                 backgroundColor: '#464646',
             }}>
-            <AppHeader title={'Borrow Dishes'} className={'headerDiv'} />
+            <AppHeader title={'Borrow Dishes'} />
 
             <div className="qr-body-wrapper">
                 <div className="b-text-wrapper">

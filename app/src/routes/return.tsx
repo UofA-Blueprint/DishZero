@@ -25,6 +25,7 @@ import {
     RadioGroup,
     Radio,
     IconButton,
+    DialogContent,
 } from '@mui/material'
 import { useAuth } from '../contexts/AuthContext'
 import { BallTriangle } from 'react-loader-spinner'
@@ -35,6 +36,12 @@ import ReportIcon from '../assets/megaphone.svg'
 import ErrorIcon from '../assets/error_icon.svg'
 import CloseIcon from '../assets/X_icon.svg'
 import axios from 'axios'
+import adminApi from '../admin/adminApi'
+import { Dish, DishStatus } from '../admin/Dishes/constants'
+import { Close } from '@mui/icons-material'
+import CustomDialogTitle from '../admin/CustomDialogTitle'
+import { theme } from 'antd'
+import { useSnackbar } from 'notistack'
 
 const PopUpModal = memo(({ dishType, error, message, reportToggle, qid, isMobile }) => {
     let avatarIcon
@@ -122,6 +129,11 @@ const Return = ({ noTimer }) => {
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
     const location = useLocation()
+
+    const [forceSignInDialog, setForceSignInDialog] = useState(false)
+    const [forceLoading, setForceLoading] = useState(false)
+
+    const { enqueueSnackbar } = useSnackbar()
 
     /*const onScan = async (id: string) => {
         setScanId(id);
@@ -263,60 +275,124 @@ const Return = ({ noTimer }) => {
         setQid(condition)
         setIsLoading(true)
 
-        await axios
-            .get(`/api/dish`, {
-                headers: {
-                    'x-api-key': `${process.env.REACT_APP_API_KEY}`,
-                    'session-token': sessionToken,
-                },
-                baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
-                params: { qid: condition },
-            })
-            .then(function (response) {
-                console.log(response)
-                setDishType(response.data.dish.type)
-                setDishID(response.data.dish.id)
-            })
-            .catch(function (error) {
-                console.log(error)
-            })
+        const dishData = (await adminApi.getDishByQid(sessionToken, condition)) as Dish
+        setDishID(dishData.id)
+        setDishType(dishData.type)
 
+        console.log(dishData)
+        // check if dish is borrowed
+        if (dishData.status == DishStatus.borrowed) {
+            // return the dish
+            await axios
+                .post(
+                    `/api/dish/return`,
+                    {
+                        returned: {
+                            condition: 'good',
+                        },
+                    },
+                    {
+                        headers: {
+                            'x-api-key': `${process.env.REACT_APP_API_KEY}`,
+                            'session-token': sessionToken,
+                            'Content-Type': 'application/json',
+                        },
+                        params: { qid: condition },
+                        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+                    },
+                )
+                .then(function (response) {
+                    setError('')
+                    setIsLoading(false)
+                    setMessage('')
+                    setPopUp(true)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error.response.data.message)
+                    setError(error.response.data.message)
+                    setIsLoading(false)
+                    setMessage('')
+                    setPopUp(true)
+                })
+        } else {
+            // create a popup asking if they want to force sign out and sign in
+            setForceSignInDialog(true)
+        }
+
+        // get the dish
         //let icon = eval(dishType + "Icon") Trying to create a dynamic variable which does work but does not properly reference the imported image variable.
         //How are we gonna handle other dish types?
         //setDishIcon(icon);
 
-        await axios
+        // Check if dish is signed out
+    }
+
+    const forceSignIn = async () => {
+        // sign out the dish
+        setForceLoading(true)
+        const response = (await axios
             .post(
-                `/api/dish/return`,
+                `${process.env.REACT_APP_BACKEND_ADDRESS}/api/dish/borrow`,
+                {},
                 {
-                    returned: {
-                        condition: 'good',
-                    },
-                },
-                {
-                    headers: {
-                        'x-api-key': `${process.env.REACT_APP_API_KEY}`,
-                        'session-token': sessionToken,
-                        'Content-Type': 'application/json',
-                    },
-                    params: { qid: condition },
-                    baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+                    headers: { 'x-api-key': `${process.env.REACT_APP_API_KEY}`, 'session-token': sessionToken },
+                    params: { qid: qid, email: 'dishzero@ualberta.ca' },
                 },
             )
-            .then(function (response) {
-                setError('')
-                setIsLoading(false)
-                setMessage('')
-                setPopUp(true)
+            .then((res) => {
+                console.log('res', res)
+                return res
             })
-            .catch(function (error) {
-                // handle error
-                console.log(error.response.data.message)
-                setError(error.response.data.message)
-                setIsLoading(false)
-                setMessage('')
-                setPopUp(true)
-            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(`Failed to borrow dish ${err}.`)
+                return err
+            })) as any
+        console.log('response', response)
+
+        if (response && response.status != 200) {
+            enqueueSnackbar(`Failed to sign out the dish please try again: ${response.message}`, { variant: 'error' })
+            setForceLoading(false)
+        } else {
+            console.log('returning the dish')
+            // return the dish
+            // const response = (await adminApi.returnDish(sessionToken, qid)) as any
+            const response = (await axios
+                .post(
+                    `/api/dish/return`,
+                    {
+                        returned: {
+                            condition: 'good',
+                        },
+                    },
+                    {
+                        headers: {
+                            'x-api-key': `${process.env.REACT_APP_API_KEY}`,
+                            'session-token': sessionToken,
+                            'Content-Type': 'application/json',
+                        },
+                        params: { qid: qid },
+                        baseURL: `${process.env.REACT_APP_BACKEND_ADDRESS}`,
+                    },
+                )
+                .then(function (response) {
+                    setForceSignInDialog(false)
+                    setError('')
+                    setIsLoading(false)
+                    setMessage('')
+                    setPopUp(true)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error.response.data.message)
+                    setError(error.response.data.message)
+                    setIsLoading(false)
+                    setMessage('')
+                    setPopUp(true)
+                })) as any
+            setForceLoading(false)
+        }
     }
 
     const reportToggle = () => {
@@ -372,7 +448,7 @@ const Return = ({ noTimer }) => {
             {/* {isLoading ? ( */}
             {/* <></> */}
             {/* // ) : ( */}
-            <AppHeader title={'Return Dishes'} className={'headerDiv'} />
+            <AppHeader title={'Return Dishes'} />
             {/* // )} */}
             {/* {isLoading ? (
         <Box
@@ -411,6 +487,27 @@ const Return = ({ noTimer }) => {
             ) : (
                 <></>
             )}
+
+            <CustomDialogTitle
+                open={forceSignInDialog}
+                setOpen={setForceSignInDialog}
+                dialogTitle={'Dish is not signed out'}
+                loading={false}>
+                <DialogContent sx={{ minWidth: '420px', textAlign: 'center' }}>
+                    <Typography variant="body1" fontWeight="bold" sx={{ mb: '1rem' }}>
+                        This dish is not signed out. You can force sign in and sign out the dish.
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        onClick={forceSignIn}
+                        size="large"
+                        color="error"
+                        disabled={forceLoading}>
+                        Force Sign In Dish
+                    </Button>
+                </DialogContent>
+            </CustomDialogTitle>
+
             <CameraInput
                 setLoading={setIsLoading}
                 isMobile={isMobile}
