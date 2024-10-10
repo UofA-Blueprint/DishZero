@@ -39,6 +39,20 @@ const adminApi = {
         const transactions = response?.data.transactions
         return transactions
     },
+    getDishByQid: async function (token: string, qid: string) {
+        const response = await axios
+            .get(`${this.serverAddress}/api/dish?qid=${qid}}`, {
+                headers: headers(token),
+            })
+            .then((res) => {
+                return res
+            })
+            .catch((err) => {
+                console.error(`Failed to get dish using qid from database. ${err}.`)
+            })
+        const dish = response?.data.dish
+        return dish
+    },
     getAllDishes: async function (token: string, withEmail?: boolean) {
         const response = await axios
             .get(`${this.serverAddress}/api/dish?all=true&transaction=true&withEmail=${withEmail?.toString()}`, {
@@ -48,7 +62,7 @@ const adminApi = {
                 return res
             })
             .catch((err) => {
-                console.log(`Failed to get dishes from database. ${err}.`)
+                console.error(`Failed to get dishes from database. ${err}.`)
             })
         const dishes = response?.data.dishes
         return dishes
@@ -145,6 +159,31 @@ const adminApi = {
             .catch((err) => {
                 // eslint-disable-next-line no-console
                 console.error(`Failed to add dish(es) to the database. ${err}.`)
+                return err
+            })
+        return response
+    },
+    returnDish: async function (token: string, qid: string) {
+        const response = await axios
+            .post(
+                `/api/dish/return`,
+                {
+                    returned: {
+                        condition: 'good',
+                    },
+                    // qid: qid,
+                },
+                {
+                    headers: headers(token),
+                    params: { qid: qid },
+                },
+            )
+            .then((res) => {
+                return res
+            })
+            .catch((err) => {
+                // eslint-disable-next-line no-console
+                console.error(`Failed to return dish. ${err}.`)
                 return err
             })
         return response
