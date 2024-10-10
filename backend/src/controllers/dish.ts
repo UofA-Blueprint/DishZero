@@ -22,7 +22,7 @@ import {
 } from '../services/dish'
 import { CustomRequest } from '../middlewares/auth'
 import Logger from '../utils/logger'
-import { getUserById, verifyIfUserAdmin, verifyIfUserVolunteer } from '../services/users'
+import { getUserByEmail, getUserById, verifyIfUserAdmin, verifyIfUserVolunteer } from '../services/users'
 import {
     registerTransaction,
     getLatestTransactionByTstamp,
@@ -328,6 +328,7 @@ export const addDishType = async (req: Request, res: Response) => {
 
 export const borrowDish = async (req: Request, res: Response) => {
     let qid = req.query['qid']?.toString()
+    let email = req.query['email']?.toString()
 
     // TODO: add support for dish_id
 
@@ -373,8 +374,7 @@ export const borrowDish = async (req: Request, res: Response) => {
             })
             return res.status(400).json({ error: 'operation_not_allowed', message: 'Dish already borrowed' })
         }
-
-        const user = (await getUserById(userClaims.uid)) as User
+        const user = email ? ((await getUserByEmail(email!)) as User) : ((await getUserById(userClaims.uid)) as User)
         let transaction: Transaction = {
             dish: {
                 qid: associatedDish.qid,
